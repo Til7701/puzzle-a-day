@@ -25,6 +25,7 @@ public class Tile {
         this.color = color;
         this.base = base;
         System.out.println("Creating Tile: " + name);
+        print(base);
         List<int[][]> baseRotated = getAllRotations(base);
         System.out.println("Number of Rotations: " + baseRotated.size());
         allPositions = getAllPositions(baseRotated, board);
@@ -101,7 +102,41 @@ public class Tile {
     private static List<int[][]> getAllPositions(List<int[][]> baseRotated, Board board) {
         Set<int[][]> results = new HashSet<>();
 
+        for (int[][] tile : baseRotated) {
+            results.addAll(getAllPositionsForTile(tile, board));
+        }
+
         return results.stream().toList();
+    }
+
+    private static List<int[][]> getAllPositionsForTile(int[][] tile, Board board) {
+        Set<int[][]> results = new HashSet<>();
+        int[][] boardArray = board.getBoard();
+
+        for (int i = 0; i < boardArray.length - tile.length + 1; i++) {
+            for (int j = 0; j < boardArray[i].length - tile[0].length + 1; j++) {
+                int[][] newBoard = place(tile, boardArray, i, j);
+                if (Board.isValid(newBoard))
+                    results.add(newBoard);
+            }
+        }
+
+        return results.stream().toList();
+    }
+
+    private static int[][] place(int[][] tile, int[][] boardArray, int i, int j) {
+        int[][] copy = new int[boardArray.length][boardArray[0].length];
+
+        for (int m = 0; m < boardArray.length; m++) {
+            System.arraycopy(boardArray[m], 0, copy[m], 0, boardArray[m].length);
+        }
+
+        for (int k = 0; k < tile.length; k++) {
+            for (int l = 0; l < tile[k].length; l++) {
+                copy[i + k][j + l] += tile[k][l];
+            }
+        }
+        return copy;
     }
 
     private static void print(int[][] array) {
