@@ -85,8 +85,4 @@ public class ArrayProvider {
             {1, 1}
     };
 
-    public static final int[][][] TILES = new int[][][]{
-            TILE_l, TILE_t, TILE_C, TILE_S, TILE_O, TILE_L, TILE_s, TILE_P
-    };
-
 }
