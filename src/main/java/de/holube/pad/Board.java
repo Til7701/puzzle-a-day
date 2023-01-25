@@ -1,10 +1,12 @@
 package de.holube.pad;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@EqualsAndHashCode
 public class Board {
 
     private final int[][] board;
@@ -53,7 +55,7 @@ public class Board {
                     return false;
                 } else if (cell == 0) {
                     // check if day
-                    if (boardMeaning[0][i][j] == 0) {
+                    if (boardMeaning[0][i][j] == 1) {
                         if (day == 0) {
                             day = boardMeaning[1][i][j];
                         } else {
@@ -61,7 +63,7 @@ public class Board {
                             month = 0;
                             return false;
                         }
-                    } else if (boardMeaning[0][i][j] == 1) { // check if month
+                    } else if (boardMeaning[0][i][j] == 0) { // check if month
                         if (month == 0) {
                             month = boardMeaning[1][i][j];
                         } else {
@@ -109,4 +111,6 @@ public class Board {
 
         return new Board(newBoard, boardMeaning, newTiles, newTileCumArrays);
     }
+
+
 }

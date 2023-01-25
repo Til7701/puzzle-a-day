@@ -6,4 +6,6 @@ public interface Buffer<E> {
 
     E get() throws InterruptedException;
 
+    boolean isEmpty();
+    
 }

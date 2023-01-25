@@ -73,4 +73,9 @@ public class SemBuffer<E> implements Buffer<E> {
             mutex.release();
         }
     }
+
+    public boolean isEmpty() {
+        return readSemaphore.availablePermits() == 0;
+    }
+
 }

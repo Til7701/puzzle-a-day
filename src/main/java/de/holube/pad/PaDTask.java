@@ -28,7 +28,6 @@ public class PaDTask extends RecursiveTask<Boolean> {
         try {
             if (tileIndex >= tiles.length) {
                 if (board.isValidSolution()) {
-                    System.out.println("found solution");
                     try {
                         solutionBuffer.put(board);
                         return true;

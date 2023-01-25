@@ -18,6 +18,7 @@ public class SolutionHandlerThread extends Thread {
     private final Buffer<Board> solutionBuffer;
     private final Stats stats = new Stats();
     private int fileName = 0;
+    private volatile boolean isDone = false;
 
     public SolutionHandlerThread(Buffer<Board> solutionBuffer) {
         this.solutionBuffer = solutionBuffer;
@@ -39,6 +40,10 @@ public class SolutionHandlerThread extends Thread {
     public void run() {
         while (!interrupted()) {
             try {
+                if (isDone && solutionBuffer.isEmpty()) {
+                    stats.print();
+                    return;
+                }
                 Board board = solutionBuffer.get();
                 stats.addSolution(board);
 
@@ -49,6 +54,8 @@ public class SolutionHandlerThread extends Thread {
                 throw new RuntimeException(e);
             }
         }
+
+        stats.print();
     }
 
     private BufferedImage createImage(Board board) {
@@ -56,6 +63,7 @@ public class SolutionHandlerThread extends Thread {
         int height = IMAGE_SIZE_PER_CELL * array.length;
         int width = IMAGE_SIZE_PER_CELL * array[0].length;
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics2D = image.createGraphics();
 
         List<Tile> tileBoards = board.getTiles();
         List<int[][]> tileCumArrays = board.getTileCumArrays();
@@ -64,14 +72,13 @@ public class SolutionHandlerThread extends Thread {
             Tile tile = tileBoards.get(i);
             Color color = tile.getColor();
             int[][] tileCumArray = tileCumArrays.get(i);
-            Graphics2D graphics2D = image.createGraphics();
             graphics2D.setColor(color);
 
             for (int j = 0; j < tileCumArray.length; j++) {
                 for (int k = 0; k < tileCumArray[0].length; k++) {
                     if (tileCumArray[j][k] == 1) {
                         graphics2D.fillRect(
-                                j * IMAGE_SIZE_PER_CELL, k * IMAGE_SIZE_PER_CELL,
+                                k * IMAGE_SIZE_PER_CELL, j * IMAGE_SIZE_PER_CELL,
                                 IMAGE_SIZE_PER_CELL, IMAGE_SIZE_PER_CELL
                         );
                     }
@@ -83,17 +90,21 @@ public class SolutionHandlerThread extends Thread {
     }
 
     private void save(Board board, BufferedImage image) {
-        File monthFolder = new File(String.valueOf(board.getMonth()));
+        File monthFolder = new File(OUTPUT_FOLDER + "\\" + board.getMonth());
         monthFolder.mkdir();
-        File dayFolder = new File(board.getMonth() + "\\" + board.getDay());
+        File dayFolder = new File(OUTPUT_FOLDER + "\\" + board.getMonth() + "\\" + board.getDay());
         dayFolder.mkdir();
-        File file = new File(board.getMonth() + "\\" + board.getDay() + "\\" + fileName + ".png");
+        File file = new File(OUTPUT_FOLDER + "\\" + board.getMonth() + "\\" + board.getDay() + "\\" + fileName + ".png");
         fileName++;
         try {
             ImageIO.write(image, "png", file);
         } catch (IOException e) {
             System.out.println("Write error for " + file.getPath() + ": " + e.getMessage());
         }
+    }
+
+    public void done() {
+        isDone = true;
     }
 
 }

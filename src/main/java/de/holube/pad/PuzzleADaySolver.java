@@ -12,7 +12,7 @@ public class PuzzleADaySolver {
 
     private final Buffer<Board> solutionBuffer;
 
-    ForkJoinPool pool = new ForkJoinPool();
+    ForkJoinPool pool = new ForkJoinPool(12);
 
     public PuzzleADaySolver(Board board, Tile[] tiles, Buffer<Board> solutionBuffer) {
         this.board = board;
@@ -23,6 +23,5 @@ public class PuzzleADaySolver {
     public void solve() {
         pool.invoke(new PaDTask(board, tiles, 0, solutionBuffer));
     }
-
 
 }
