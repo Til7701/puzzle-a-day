@@ -4,9 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9576cb07-6120-490d-8823-4a149303a815" name="Changes" comment="correct rotations">
+    <list default="true" id="9576cb07-6120-490d-8823-4a149303a815" name="Changes" comment="placements">
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/PaDTask.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/Buffer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/SemBuffer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/SolutionHandlerThread.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/Stats.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/Board.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/PuzzleADaySolver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/PuzzleADaySolver.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/Tile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/Tile.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -18,6 +26,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Enum" />
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -92,7 +101,9 @@
       <updated>1674471242565</updated>
       <workItem from="1674471244290" duration="4265000" />
       <workItem from="1674569936196" duration="528000" />
-      <workItem from="1674643186653" duration="3914000" />
+      <workItem from="1674643186653" duration="4604000" />
+      <workItem from="1674656100270" duration="1058000" />
+      <workItem from="1674658289434" duration="3754000" />
     </task>
     <task id="LOCAL-00001" summary="rotation">
       <created>1674643471145</created>
@@ -115,7 +126,14 @@
       <option name="project" value="LOCAL" />
       <updated>1674645901493</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="placements">
+      <created>1674647270543</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1674647270543</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -126,13 +144,7 @@
     <MESSAGE value="rotation" />
     <MESSAGE value="flip" />
     <MESSAGE value="correct rotations" />
-    <option name="LAST_COMMIT_MESSAGE" value="correct rotations" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <default-breakpoints>
-        <breakpoint enabled="true" type="java-exception" />
-      </default-breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="placements" />
+    <option name="LAST_COMMIT_MESSAGE" value="placements" />
   </component>
 </project>

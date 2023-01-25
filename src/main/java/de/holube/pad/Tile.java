@@ -116,12 +116,23 @@ public class Tile {
         for (int i = 0; i < boardArray.length - tile.length + 1; i++) {
             for (int j = 0; j < boardArray[i].length - tile[0].length + 1; j++) {
                 int[][] newBoard = place(tile, boardArray, i, j);
-                if (Board.isValid(newBoard))
+                if (Board.isValid(newBoard)) {
+                    newBoard = removeBoard(newBoard, boardArray);
                     results.add(newBoard);
+                }
             }
         }
 
         return results.stream().toList();
+    }
+
+    private static int[][] removeBoard(int[][] newBoard, int[][] boardArray) {
+        for (int i = 0; i < newBoard.length; i++) {
+            for (int j = 0; j < newBoard[i].length; j++) {
+                newBoard[i][j] -= boardArray[i][j];
+            }
+        }
+        return newBoard;
     }
 
     private static int[][] place(int[][] tile, int[][] boardArray, int i, int j) {

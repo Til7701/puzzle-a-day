@@ -1,6 +1,9 @@
 package de.holube.pad;
 
 import de.holube.pad.util.ArrayProvider;
+import de.holube.pad.util.Buffer;
+import de.holube.pad.util.SemBuffer;
+import de.holube.pad.util.SolutionHandlerThread;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -9,7 +12,7 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        final Board board = new Board(ArrayProvider.BOARD_LAYOUT, ArrayProvider.BOARD_MEANING);
+        final Board board = new Board(ArrayProvider.BOARD_LAYOUT, ArrayProvider.BOARD_MEANING, new ArrayList<>(), new ArrayList<>());
 
         List<Tile> tiles = new ArrayList<>();
         tiles.add(new Tile(ArrayProvider.TILE_S, "S", Color.RED, board));
@@ -27,8 +30,12 @@ public class Main {
         }
         System.out.println("Total number of possible boards: " + totalOptions);
 
-        final PuzzleADaySolver padSolver = new PuzzleADaySolver(board, tiles.toArray(new Tile[0]));
+        Buffer<Board> solutionBuffer = new SemBuffer<>(100);
+        SolutionHandlerThread thread = new SolutionHandlerThread(solutionBuffer);
+        thread.start();
 
+        final PuzzleADaySolver padSolver = new PuzzleADaySolver(board, tiles.toArray(new Tile[0]), solutionBuffer);
+        padSolver.solve();
     }
 
 }
