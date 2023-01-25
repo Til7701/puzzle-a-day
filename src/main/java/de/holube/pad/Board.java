@@ -18,7 +18,7 @@ public class Board {
         this.boardMeaning = boardMeaning;
     }
 
-    public boolean isValid() {
+    public static boolean isValid(int[][] board) {
         for (int[] row : board) {
             for (int cell : row) {
                 if (cell > 1)
@@ -27,6 +27,10 @@ public class Board {
         }
 
         return true;
+    }
+
+    public boolean isValid() {
+        return isValid(board);
     }
 
     public boolean isValidSolution() {
