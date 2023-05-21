@@ -2,6 +2,7 @@ package de.holube.pad.util;
 
 import de.holube.pad.Board;
 import de.holube.pad.Tile;
+import lombok.Getter;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -9,20 +10,17 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class SolutionHandlerThread extends Thread {
+public class SolutionHandler {
 
     private static final int IMAGE_SIZE_PER_CELL = 50;
     private static final String OUTPUT_FOLDER = "output";
+    private static final AtomicInteger fileName = new AtomicInteger(0);
+    @Getter
+    private static final Stats stats = new Stats();
 
-    private final Buffer<Board> solutionBuffer;
-    private final Stats stats = new Stats();
-    private int fileName = 0;
-    private volatile boolean isDone = false;
-
-    public SolutionHandlerThread(Buffer<Board> solutionBuffer) {
-        this.solutionBuffer = solutionBuffer;
-
+    public SolutionHandler() {
         File folder = new File(OUTPUT_FOLDER);
         folder.mkdir();
     }
@@ -36,26 +34,11 @@ public class SolutionHandlerThread extends Thread {
         }
     }
 
-    @Override
-    public void run() {
-        while (!interrupted()) {
-            try {
-                if (isDone && solutionBuffer.isEmpty()) {
-                    stats.print();
-                    return;
-                }
-                Board board = solutionBuffer.get();
-                stats.addSolution(board);
+    public void handleSolution(Board board) {
+        stats.addSolution(board);
 
-                BufferedImage image = createImage(board);
-                save(board, image);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            }
-        }
-
-        stats.print();
+        BufferedImage image = createImage(board);
+        save(board, image);
     }
 
     private BufferedImage createImage(Board board) {
@@ -90,21 +73,18 @@ public class SolutionHandlerThread extends Thread {
     }
 
     private void save(Board board, BufferedImage image) {
-        File monthFolder = new File(OUTPUT_FOLDER + "\\" + board.getMonth());
+        String separator = File.separator;
+        final int name = fileName.incrementAndGet();
+        File monthFolder = new File(OUTPUT_FOLDER + separator + board.getMonth());
         monthFolder.mkdir();
-        File dayFolder = new File(OUTPUT_FOLDER + "\\" + board.getMonth() + "\\" + board.getDay());
+        File dayFolder = new File(OUTPUT_FOLDER + separator + board.getMonth() + separator + board.getDay());
         dayFolder.mkdir();
-        File file = new File(OUTPUT_FOLDER + "\\" + board.getMonth() + "\\" + board.getDay() + "\\" + fileName + ".png");
-        fileName++;
+        File file = new File(OUTPUT_FOLDER + separator + board.getMonth() + separator + board.getDay() + separator + name + ".png");
         try {
             ImageIO.write(image, "png", file);
         } catch (IOException e) {
             System.out.println("Write error for " + file.getPath() + ": " + e.getMessage());
         }
-    }
-
-    public void done() {
-        isDone = true;
     }
 
 }

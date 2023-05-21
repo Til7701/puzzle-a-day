@@ -1,9 +1,6 @@
 package de.holube.pad;
 
 import de.holube.pad.util.ArrayProvider;
-import de.holube.pad.util.Buffer;
-import de.holube.pad.util.SemBuffer;
-import de.holube.pad.util.SolutionHandlerThread;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -30,18 +27,12 @@ public class Main {
         }
         System.out.println("Total number of possible boards: " + totalOptions);
 
-        Buffer<Board> solutionBuffer = new SemBuffer<>(10000);
-        SolutionHandlerThread thread = new SolutionHandlerThread(solutionBuffer);
-        thread.start();
-
         long startTime = System.currentTimeMillis();
-        final PuzzleADaySolver padSolver = new PuzzleADaySolver(board, tiles.toArray(new Tile[0]), solutionBuffer);
+        final PuzzleADaySolver padSolver = new PuzzleADaySolver(board, tiles.toArray(new Tile[0]));
         padSolver.solve();
         long endTime = System.currentTimeMillis();
         long time = endTime - startTime;
         System.out.println("done in: " + time + "ms");
-        thread.done();
-
     }
 
 }

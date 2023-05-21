@@ -1,26 +1,36 @@
 package de.holube.pad.util;
 
 import de.holube.pad.Board;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 public class Stats {
 
     private final int[] days = new int[12 * 31];
-    List<Board> results = new ArrayList<>();
-
+    private final Semaphore semaphore = new Semaphore(1);
+    @Getter
+    private final List<Board> results = new ArrayList<>();
     private int totalSolutions = 0;
 
     public void addSolution(Board board) {
-        if (results.contains(board)) {
-            System.out.println("Duplicate detected! Month: " + board.getMonth() + " Day: " + board.getDay());
-        }
-        results.add(board);
-        days[(board.getMonth() * 31) + board.getDay() - 31 - 1] += 1;
-        totalSolutions++;
-        if (totalSolutions % 100 == 0) {
-            System.out.println("Solutions received: " + totalSolutions);
+        try {
+            semaphore.acquire();
+            if (results.contains(board)) {
+                System.out.println("Duplicate detected! Month: " + board.getMonth() + " Day: " + board.getDay());
+            }
+            results.add(board);
+            days[(board.getMonth() * 31) + board.getDay() - 31 - 1] += 1;
+            totalSolutions++;
+            if (totalSolutions % 100 == 0) {
+                System.out.println("Solutions received: " + totalSolutions);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            semaphore.release();
         }
     }
 

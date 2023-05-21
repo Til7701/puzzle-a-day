@@ -1,7 +1,5 @@
 package de.holube.pad;
 
-import de.holube.pad.util.Buffer;
-
 import java.util.concurrent.ForkJoinPool;
 
 public class PuzzleADaySolver {
@@ -10,18 +8,15 @@ public class PuzzleADaySolver {
 
     private final Tile[] tiles;
 
-    private final Buffer<Board> solutionBuffer;
+    ForkJoinPool pool = new ForkJoinPool(8);
 
-    ForkJoinPool pool = new ForkJoinPool(12);
-
-    public PuzzleADaySolver(Board board, Tile[] tiles, Buffer<Board> solutionBuffer) {
+    public PuzzleADaySolver(Board board, Tile[] tiles) {
         this.board = board;
         this.tiles = tiles;
-        this.solutionBuffer = solutionBuffer;
     }
 
     public void solve() {
-        pool.invoke(new PaDTask(board, tiles, 0, solutionBuffer));
+        pool.invoke(new PaDTask(board, tiles, 0));
     }
 
 }
