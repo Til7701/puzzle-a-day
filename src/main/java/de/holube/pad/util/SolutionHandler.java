@@ -1,7 +1,7 @@
 package de.holube.pad.util;
 
-import de.holube.pad.Board;
-import de.holube.pad.Tile;
+import de.holube.pad.model.Board;
+import de.holube.pad.model.Tile;
 import lombok.Getter;
 
 import javax.imageio.ImageIO;

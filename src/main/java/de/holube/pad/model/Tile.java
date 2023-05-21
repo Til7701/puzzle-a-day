@@ -1,4 +1,4 @@
-package de.holube.pad;
+package de.holube.pad.model;
 
 import lombok.Getter;
 

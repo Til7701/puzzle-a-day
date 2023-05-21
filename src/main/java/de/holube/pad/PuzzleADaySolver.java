@@ -1,5 +1,8 @@
 package de.holube.pad;
 
+import de.holube.pad.model.Board;
+import de.holube.pad.model.Tile;
+
 import java.util.concurrent.ForkJoinPool;
 
 public class PuzzleADaySolver {

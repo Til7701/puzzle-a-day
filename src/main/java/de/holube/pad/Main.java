@@ -1,5 +1,7 @@
 package de.holube.pad;
 
+import de.holube.pad.model.Board;
+import de.holube.pad.model.Tile;
 import de.holube.pad.util.ArrayProvider;
 
 import java.awt.*;

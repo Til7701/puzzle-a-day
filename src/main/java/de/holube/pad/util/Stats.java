@@ -1,6 +1,6 @@
 package de.holube.pad.util;
 
-import de.holube.pad.Board;
+import de.holube.pad.model.Board;
 import lombok.Getter;
 
 import java.util.ArrayList;
