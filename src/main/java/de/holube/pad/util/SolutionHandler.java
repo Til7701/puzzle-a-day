@@ -22,7 +22,10 @@ public class SolutionHandler {
 
     public SolutionHandler() {
         File folder = new File(OUTPUT_FOLDER);
-        folder.mkdir();
+        if (!folder.exists() && !folder.mkdir()) {
+            System.out.println("Could not create output folder");
+            System.exit(1);
+        }
     }
 
     private static void print(int[][] array) {
@@ -75,15 +78,15 @@ public class SolutionHandler {
     private void save(Board board, BufferedImage image) {
         String separator = File.separator;
         final int name = fileName.incrementAndGet();
-        File monthFolder = new File(OUTPUT_FOLDER + separator + board.getMonth());
-        monthFolder.mkdir();
-        File dayFolder = new File(OUTPUT_FOLDER + separator + board.getMonth() + separator + board.getDay());
-        dayFolder.mkdir();
         File file = new File(OUTPUT_FOLDER + separator + board.getMonth() + separator + board.getDay() + separator + name + ".png");
-        try {
-            ImageIO.write(image, "png", file);
-        } catch (IOException e) {
-            System.out.println("Write error for " + file.getPath() + ": " + e.getMessage());
+        if (!file.mkdirs()) {
+            System.out.println("Could not create output folder");
+        } else {
+            try {
+                ImageIO.write(image, "png", file);
+            } catch (IOException e) {
+                System.out.println("Write error for " + file.getPath() + ": " + e.getMessage());
+            }
         }
     }
 

@@ -29,6 +29,7 @@ public class Stats {
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
+            Thread.currentThread().interrupt();
         } finally {
             semaphore.release();
         }
