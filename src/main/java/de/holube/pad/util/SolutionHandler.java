@@ -20,14 +20,6 @@ public class SolutionHandler {
     @Getter
     private static final Stats stats = new Stats();
 
-    public SolutionHandler() {
-        File folder = new File(OUTPUT_FOLDER);
-        if (!folder.exists() && !folder.mkdir()) {
-            System.out.println("SolutionHandler: Could not create output folder");
-            System.exit(1);
-        }
-    }
-
     private static void print(int[][] array) {
         for (int[] ints : array) {
             for (int anInt : ints) {
