@@ -18,9 +18,9 @@ public class Stats {
     public void addSolution(Board board) {
         try {
             semaphore.acquire();
-            if (results.contains(board)) {
+            /*if (results.contains(board)) {
                 System.out.println("Duplicate detected! Month: " + board.getMonth() + " Day: " + board.getDay());
-            }
+            }*/
             results.add(board);
             days[(board.getMonth() * 31) + board.getDay() - 31 - 1] += 1;
             totalSolutions++;

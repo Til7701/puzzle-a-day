@@ -8,7 +8,7 @@ public class PuzzleADaySolver {
 
     private final Tile[] tiles;
 
-    ForkJoinPool pool = new ForkJoinPool(8);
+    ForkJoinPool pool = new ForkJoinPool(16);
 
     public PuzzleADaySolver(Board board, Tile[] tiles) {
         this.board = board;

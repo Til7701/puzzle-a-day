@@ -23,7 +23,7 @@ public class SolutionHandler {
     public SolutionHandler() {
         File folder = new File(OUTPUT_FOLDER);
         if (!folder.exists() && !folder.mkdir()) {
-            System.out.println("Could not create output folder");
+            System.out.println("SolutionHandler: Could not create output folder");
             System.exit(1);
         }
     }
@@ -79,7 +79,7 @@ public class SolutionHandler {
         String separator = File.separator;
         final int name = fileName.incrementAndGet();
         File file = new File(OUTPUT_FOLDER + separator + board.getMonth() + separator + board.getDay() + separator + name + ".png");
-        if (!file.mkdirs()) {
+        if (!file.getParentFile().exists() && !file.mkdirs()) {
             System.out.println("Could not create output folder");
         } else {
             try {
