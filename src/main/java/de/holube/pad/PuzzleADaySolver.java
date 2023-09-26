@@ -12,7 +12,7 @@ public class PuzzleADaySolver {
 
     private final Tile[] tiles;
 
-    private final ForkJoinPool pool = new ForkJoinPool(1);
+    private final ForkJoinPool pool = new ForkJoinPool(10);
 
     private final SolutionHandlerFactory shf;
 

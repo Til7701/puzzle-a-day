@@ -18,6 +18,10 @@ public class Main {
     public static void main(String[] args) {
         final Board board = new DefaultBoard();
         final SolutionHandlerFactory shf = DefaultSolutionHandlerFactory.get();
+        final Stats stats = DefaultSolutionHandler.getStats();
+
+        // final Board board = new YearBoard();
+        // final SolutionHandlerFactory shf = YearSolutionHandlerFactory.get();
 
         List<Tile> tiles = new ArrayList<>();
         tiles.add(new Tile(ArrayProvider.TILE_S, "S", Color.RED, board));
@@ -42,7 +46,6 @@ public class Main {
         long time = endTime - startTime;
         System.out.println("done in: " + time + "ms");
 
-        Stats stats = DefaultSolutionHandler.getStats();
         stats.calculateStats();
         stats.printStats();
 
