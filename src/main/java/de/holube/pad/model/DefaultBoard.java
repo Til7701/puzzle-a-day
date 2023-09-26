@@ -52,47 +52,6 @@ public class DefaultBoard extends AbstractBoard {
         super(board, tiles, tileCumArrays, MAX_KEY);
     }
 
-    /*public boolean isValidSolution() {
-        for (int i = 0; i < board.length; i++) {
-            int[] row = board[i];
-            for (int j = 0; j < row.length; j++) {
-                int cell = row[j];
-                if (cell > 1) {
-                    day = 0;
-                    month = 0;
-                    return false;
-                } else if (cell == 0) {
-                    // check if day
-                    if (BOARD_MEANING[0][i][j] == 1) {
-                        if (day == 0) {
-                            day = BOARD_MEANING[1][i][j];
-                        } else {
-                            day = 0;
-                            month = 0;
-                            return false;
-                        }
-                    } else if (BOARD_MEANING[0][i][j] == 0) { // check if month
-                        if (month == 0) {
-                            month = BOARD_MEANING[1][i][j];
-                        } else {
-                            month = 0;
-                            day = 0;
-                            return false;
-                        }
-                    } else {
-                        return false;
-                    }
-                }
-            }
-        }
-
-        if (day != 0 && month != 0)
-            return true;
-        day = 0;
-        month = 0;
-        return false;
-    }*/
-
     public int[][] getBoardLayout() {
         return BOARD_LAYOUT;
     }

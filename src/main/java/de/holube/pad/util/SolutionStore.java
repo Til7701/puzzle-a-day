@@ -11,6 +11,7 @@ public class SolutionStore {
 
     public SolutionStore(int maxKey) {
         values = new int[maxKey + 1];
+        reset();
     }
 
     public boolean add(int key, int value) {

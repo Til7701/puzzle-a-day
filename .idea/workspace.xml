@@ -4,15 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9576cb07-6120-490d-8823-4a149303a815" name="Changes" comment="solution refactor">
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/YearSolutionHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/YearSolutionHandlerFactory.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/YearStats.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/Main.java" afterDir="false" />
+    <list default="true" id="9576cb07-6120-490d-8823-4a149303a815" name="Changes" comment="year and stats">
       <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/PuzzleADaySolver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/PuzzleADaySolver.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/YearBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/YearBoard.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/DefaultStats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/DefaultStats.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/DefaultBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/DefaultBoard.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/SolutionStore.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/SolutionStore.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -104,7 +99,7 @@
       <workItem from="1677835093954" duration="548000" />
       <workItem from="1684661275123" duration="3295000" />
       <workItem from="1687856322147" duration="526000" />
-      <workItem from="1695726028547" duration="9974000" />
+      <workItem from="1695726028547" duration="10552000" />
     </task>
     <task id="LOCAL-00001" summary="rotation">
       <created>1674643471145</created>
@@ -204,7 +199,14 @@
       <option name="project" value="LOCAL" />
       <updated>1695734012473</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="year and stats">
+      <created>1695736077411</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1695736077411</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -237,6 +239,18 @@
     <MESSAGE value="add tile optimisation" />
     <MESSAGE value="add tile to abstractboard" />
     <MESSAGE value="solution refactor" />
-    <option name="LAST_COMMIT_MESSAGE" value="solution refactor" />
+    <MESSAGE value="year and stats" />
+    <option name="LAST_COMMIT_MESSAGE" value="year and stats" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/de/holube/pad/solution/DefaultStats.java</url>
+          <line>21</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
