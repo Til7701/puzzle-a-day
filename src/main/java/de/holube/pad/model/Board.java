@@ -33,5 +33,7 @@ public interface Board {
 
     SolutionStore getSolutionStore();
 
+    int getFreeSpaces();
+
 
 }

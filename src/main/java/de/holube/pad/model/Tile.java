@@ -165,4 +165,15 @@ public class Tile {
         }
     }
 
+    public int getOccupiedSpaces() {
+        int result = 0;
+        for (int[] ints : base) {
+            for (int anInt : ints) {
+                if (anInt == 1)
+                    result++;
+            }
+        }
+        return result;
+    }
+
 }

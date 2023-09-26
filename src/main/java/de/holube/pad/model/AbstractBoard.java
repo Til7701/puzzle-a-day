@@ -99,4 +99,15 @@ public abstract class AbstractBoard implements Board {
 
     protected abstract int[][][] getBoardMeaning();
 
+    public int getFreeSpaces() {
+        int result = 0;
+        for (int[] ints : board) {
+            for (int anInt : ints) {
+                if (anInt == 0)
+                    result++;
+            }
+        }
+        return result;
+    }
+
 }

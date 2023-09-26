@@ -1,12 +1,12 @@
 package de.holube.pad;
 
 import de.holube.pad.model.Board;
-import de.holube.pad.model.DefaultBoard;
 import de.holube.pad.model.Tile;
-import de.holube.pad.solution.DefaultSolutionHandler;
-import de.holube.pad.solution.DefaultSolutionHandlerFactory;
+import de.holube.pad.model.YearBoard;
 import de.holube.pad.solution.SolutionHandlerFactory;
 import de.holube.pad.solution.Stats;
+import de.holube.pad.solution.YearSolutionHandler;
+import de.holube.pad.solution.YearSolutionHandlerFactory;
 import de.holube.pad.util.ArrayProvider;
 
 import java.awt.*;
@@ -16,12 +16,13 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        final Board board = new DefaultBoard();
-        final SolutionHandlerFactory shf = DefaultSolutionHandlerFactory.get();
-        final Stats stats = DefaultSolutionHandler.getStats();
+        //final Board board = new DefaultBoard();
+        //final SolutionHandlerFactory shf = DefaultSolutionHandlerFactory.get();
+        //final Stats stats = DefaultSolutionHandler.getStats();
 
-        // final Board board = new YearBoard();
-        // final SolutionHandlerFactory shf = YearSolutionHandlerFactory.get();
+        final Board board = new YearBoard();
+        final SolutionHandlerFactory shf = YearSolutionHandlerFactory.get();
+        final Stats stats = YearSolutionHandler.getStats();
 
         List<Tile> tiles = new ArrayList<>();
         tiles.add(new Tile(ArrayProvider.TILE_S, "S", Color.RED, board));
@@ -32,6 +33,13 @@ public class Main {
         tiles.add(new Tile(ArrayProvider.TILE_s, "s", Color.GRAY, board));
         tiles.add(new Tile(ArrayProvider.TILE_P, "P", Color.PINK, board));
         tiles.add(new Tile(ArrayProvider.TILE_C, "C", Color.ORANGE, board));
+
+        tiles.add(new Tile(ArrayProvider.TILE_C, "C", Color.ORANGE, board));
+
+        if (!PlausibilityCheck.check(board, tiles)) {
+            System.out.println("Not Plausible!!");
+            return;
+        }
 
         int totalOptions = 1;
         for (Tile tile : tiles) {
