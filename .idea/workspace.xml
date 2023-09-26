@@ -4,14 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9576cb07-6120-490d-8823-4a149303a815" name="Changes" comment="model package">
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/Distance.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/AbstractBoard.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/DefaultBoard.java" afterDir="false" />
+    <list default="true" id="9576cb07-6120-490d-8823-4a149303a815" name="Changes" comment="borad refactoring">
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/AbstractSolutionHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/AbstractStats.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/DefaultSolutionHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/DefaultSolutionHandlerFactory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/SolutionHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/SolutionHandlerFactory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/Stats.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/Board.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/ArrayProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/ArrayProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/PaDTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/PaDTask.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/PuzzleADaySolver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/PuzzleADaySolver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/DefaultBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/DefaultBoard.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/SolutionHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/Stats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/DefaultStats.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,8 +29,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Enum" />
-        <option value="Interface" />
         <option value="Class" />
+        <option value="Interface" />
       </list>
     </option>
   </component>
@@ -103,7 +110,7 @@
       <workItem from="1677835093954" duration="548000" />
       <workItem from="1684661275123" duration="3295000" />
       <workItem from="1687856322147" duration="526000" />
-      <workItem from="1695726028547" duration="1910000" />
+      <workItem from="1695726028547" duration="3986000" />
     </task>
     <task id="LOCAL-00001" summary="rotation">
       <created>1674643471145</created>
@@ -168,7 +175,14 @@
       <option name="project" value="LOCAL" />
       <updated>1684663729032</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="borad refactoring">
+      <created>1695728029245</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1695728029245</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -196,6 +210,7 @@
     <MESSAGE value="error correction" />
     <MESSAGE value="hand over output folder creation to first solution" />
     <MESSAGE value="model package" />
-    <option name="LAST_COMMIT_MESSAGE" value="model package" />
+    <MESSAGE value="borad refactoring" />
+    <option name="LAST_COMMIT_MESSAGE" value="borad refactoring" />
   </component>
 </project>

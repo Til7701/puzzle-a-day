@@ -3,6 +3,9 @@ package de.holube.pad;
 import de.holube.pad.model.Board;
 import de.holube.pad.model.DefaultBoard;
 import de.holube.pad.model.Tile;
+import de.holube.pad.solution.DefaultSolutionHandlerFactory;
+import de.holube.pad.solution.SolutionHandlerFactory;
+import de.holube.pad.solution.Stats;
 import de.holube.pad.util.ArrayProvider;
 
 import java.awt.*;
@@ -13,6 +16,7 @@ public class Main {
 
     public static void main(String[] args) {
         final Board board = new DefaultBoard();
+        final SolutionHandlerFactory shf = DefaultSolutionHandlerFactory.get();
 
         List<Tile> tiles = new ArrayList<>();
         tiles.add(new Tile(ArrayProvider.TILE_S, "S", Color.RED, board));
@@ -31,11 +35,15 @@ public class Main {
         System.out.println("Total number of possible boards: " + totalOptions);
 
         long startTime = System.currentTimeMillis();
-        final PuzzleADaySolver padSolver = new PuzzleADaySolver(board, tiles.toArray(new Tile[0]));
+        final PuzzleADaySolver padSolver = new PuzzleADaySolver(board, tiles.toArray(new Tile[0]), shf);
         padSolver.solve();
         long endTime = System.currentTimeMillis();
         long time = endTime - startTime;
         System.out.println("done in: " + time + "ms");
+
+        Stats stats = shf.create().getStats();
+        stats.calculateStats();
+        stats.printStats();
 
         //Distance distance = new Distance(SolutionHandler.getStats().getResults());
         //distance.calculateDistances();

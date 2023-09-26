@@ -1,8 +1,7 @@
-package de.holube.pad.util;
+package de.holube.pad.solution;
 
 import de.holube.pad.model.Board;
 import de.holube.pad.model.Tile;
-import lombok.Getter;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -12,38 +11,20 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class SolutionHandler {
+public abstract class AbstractSolutionHandler implements SolutionHandler {
 
     private static final int IMAGE_SIZE_PER_CELL = 50;
     private static final String OUTPUT_FOLDER = "output";
     private static final AtomicInteger fileName = new AtomicInteger(0);
-    @Getter
-    private static final Stats stats = new Stats();
 
-    private static void print(int[][] array) {
-        for (int[] ints : array) {
-            for (int anInt : ints) {
-                System.out.print(anInt + " ");
-            }
-            System.out.println();
-        }
-    }
-
-    public void handleSolution(Board board) {
-        stats.addSolution(board);
-
-        BufferedImage image = createImage(board);
-        save(board, image);
-    }
-
-    private BufferedImage createImage(Board board) {
+    protected BufferedImage createImage(Board board) {
         int[][] array = board.getBoard();
         int height = IMAGE_SIZE_PER_CELL * array.length;
         int width = IMAGE_SIZE_PER_CELL * array[0].length;
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics2D = image.createGraphics();
 
-        List<Tile> tileBoards = board.getTiles();
+        java.util.List<Tile> tileBoards = board.getTiles();
         List<int[][]> tileCumArrays = board.getTileCumArrays();
 
         for (int i = 0; i < tileBoards.size(); i++) {
@@ -67,7 +48,7 @@ public class SolutionHandler {
         return image;
     }
 
-    private void save(Board board, BufferedImage image) {
+    protected void save(Board board, BufferedImage image) {
         String separator = File.separator;
         final int name = fileName.incrementAndGet();
         File file = new File(OUTPUT_FOLDER + separator + board.getMonth() + separator + board.getDay() + separator + name + ".png");

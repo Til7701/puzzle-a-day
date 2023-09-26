@@ -2,7 +2,7 @@ package de.holube.pad;
 
 import de.holube.pad.model.Board;
 import de.holube.pad.model.Tile;
-import de.holube.pad.util.SolutionHandler;
+import de.holube.pad.solution.SolutionHandlerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,17 +16,20 @@ public class PaDTask extends RecursiveTask<Boolean> {
 
     private final int tileIndex;
 
-    public PaDTask(Board board, Tile[] tiles, int tileIndex) {
+    private final SolutionHandlerFactory shf;
+
+    public PaDTask(Board board, Tile[] tiles, int tileIndex, SolutionHandlerFactory shf) {
         this.board = board;
         this.tiles = tiles;
         this.tileIndex = tileIndex;
+        this.shf = shf;
     }
 
     @Override
     protected Boolean compute() {
         if (tileIndex >= tiles.length) {
             if (board.isValidSolution()) {
-                new SolutionHandler().handleSolution(board);
+                shf.create().handleSolution(board);
                 return true;
             }
             return false;
@@ -38,7 +41,7 @@ public class PaDTask extends RecursiveTask<Boolean> {
         for (int[][] tileCumBoard : tileCumBoards) {
             Board potentialNextBoard = board.addTile(tileCumBoard, tiles[tileIndex]);
             if (potentialNextBoard.isValid()) {
-                nextTasks.add(new PaDTask(potentialNextBoard, tiles, tileIndex + 1));
+                nextTasks.add(new PaDTask(potentialNextBoard, tiles, tileIndex + 1, shf));
             }
         }
 
