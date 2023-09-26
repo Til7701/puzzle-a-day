@@ -26,9 +26,4 @@ public class DefaultSolutionHandler extends AbstractSolutionHandler {
         save(board, image);
     }
 
-    @Override
-    public Stats getStats() {
-        return stats;
-    }
-
 }

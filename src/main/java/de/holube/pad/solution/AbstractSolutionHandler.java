@@ -51,7 +51,7 @@ public abstract class AbstractSolutionHandler implements SolutionHandler {
     protected void save(Board board, BufferedImage image) {
         String separator = File.separator;
         final int name = fileName.incrementAndGet();
-        File file = new File(OUTPUT_FOLDER + separator + board.getMonth() + separator + board.getDay() + separator + name + ".png");
+        File file = new File(OUTPUT_FOLDER + separator + board.getPath().replace("/", separator) + separator + name + ".png");
         if (!file.getParentFile().exists() && !file.mkdirs()) {
             System.out.println("Could not create output folder");
         } else {

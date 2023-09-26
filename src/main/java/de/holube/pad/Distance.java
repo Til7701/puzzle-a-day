@@ -54,8 +54,8 @@ public class Distance {
         }
 
         public void addBoard(BoardWrapper board) {
-            if (board.getBoard().getDay() != day || board.getBoard().getMonth() != month)
-                throw new IllegalStateException("Date does not match");
+            // if (board.getBoard().getDay() != day || board.getBoard().getMonth() != month)
+            //   throw new IllegalStateException("Date does not match");
 
             boards.add(board);
         }

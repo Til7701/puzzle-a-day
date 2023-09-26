@@ -1,5 +1,7 @@
 package de.holube.pad.model;
 
+import de.holube.pad.util.SolutionStore;
+
 import java.util.List;
 
 public interface Board {
@@ -23,13 +25,13 @@ public interface Board {
 
     Board addTile(int[][] tileBoard, Tile tile);
 
-    int getDay();
-
-    int getMonth();
-
     List<Tile> getTiles();
 
     List<int[][]> getTileCumArrays();
+
+    String getPath();
+
+    SolutionStore getSolutionStore();
 
 
 }

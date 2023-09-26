@@ -3,6 +3,7 @@ package de.holube.pad;
 import de.holube.pad.model.Board;
 import de.holube.pad.model.DefaultBoard;
 import de.holube.pad.model.Tile;
+import de.holube.pad.solution.DefaultSolutionHandler;
 import de.holube.pad.solution.DefaultSolutionHandlerFactory;
 import de.holube.pad.solution.SolutionHandlerFactory;
 import de.holube.pad.solution.Stats;
@@ -41,7 +42,7 @@ public class Main {
         long time = endTime - startTime;
         System.out.println("done in: " + time + "ms");
 
-        Stats stats = shf.create().getStats();
+        Stats stats = DefaultSolutionHandler.getStats();
         stats.calculateStats();
         stats.printStats();
 

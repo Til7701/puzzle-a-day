@@ -4,21 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9576cb07-6120-490d-8823-4a149303a815" name="Changes" comment="borad refactoring">
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/AbstractSolutionHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/AbstractStats.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/DefaultSolutionHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/DefaultSolutionHandlerFactory.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/SolutionHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/SolutionHandlerFactory.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/Stats.java" afterDir="false" />
+    <list default="true" id="9576cb07-6120-490d-8823-4a149303a815" name="Changes" comment="add tile to abstractboard">
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/YearBoard.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/SolutionStore.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/Distance.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/Distance.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/PaDTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/PaDTask.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/PuzzleADaySolver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/PuzzleADaySolver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/AbstractBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/AbstractBoard.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/Board.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/DefaultBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/DefaultBoard.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/SolutionHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/Stats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/DefaultStats.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/AbstractSolutionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/AbstractSolutionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/DefaultSolutionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/DefaultSolutionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/DefaultStats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/DefaultStats.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/SolutionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/SolutionHandler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,8 +27,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Enum" />
-        <option value="Class" />
         <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -110,7 +108,7 @@
       <workItem from="1677835093954" duration="548000" />
       <workItem from="1684661275123" duration="3295000" />
       <workItem from="1687856322147" duration="526000" />
-      <workItem from="1695726028547" duration="3986000" />
+      <workItem from="1695726028547" duration="7823000" />
     </task>
     <task id="LOCAL-00001" summary="rotation">
       <created>1674643471145</created>
@@ -182,7 +180,28 @@
       <option name="project" value="LOCAL" />
       <updated>1695728029245</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="solution handler refactoring">
+      <created>1695730253867</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1695730253867</updated>
+    </task>
+    <task id="LOCAL-00012" summary="add tile optimisation">
+      <created>1695730652883</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1695730652883</updated>
+    </task>
+    <task id="LOCAL-00013" summary="add tile to abstractboard">
+      <created>1695730775021</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1695730775021</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -211,6 +230,9 @@
     <MESSAGE value="hand over output folder creation to first solution" />
     <MESSAGE value="model package" />
     <MESSAGE value="borad refactoring" />
-    <option name="LAST_COMMIT_MESSAGE" value="borad refactoring" />
+    <MESSAGE value="solution handler refactoring" />
+    <MESSAGE value="add tile optimisation" />
+    <MESSAGE value="add tile to abstractboard" />
+    <option name="LAST_COMMIT_MESSAGE" value="add tile to abstractboard" />
   </component>
 </project>

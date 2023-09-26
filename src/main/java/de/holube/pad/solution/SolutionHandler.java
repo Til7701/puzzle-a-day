@@ -6,6 +6,4 @@ public interface SolutionHandler {
 
     void handleSolution(Board board);
 
-    Stats getStats();
-
 }

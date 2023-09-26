@@ -1,13 +1,15 @@
 package de.holube.pad.solution;
 
+import de.holube.pad.model.Board;
+
 public class DefaultStats extends AbstractStats {
 
     private final int[] days = new int[12 * 31];
 
 
     public void calculateStats() {
-        for (de.holube.pad.model.Board result : results) {
-            days[(result.getMonth() * 31) + result.getDay() - 31 - 1] += 1;
+        for (Board result : results) {
+            days[(result.getSolutionStore().getValues()[0] * 31) + result.getSolutionStore().getValues()[1] - 31 - 1] += 1;
         }
     }
 

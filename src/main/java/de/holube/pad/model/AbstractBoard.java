@@ -1,5 +1,6 @@
 package de.holube.pad.model;
 
+import de.holube.pad.util.SolutionStore;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -16,10 +17,14 @@ public abstract class AbstractBoard implements Board {
     @Getter
     protected final List<int[][]> tileCumArrays = new ArrayList<>();
 
-    public AbstractBoard(int[][] board, List<Tile> tiles, List<int[][]> tileCumArrays) {
+    @Getter
+    protected SolutionStore solutionStore;
+
+    public AbstractBoard(int[][] board, List<Tile> tiles, List<int[][]> tileCumArrays, int maxKey) {
         this.board = board;
         this.tiles.addAll(tiles);
         this.tileCumArrays.addAll(tileCumArrays);
+        this.solutionStore = new SolutionStore(maxKey);
     }
 
     public boolean isValid() {
@@ -57,5 +62,41 @@ public abstract class AbstractBoard implements Board {
 
         return new DefaultBoard(newBoard, newTiles, newTileCumArrays);
     }
+
+    @Override
+    public boolean isValidSolution() {
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (board[i][j] == 0) {
+                    if (!solutionStore.add(getBoardMeaning()[0][i][j], getBoardMeaning()[1][i][j])) {
+                        solutionStore.reset();
+                        return false;
+                    }
+                } else if (board[i][j] > 1) {
+                    solutionStore.reset();
+                    return false;
+                }
+            }
+        }
+
+        if (solutionStore.isComplete()) {
+            return true;
+        }
+        solutionStore.reset();
+        return false;
+    }
+
+    public String getPath() {
+        int[] solution = solutionStore.getValues();
+        StringBuilder path = new StringBuilder();
+        for (int s : solution) {
+            path.append(s).append("/");
+        }
+        return path.toString();
+    }
+
+    protected abstract int[][] getBoardLayout();
+
+    protected abstract int[][][] getBoardMeaning();
 
 }

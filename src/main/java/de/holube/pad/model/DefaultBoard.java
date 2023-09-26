@@ -42,21 +42,17 @@ public class DefaultBoard extends AbstractBoard {
             }
     };
 
-    @Getter
-    private transient int day = 0;
-
-    @Getter
-    private transient int month = 0;
+    protected static final int MAX_KEY = 1;
 
     public DefaultBoard() {
         this(BOARD_LAYOUT, new ArrayList<>(), new ArrayList<>());
     }
 
     public DefaultBoard(int[][] board, List<Tile> tiles, List<int[][]> tileCumArrays) {
-        super(board, tiles, tileCumArrays);
+        super(board, tiles, tileCumArrays, MAX_KEY);
     }
 
-    public boolean isValidSolution() {
+    /*public boolean isValidSolution() {
         for (int i = 0; i < board.length; i++) {
             int[] row = board[i];
             for (int j = 0; j < row.length; j++) {
@@ -95,6 +91,14 @@ public class DefaultBoard extends AbstractBoard {
         day = 0;
         month = 0;
         return false;
+    }*/
+
+    public int[][] getBoardLayout() {
+        return BOARD_LAYOUT;
+    }
+
+    public int[][][] getBoardMeaning() {
+        return BOARD_MEANING;
     }
 
 
