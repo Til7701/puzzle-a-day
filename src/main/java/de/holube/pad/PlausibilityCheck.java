@@ -21,6 +21,7 @@ public class PlausibilityCheck {
 
         System.out.println("Board Spaces: " + boardFreeSpaces);
         System.out.println("Tile Spaces: " + tileOccupiedSpaces);
+        System.out.println("Difference: " + Math.abs(boardFreeSpaces - tileOccupiedSpaces));
 
         return boardFreeSpaces == tileOccupiedSpaces;
     }

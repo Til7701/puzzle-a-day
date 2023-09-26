@@ -34,7 +34,10 @@ public class Main {
         tiles.add(new Tile(ArrayProvider.TILE_P, "P", Color.PINK, board));
         tiles.add(new Tile(ArrayProvider.TILE_C, "C", Color.ORANGE, board));
 
-        tiles.add(new Tile(ArrayProvider.TILE_C, "C", Color.ORANGE, board));
+        tiles.add(new Tile(ArrayProvider.TILE_H, "H", Color.WHITE, board));
+        tiles.add(new Tile(ArrayProvider.TILE_I, "I", Color.LIGHT_GRAY, board));
+        tiles.add(new Tile(ArrayProvider.TILE_p, "p", Color.DARK_GRAY, board));
+        tiles.add(new Tile(ArrayProvider.TILE_T, "T", Color.RED, board));
 
         if (!PlausibilityCheck.check(board, tiles)) {
             System.out.println("Not Plausible!!");
