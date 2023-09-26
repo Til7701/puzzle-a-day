@@ -99,18 +99,22 @@ public class DefaultBoard extends AbstractBoard {
 
     public Board addTile(int[][] tileCumBoard, Tile tile) {
         int[][] newBoard = new int[board.length][board[0].length];
+
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                newBoard[i][j] = board[i][j] + tileCumBoard[i][j];
+                if (newBoard[i][j] >= 2) {
+                    return null;
+                }
+            }
+        }
+
         List<Tile> newTiles = new ArrayList<>(tiles.size() + 1);
         newTiles.addAll(tiles);
         newTiles.add(tile);
         List<int[][]> newTileCumArrays = new ArrayList<>(tileCumArrays.size() + 1);
         newTileCumArrays.addAll(tileCumArrays);
         newTileCumArrays.add(tileCumBoard);
-
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                newBoard[i][j] = board[i][j] + tileCumBoard[i][j];
-            }
-        }
 
         return new DefaultBoard(newBoard, newTiles, newTileCumArrays);
     }

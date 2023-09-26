@@ -40,7 +40,7 @@ public class PaDTask extends RecursiveTask<Boolean> {
 
         for (int[][] tileCumBoard : tileCumBoards) {
             Board potentialNextBoard = board.addTile(tileCumBoard, tiles[tileIndex]);
-            if (potentialNextBoard.isValid()) {
+            if (potentialNextBoard != null) {
                 nextTasks.add(new PaDTask(potentialNextBoard, tiles, tileIndex + 1, shf));
             }
         }
