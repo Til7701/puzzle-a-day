@@ -4,6 +4,8 @@ import de.holube.pad.model.Board;
 import de.holube.pad.model.Tile;
 import de.holube.pad.solution.SolutionHandlerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 
 public class PuzzleADaySolver {
@@ -23,7 +25,20 @@ public class PuzzleADaySolver {
     }
 
     public void solve() {
-        pool.invoke(new PaDTask(board, tiles, 0, shf));
+        List<int[][]> tileCumBoards = tiles[0].getAllPositions();
+        List<PaDTask> tasks = new ArrayList<>();
+
+        for (int[][] tileCumBoard : tileCumBoards) {
+            Board potentialNextBoard = board.addTile(tileCumBoard, tiles[0]);
+            if (potentialNextBoard != null) {
+                tasks.add(new PaDTask(potentialNextBoard, tiles, 1, shf));
+            }
+        }
+
+        for (int i = 0; i < tasks.size(); i++) {
+            pool.invoke(tasks.get(i));
+            System.out.println("Progress: " + i + "/" + tasks.size() + "%");
+        }
     }
 
 }

@@ -40,4 +40,9 @@ public class DefaultStats extends AbstractStats {
         System.out.println(Arrays.deepToString(days));
     }
 
+    @Override
+    public void save() {
+        
+    }
+
 }

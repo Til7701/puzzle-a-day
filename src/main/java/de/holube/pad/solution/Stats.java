@@ -10,4 +10,6 @@ public interface Stats {
 
     void printStats();
 
+    void save();
+
 }

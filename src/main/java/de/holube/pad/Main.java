@@ -66,6 +66,7 @@ public class Main {
 
         stats.calculateStats();
         stats.printStats();
+        stats.save();
 
         //Distance distance = new Distance(SolutionHandler.getStats().getResults());
         //distance.calculateDistances();
