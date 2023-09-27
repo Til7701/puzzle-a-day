@@ -83,6 +83,11 @@ public class ArrayProvider {
             {1}
     };
 
+    public static final int[][] TILE_2x = new int[][]{
+            {1, 1},
+            {1, 1}
+    };
+
     public static final int[][] TILE_p = new int[][]{
             {1, 0, 0, 0, 0},
             {1, 1, 1, 1, 1}

@@ -35,11 +35,15 @@ public class Main {
         tiles.add(new Tile(ArrayProvider.TILE_P, "P", Color.PINK, board));
         tiles.add(new Tile(ArrayProvider.TILE_C, "C", Color.ORANGE, board));
 
-        tiles.add(new Tile(ArrayProvider.TILE_H, "H", Color.WHITE, board));
+        tiles.add(new Tile(ArrayProvider.TILE_P, "P", Color.PINK, board));
+        tiles.add(new Tile(ArrayProvider.TILE_O, "O", Color.GREEN, board));
+        // tiles.add(new Tile(ArrayProvider.TILE_H, "H", Color.WHITE, board));
         //tiles.add(new Tile(ArrayProvider.TILE_I, "I", Color.LIGHT_GRAY, board));
         //tiles.add(new Tile(ArrayProvider.TILE_4, "4", Color.LIGHT_GRAY, board));
-        tiles.add(new Tile(ArrayProvider.TILE_p, "p", Color.DARK_GRAY, board));
-        tiles.add(new Tile(ArrayProvider.TILE_T, "T", Color.LIGHT_GRAY, board));
+        tiles.add(new Tile(ArrayProvider.TILE_2, "2", Color.LIGHT_GRAY, board));
+        tiles.add(new Tile(ArrayProvider.TILE_2x, "2x", Color.RED, board));
+        //tiles.add(new Tile(ArrayProvider.TILE_p, "p", Color.DARK_GRAY, board));
+        // tiles.add(new Tile(ArrayProvider.TILE_T, "T", Color.LIGHT_GRAY, board));
         tiles.add(new Tile(ArrayProvider.TILE_1, "1", Color.RED, board));
 
         if (!PlausibilityCheck.check(board, tiles)) {
