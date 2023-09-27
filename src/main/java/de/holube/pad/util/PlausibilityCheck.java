@@ -1,4 +1,4 @@
-package de.holube.pad;
+package de.holube.pad.util;
 
 import de.holube.pad.model.Board;
 import de.holube.pad.model.Tile;
@@ -19,11 +19,13 @@ public class PlausibilityCheck {
 
         int boardFreeSpaces = board.getFreeSpaces();
 
+        int difference = Math.abs(boardFreeSpaces - (tileOccupiedSpaces + board.getMaxKey() + 1));
+
         System.out.println("Board Spaces: " + boardFreeSpaces);
         System.out.println("Tile Spaces: " + tileOccupiedSpaces);
-        System.out.println("Difference: " + Math.abs(boardFreeSpaces - tileOccupiedSpaces));
+        System.out.println("Difference: " + difference);
 
-        return boardFreeSpaces == tileOccupiedSpaces;
+        return difference == 0;
     }
 
 }

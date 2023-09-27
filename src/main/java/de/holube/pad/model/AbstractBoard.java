@@ -60,8 +60,10 @@ public abstract class AbstractBoard implements Board {
         newTileCumArrays.addAll(tileCumArrays);
         newTileCumArrays.add(tileCumBoard);
 
-        return new DefaultBoard(newBoard, newTiles, newTileCumArrays);
+        return createNewBoard(newBoard, newTiles, newTileCumArrays);
     }
+
+    protected abstract Board createNewBoard(int[][] newBoard, List<Tile> newTiles, List<int[][]> newTileCumBoards);
 
     @Override
     public boolean isValidSolution() {

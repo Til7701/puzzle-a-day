@@ -35,5 +35,7 @@ public interface Board {
 
     int getFreeSpaces();
 
+    int getMaxKey();
+
 
 }

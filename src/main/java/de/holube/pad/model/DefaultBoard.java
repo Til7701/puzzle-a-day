@@ -60,5 +60,15 @@ public class DefaultBoard extends AbstractBoard {
         return BOARD_MEANING;
     }
 
+    @Override
+    protected Board createNewBoard(int[][] newBoard, List<Tile> newTiles, List<int[][]> newTileCumBoards) {
+        return new DefaultBoard(newBoard, newTiles, newTileCumBoards);
+    }
+
+    @Override
+    public int getMaxKey() {
+        return MAX_KEY;
+    }
+
 
 }

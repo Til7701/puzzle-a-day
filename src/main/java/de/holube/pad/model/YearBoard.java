@@ -50,6 +50,16 @@ public class YearBoard extends AbstractBoard {
         super(board, tiles, tileCumArrays, MAX_KEY);
     }
 
+    @Override
+    protected Board createNewBoard(int[][] newBoard, List<Tile> newTiles, List<int[][]> newTileCumBoards) {
+        return new YearBoard(newBoard, newTiles, newTileCumBoards);
+    }
+
+    @Override
+    public int getMaxKey() {
+        return MAX_KEY;
+    }
+
     public int[][] getBoardLayout() {
         return BOARD_LAYOUT;
     }
