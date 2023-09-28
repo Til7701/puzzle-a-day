@@ -22,8 +22,8 @@ public class PuzzleADaySolver {
         this.board = board;
         this.tiles = tiles;
         this.shf = shf;
-        int parallelism = (int) (Runtime.getRuntime().availableProcessors() * 0.7);
-        pool = new ForkJoinPool(parallelism);
+        final int parallelism = (int) (Runtime.getRuntime().availableProcessors() * 0.7);
+        this.pool = new ForkJoinPool(parallelism);
         System.out.println("Parallelism: " + parallelism);
     }
 

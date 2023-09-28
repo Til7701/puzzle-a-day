@@ -6,16 +6,62 @@ import de.holube.pad.model.Tile;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractSolutionHandler implements SolutionHandler {
 
+    private static final Writer output;
+
+    private static final Semaphore mutex = new Semaphore(1);
+
     private static final int IMAGE_SIZE_PER_CELL = 50;
     private static final String OUTPUT_FOLDER = "output";
     private static final AtomicInteger fileName = new AtomicInteger(0);
+
+    static {
+        try {
+            output = new BufferedWriter(new FileWriter("Solutions_" + new Date().toString().replace(":", "-")));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Override
+    public void close() throws IOException {
+        try {
+            mutex.acquire();
+            output.close();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            mutex.release();
+        }
+    }
+
+    public void handleSolution(Board board) {
+        getStats().addSolution(board);
+
+        try {
+            mutex.acquire();
+            try {
+                output.append(board.toString()).append("\n");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            mutex.release();
+        }
+
+        //BufferedImage image = createImage(board);
+        //save(board, image);
+    }
 
     protected BufferedImage createImage(Board board) {
         int[][] array = board.getBoard();

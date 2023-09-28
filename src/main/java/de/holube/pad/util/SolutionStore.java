@@ -17,7 +17,7 @@ public class SolutionStore {
     public boolean add(int key, int value) {
         if (key < 0)
             return true;
-        if (values[key] == 1)
+        if (values[key] > -1)
             return false;
         values[key] = value;
         return true;

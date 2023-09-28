@@ -1,15 +1,14 @@
 package de.holube.pad.model;
 
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 public class DefaultBoard extends AbstractBoard {
 
-    @Getter
     public static final int[][] BOARD_LAYOUT = new int[][]{
             {0, 0, 0, 0, 0, 0, 1},
             {0, 0, 0, 0, 0, 0, 1},
@@ -20,7 +19,6 @@ public class DefaultBoard extends AbstractBoard {
             {0, 0, 0, 1, 1, 1, 1},
     };
 
-    @Getter
     public static final int[][][] BOARD_MEANING = new int[][][]{
             {
                     {0, 0, 0, 0, 0, 0, -1},
@@ -41,8 +39,13 @@ public class DefaultBoard extends AbstractBoard {
                     {29, 30, 31, -1, -1, -1, -1}
             }
     };
+    protected static final int MAX_KEY;
 
-    protected static final int MAX_KEY = 1;
+    static {
+        MAX_KEY = Arrays.stream(BOARD_MEANING[0])
+                .flatMapToInt(Arrays::stream)
+                .summaryStatistics().getMax();
+    }
 
     public DefaultBoard() {
         this(BOARD_LAYOUT, new ArrayList<>(), new ArrayList<>());
@@ -52,10 +55,12 @@ public class DefaultBoard extends AbstractBoard {
         super(board, tiles, tileCumArrays, MAX_KEY);
     }
 
+    @Override
     public int[][] getBoardLayout() {
         return BOARD_LAYOUT;
     }
 
+    @Override
     public int[][][] getBoardMeaning() {
         return BOARD_MEANING;
     }
@@ -69,6 +74,5 @@ public class DefaultBoard extends AbstractBoard {
     public int getMaxKey() {
         return MAX_KEY;
     }
-
 
 }

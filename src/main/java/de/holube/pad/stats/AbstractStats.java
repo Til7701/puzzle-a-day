@@ -1,4 +1,4 @@
-package de.holube.pad.solution;
+package de.holube.pad.stats;
 
 import de.holube.pad.model.Board;
 import lombok.Getter;

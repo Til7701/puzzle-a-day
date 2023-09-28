@@ -5,18 +5,18 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @EqualsAndHashCode
 public abstract class AbstractBoard implements Board {
 
-    protected final int[][] board;
 
+    protected final int[][] board;
     @Getter
     protected final List<Tile> tiles = new ArrayList<>();
     @Getter
     protected final List<int[][]> tileCumArrays = new ArrayList<>();
-
     @Getter
     protected SolutionStore solutionStore;
 
@@ -110,6 +110,22 @@ public abstract class AbstractBoard implements Board {
             }
         }
         return result;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+
+        SolutionStore solutionStore = getSolutionStore();
+        return Arrays.toString(solutionStore.getValues());
+        /* builder.append(Arrays.toString(solutionStore.getValues())).append("&");
+
+        List<int[][]> tileArrays = getTileCumArrays();
+        for (int[][] array : tileArrays) {
+            builder.append(Arrays.deepToString(array)).append("#");
+        }
+
+        return builder.toString();*/
     }
 
 }

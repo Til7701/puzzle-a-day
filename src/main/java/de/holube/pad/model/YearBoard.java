@@ -1,15 +1,11 @@
 package de.holube.pad.model;
 
-import de.holube.pad.util.SolutionStore;
-import lombok.Getter;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class YearBoard extends AbstractBoard {
 
-    @Getter
     public static final int[][] BOARD_LAYOUT = new int[][]{
             {1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1},
             {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0},
@@ -20,7 +16,6 @@ public class YearBoard extends AbstractBoard {
             {1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1},
     };
 
-    @Getter
     public static final int[][][] BOARD_MEANING = new int[][][]{
             {
                     {-1, -1, 2, 2, 2, 2, 2, 2, -1, -1, -1},
@@ -42,7 +37,13 @@ public class YearBoard extends AbstractBoard {
             }
     };
 
-    protected static final int MAX_KEY = 3;
+    protected static final int MAX_KEY;
+
+    static {
+        MAX_KEY = Arrays.stream(BOARD_MEANING[0])
+                .flatMapToInt(Arrays::stream)
+                .summaryStatistics().getMax();
+    }
 
     public YearBoard() {
         this(BOARD_LAYOUT, new ArrayList<>(), new ArrayList<>());
@@ -58,30 +59,18 @@ public class YearBoard extends AbstractBoard {
     }
 
     @Override
-    public int getMaxKey() {
-        return MAX_KEY;
-    }
-
     public int[][] getBoardLayout() {
         return BOARD_LAYOUT;
     }
 
+    @Override
     public int[][][] getBoardMeaning() {
         return BOARD_MEANING;
     }
 
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-
-        SolutionStore solutionStore = getSolutionStore();
-        builder.append(Arrays.toString(solutionStore.getValues())).append("&");
-
-        List<int[][]> tileArrays = getTileCumArrays();
-        for (int[][] array : tileArrays) {
-            builder.append(Arrays.deepToString(array)).append("#");
-        }
-
-        return builder.toString();
+    @Override
+    public int getMaxKey() {
+        return MAX_KEY;
     }
 
 }
