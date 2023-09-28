@@ -42,5 +42,10 @@ public class YearStats extends AbstractStats {
         System.out.println(Arrays.deepToString(days));
     }
 
+    @Override
+    public void save() {
+
+    }
+
 
 }

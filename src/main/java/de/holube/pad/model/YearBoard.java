@@ -1,8 +1,10 @@
 package de.holube.pad.model;
 
+import de.holube.pad.util.SolutionStore;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class YearBoard extends AbstractBoard {
@@ -66,6 +68,20 @@ public class YearBoard extends AbstractBoard {
 
     public int[][][] getBoardMeaning() {
         return BOARD_MEANING;
+    }
+
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+
+        SolutionStore solutionStore = getSolutionStore();
+        builder.append(Arrays.toString(solutionStore.getValues())).append("&");
+
+        List<int[][]> tileArrays = getTileCumArrays();
+        for (int[][] array : tileArrays) {
+            builder.append(Arrays.deepToString(array)).append("#");
+        }
+
+        return builder.toString();
     }
 
 }

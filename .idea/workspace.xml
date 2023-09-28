@@ -6,11 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="9576cb07-6120-490d-8823-4a149303a815" name="Changes" comment="maybe config">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/PuzzleADaySolver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/PuzzleADaySolver.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/DefaultStats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/DefaultStats.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/Stats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/Stats.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/YearBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/YearBoard.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/YearSolutionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/YearSolutionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/YearStats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/YearStats.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,6 +57,7 @@
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
@@ -109,6 +108,7 @@
       <workItem from="1684661275123" duration="3295000" />
       <workItem from="1687856322147" duration="526000" />
       <workItem from="1695726028547" duration="10552000" />
+      <workItem from="1695894623293" duration="1121000" />
     </task>
     <task id="LOCAL-00001" summary="rotation">
       <created>1674643471145</created>
