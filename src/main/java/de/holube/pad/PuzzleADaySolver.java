@@ -3,10 +3,12 @@ package de.holube.pad;
 import de.holube.pad.model.Board;
 import de.holube.pad.model.Tile;
 import de.holube.pad.solution.SolutionHandlerFactory;
+import de.holube.pad.util.pool.CustomPool;
+import de.holube.pad.util.pool.CustomTask;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.CountDownLatch;
 
 public class PuzzleADaySolver {
 
@@ -14,7 +16,7 @@ public class PuzzleADaySolver {
 
     private final Tile[] tiles;
 
-    private final ForkJoinPool pool;
+    private final CustomPool pool;
 
     private final SolutionHandlerFactory shf;
 
@@ -23,24 +25,32 @@ public class PuzzleADaySolver {
         this.tiles = tiles;
         this.shf = shf;
         final int parallelism = (int) (Runtime.getRuntime().availableProcessors() * 0.7);
-        this.pool = new ForkJoinPool(parallelism);
+        this.pool = new CustomPool(parallelism);
         System.out.println("Parallelism: " + parallelism);
     }
 
     public void solve() {
         List<byte[][]> tileCumBoards = tiles[0].getAllPositions();
-        List<PaDTask> tasks = new ArrayList<>();
+        List<Board> boards = new ArrayList<>();
 
         for (byte[][] tileCumBoard : tileCumBoards) {
             Board potentialNextBoard = board.addTile(tileCumBoard, tiles[0]);
             if (potentialNextBoard != null) {
-                tasks.add(new PaDTask(potentialNextBoard, tiles, 1, shf));
+                boards.add(potentialNextBoard);
             }
         }
 
-        for (int i = 0; i < tasks.size(); i++) {
-            pool.invoke(tasks.get(i));
-            System.out.println("Progress: " + (i + 1) + "/" + tasks.size());
+        CountDownLatch latch = new CountDownLatch(boards.size());
+        List<CustomTask> tasks = new ArrayList<>();
+        for (Board board : boards) {
+            tasks.add(new InitialPaDTask(latch, boards.size(), board, tiles, 1, shf));
+        }
+
+        pool.invokeAll(tasks);
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 

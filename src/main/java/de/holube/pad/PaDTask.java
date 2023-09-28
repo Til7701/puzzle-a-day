@@ -3,12 +3,12 @@ package de.holube.pad;
 import de.holube.pad.model.Board;
 import de.holube.pad.model.Tile;
 import de.holube.pad.solution.SolutionHandlerFactory;
+import de.holube.pad.util.pool.CustomTask;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.RecursiveTask;
 
-public class PaDTask extends RecursiveTask<Boolean> {
+public class PaDTask extends CustomTask {
 
     private final Board board;
 
@@ -26,17 +26,17 @@ public class PaDTask extends RecursiveTask<Boolean> {
     }
 
     @Override
-    protected Boolean compute() {
+    public void compute() {
         if (tileIndex >= tiles.length) {
             if (board.isValidSolution()) {
                 shf.create().handleSolution(board);
-                return true;
+                return;
             }
-            return false;
+            return;
         }
 
         List<byte[][]> tileCumBoards = tiles[tileIndex].getAllPositions();
-        List<PaDTask> nextTasks = new ArrayList<>();
+        List<CustomTask> nextTasks = new ArrayList<>();
 
         for (byte[][] tileCumBoard : tileCumBoards) {
             Board potentialNextBoard = board.addTile(tileCumBoard, tiles[tileIndex]);
@@ -45,7 +45,6 @@ public class PaDTask extends RecursiveTask<Boolean> {
             }
         }
 
-        invokeAll(nextTasks);
-        return false;
+        getPool().invokeAll(nextTasks);
     }
 }
