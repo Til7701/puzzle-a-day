@@ -8,7 +8,7 @@ public class YearStats extends AbstractStats {
     private final int[][][][] days = new int[10][10][12][31];
 
     @Override
-    protected void addToDaysArray(int[] values) {
+    protected void addToDaysArray(byte[] values) {
         days[values[0]][values[1]][values[2] - 1][values[3] - 1] += 1;
     }
 

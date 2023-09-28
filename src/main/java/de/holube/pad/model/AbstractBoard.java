@@ -12,15 +12,15 @@ import java.util.List;
 public abstract class AbstractBoard implements Board {
 
 
-    protected final int[][] board;
+    protected final byte[][] board;
     @Getter
     protected final List<Tile> tiles = new ArrayList<>();
     @Getter
-    protected final List<int[][]> tileCumArrays = new ArrayList<>();
+    protected final List<byte[][]> tileCumArrays = new ArrayList<>();
     @Getter
     protected SolutionStore solutionStore;
 
-    public AbstractBoard(int[][] board, List<Tile> tiles, List<int[][]> tileCumArrays, int maxKey) {
+    public AbstractBoard(byte[][] board, List<Tile> tiles, List<byte[][]> tileCumArrays, byte maxKey) {
         this.board = board;
         this.tiles.addAll(tiles);
         this.tileCumArrays.addAll(tileCumArrays);
@@ -31,8 +31,8 @@ public abstract class AbstractBoard implements Board {
         return Board.isValid(getBoard());
     }
 
-    public int[][] getBoard() {
-        int[][] copy = new int[board.length][board[0].length];
+    public byte[][] getBoard() {
+        byte[][] copy = new byte[board.length][board[0].length];
 
         for (int i = 0; i < board.length; i++) {
             System.arraycopy(board[i], 0, copy[i], 0, board[i].length);
@@ -41,12 +41,12 @@ public abstract class AbstractBoard implements Board {
         return copy;
     }
 
-    public Board addTile(int[][] tileCumBoard, Tile tile) {
-        int[][] newBoard = new int[board.length][board[0].length];
+    public Board addTile(byte[][] tileCumBoard, Tile tile) {
+        byte[][] newBoard = new byte[board.length][board[0].length];
 
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
-                newBoard[i][j] = board[i][j] + tileCumBoard[i][j];
+                newBoard[i][j] = (byte) (board[i][j] + tileCumBoard[i][j]);
                 if (newBoard[i][j] >= 2) {
                     return null;
                 }
@@ -56,21 +56,21 @@ public abstract class AbstractBoard implements Board {
         List<Tile> newTiles = new ArrayList<>(tiles.size() + 1);
         newTiles.addAll(tiles);
         newTiles.add(tile);
-        List<int[][]> newTileCumArrays = new ArrayList<>(tileCumArrays.size() + 1);
+        List<byte[][]> newTileCumArrays = new ArrayList<>(tileCumArrays.size() + 1);
         newTileCumArrays.addAll(tileCumArrays);
         newTileCumArrays.add(tileCumBoard);
 
         return createNewBoard(newBoard, newTiles, newTileCumArrays);
     }
 
-    protected abstract Board createNewBoard(int[][] newBoard, List<Tile> newTiles, List<int[][]> newTileCumBoards);
+    protected abstract Board createNewBoard(byte[][] newBoard, List<Tile> newTiles, List<byte[][]> newTileCumBoards);
 
     @Override
     public boolean isValidSolution() {
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 if (board[i][j] == 0) {
-                    if (!solutionStore.add(getBoardMeaning()[0][i][j], getBoardMeaning()[1][i][j])) {
+                    if (!solutionStore.add((byte) getBoardMeaning()[0][i][j], (byte) getBoardMeaning()[1][i][j])) {
                         solutionStore.reset();
                         return false;
                     }
@@ -89,23 +89,19 @@ public abstract class AbstractBoard implements Board {
     }
 
     public String getPath() {
-        int[] solution = solutionStore.getValues();
+        byte[] solution = solutionStore.getValues();
         StringBuilder path = new StringBuilder();
-        for (int s : solution) {
+        for (byte s : solution) {
             path.append(s).append("/");
         }
         return path.toString();
     }
 
-    protected abstract int[][] getBoardLayout();
-
-    protected abstract int[][][] getBoardMeaning();
-
     public int getFreeSpaces() {
         int result = 0;
-        for (int[] ints : board) {
-            for (int anInt : ints) {
-                if (anInt == 0)
+        for (byte[] bytes : board) {
+            for (byte v : bytes) {
+                if (v == 0)
                     result++;
             }
         }
@@ -114,7 +110,7 @@ public abstract class AbstractBoard implements Board {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        //StringBuilder builder = new StringBuilder();
 
         SolutionStore solutionStore = getSolutionStore();
         return Arrays.toString(solutionStore.getValues());

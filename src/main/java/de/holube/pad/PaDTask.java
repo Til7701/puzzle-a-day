@@ -35,10 +35,10 @@ public class PaDTask extends RecursiveTask<Boolean> {
             return false;
         }
 
-        List<int[][]> tileCumBoards = tiles[tileIndex].getAllPositions();
+        List<byte[][]> tileCumBoards = tiles[tileIndex].getAllPositions();
         List<PaDTask> nextTasks = new ArrayList<>();
 
-        for (int[][] tileCumBoard : tileCumBoards) {
+        for (byte[][] tileCumBoard : tileCumBoards) {
             Board potentialNextBoard = board.addTile(tileCumBoard, tiles[tileIndex]);
             if (potentialNextBoard != null) {
                 nextTasks.add(new PaDTask(potentialNextBoard, tiles, tileIndex + 1, shf));

@@ -28,10 +28,10 @@ public class PuzzleADaySolver {
     }
 
     public void solve() {
-        List<int[][]> tileCumBoards = tiles[0].getAllPositions();
+        List<byte[][]> tileCumBoards = tiles[0].getAllPositions();
         List<PaDTask> tasks = new ArrayList<>();
 
-        for (int[][] tileCumBoard : tileCumBoards) {
+        for (byte[][] tileCumBoard : tileCumBoards) {
             Board potentialNextBoard = board.addTile(tileCumBoard, tiles[0]);
             if (potentialNextBoard != null) {
                 tasks.add(new PaDTask(potentialNextBoard, tiles, 1, shf));

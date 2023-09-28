@@ -64,19 +64,19 @@ public abstract class AbstractSolutionHandler implements SolutionHandler {
     }
 
     protected BufferedImage createImage(Board board) {
-        int[][] array = board.getBoard();
+        byte[][] array = board.getBoard();
         int height = IMAGE_SIZE_PER_CELL * array.length;
         int width = IMAGE_SIZE_PER_CELL * array[0].length;
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics2D = image.createGraphics();
 
         java.util.List<Tile> tileBoards = board.getTiles();
-        List<int[][]> tileCumArrays = board.getTileCumArrays();
+        List<byte[][]> tileCumArrays = board.getTileCumArrays();
 
         for (int i = 0; i < tileBoards.size(); i++) {
             Tile tile = tileBoards.get(i);
             Color color = tile.getColor();
-            int[][] tileCumArray = tileCumArrays.get(i);
+            byte[][] tileCumArray = tileCumArrays.get(i);
             graphics2D.setColor(color);
 
             for (int j = 0; j < tileCumArray.length; j++) {

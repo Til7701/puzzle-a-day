@@ -11,7 +11,7 @@ public class Config {
 
     public Target TARGET;
     public List<String> ACTIVE_TILES;
-    public Map<String, int[][]> TILES;
+    public Map<String, byte[][]> TILES;
 
     public enum Target {
         DEFAULT,

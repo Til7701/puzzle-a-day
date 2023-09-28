@@ -4,13 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9576cb07-6120-490d-8823-4a149303a815" name="Changes" comment="bug fixes from small improvements :)">
-      <change afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/RandomColor.java" afterDir="false" />
+    <list default="true" id="9576cb07-6120-490d-8823-4a149303a815" name="Changes" comment="read config from file">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/ArrayProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/Config.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/PaDTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/PaDTask.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/PuzzleADaySolver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/PuzzleADaySolver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/AbstractBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/AbstractBoard.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/Board.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/DefaultBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/DefaultBoard.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/Tile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/Tile.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/YearBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/YearBoard.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/AbstractSolutionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/AbstractSolutionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/stats/AbstractStats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/stats/AbstractStats.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/stats/DefaultStats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/stats/DefaultStats.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/stats/YearStats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/stats/YearStats.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/Config.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/Config.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/SolutionStore.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/SolutionStore.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -288,7 +296,14 @@
       <option name="project" value="LOCAL" />
       <updated>1695929076440</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="read config from file">
+      <created>1695931082410</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1695931082410</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -339,7 +354,8 @@
     <MESSAGE value="maybe config" />
     <MESSAGE value="small improvements" />
     <MESSAGE value="bug fixes from small improvements :)" />
-    <option name="LAST_COMMIT_MESSAGE" value="bug fixes from small improvements :)" />
+    <MESSAGE value="read config from file" />
+    <option name="LAST_COMMIT_MESSAGE" value="read config from file" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

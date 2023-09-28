@@ -8,7 +8,7 @@ public class DefaultStats extends AbstractStats {
     private final int[][] days = new int[12][31];
 
     @Override
-    protected void addToDaysArray(int[] values) {
+    protected void addToDaysArray(byte[] values) {
         days[values[0] - 1][values[1] - 1] += 1;
     }
 

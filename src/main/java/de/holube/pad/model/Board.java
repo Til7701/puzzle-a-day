@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface Board {
 
-    static boolean isValid(int[][] board) {
-        for (int[] row : board) {
-            for (int cell : row) {
+    static boolean isValid(byte[][] board) {
+        for (byte[] row : board) {
+            for (byte cell : row) {
                 if (cell > 1)
                     return false;
             }
@@ -17,17 +17,17 @@ public interface Board {
         return true;
     }
 
-    int[][] getBoard();
+    byte[][] getBoard();
 
     boolean isValid();
 
     boolean isValidSolution();
 
-    Board addTile(int[][] tileBoard, Tile tile);
+    Board addTile(byte[][] tileBoard, Tile tile);
 
     List<Tile> getTiles();
 
-    List<int[][]> getTileCumArrays();
+    List<byte[][]> getTileCumArrays();
 
     String getPath();
 
@@ -35,7 +35,11 @@ public interface Board {
 
     int getFreeSpaces();
 
-    int getMaxKey();
+    byte getMaxKey();
 
+
+    int[][][] getBoardMeaning();
+
+    byte[][] getBoardLayout();
 
 }

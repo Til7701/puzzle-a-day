@@ -6,7 +6,7 @@ import java.util.List;
 
 public class YearBoard extends AbstractBoard {
 
-    public static final int[][] BOARD_LAYOUT = new int[][]{
+    public static final byte[][] BOARD_LAYOUT = new byte[][]{
             {1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1},
             {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -37,10 +37,10 @@ public class YearBoard extends AbstractBoard {
             }
     };
 
-    protected static final int MAX_KEY;
+    protected static final byte MAX_KEY;
 
     static {
-        MAX_KEY = Arrays.stream(BOARD_MEANING[0])
+        MAX_KEY = (byte) Arrays.stream(BOARD_MEANING[0])
                 .flatMapToInt(Arrays::stream)
                 .summaryStatistics().getMax();
     }
@@ -49,17 +49,17 @@ public class YearBoard extends AbstractBoard {
         this(BOARD_LAYOUT, new ArrayList<>(), new ArrayList<>());
     }
 
-    public YearBoard(int[][] board, List<Tile> tiles, List<int[][]> tileCumArrays) {
+    public YearBoard(byte[][] board, List<Tile> tiles, List<byte[][]> tileCumArrays) {
         super(board, tiles, tileCumArrays, MAX_KEY);
     }
 
     @Override
-    protected Board createNewBoard(int[][] newBoard, List<Tile> newTiles, List<int[][]> newTileCumBoards) {
+    protected Board createNewBoard(byte[][] newBoard, List<Tile> newTiles, List<byte[][]> newTileCumBoards) {
         return new YearBoard(newBoard, newTiles, newTileCumBoards);
     }
 
     @Override
-    public int[][] getBoardLayout() {
+    public byte[][] getBoardLayout() {
         return BOARD_LAYOUT;
     }
 
@@ -69,7 +69,7 @@ public class YearBoard extends AbstractBoard {
     }
 
     @Override
-    public int getMaxKey() {
+    public byte getMaxKey() {
         return MAX_KEY;
     }
 
