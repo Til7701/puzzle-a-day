@@ -1,51 +1,47 @@
 package de.holube.pad;
 
+import com.google.gson.Gson;
 import de.holube.pad.model.Board;
 import de.holube.pad.model.DefaultBoard;
 import de.holube.pad.model.Tile;
+import de.holube.pad.model.YearBoard;
 import de.holube.pad.solution.DefaultSolutionHandlerFactory;
 import de.holube.pad.solution.SolutionHandlerFactory;
+import de.holube.pad.solution.YearSolutionHandlerFactory;
 import de.holube.pad.stats.Stats;
-import de.holube.pad.util.ArrayProvider;
+import de.holube.pad.util.Config;
 import de.holube.pad.util.PlausibilityCheck;
+import de.holube.pad.util.RandomColor;
 
-import java.awt.*;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
-        final Board board = new DefaultBoard();
-        final SolutionHandlerFactory shf = DefaultSolutionHandlerFactory.get();
+        String json = Files.readString(Path.of("config.json"));
+        Gson gson = new Gson();
+        Config config = gson.fromJson(json, Config.class);
 
-        //final Board board = new YearBoard();
-        //final SolutionHandlerFactory shf = YearSolutionHandlerFactory.get();
-
+        final Board board = switch (config.TARGET) {
+            case DEFAULT -> new DefaultBoard();
+            case YEAR -> new YearBoard();
+        };
+        final SolutionHandlerFactory shf = switch (config.TARGET) {
+            case DEFAULT -> DefaultSolutionHandlerFactory.get();
+            case YEAR -> YearSolutionHandlerFactory.get();
+        };
         final Stats stats = shf.create().getStats();
 
         final List<Tile> tiles = new ArrayList<>();
-        tiles.add(new Tile(ArrayProvider.TILE_S, "S", Color.RED, board));
-        tiles.add(new Tile(ArrayProvider.TILE_l, "l", Color.BLUE, board));
-        tiles.add(new Tile(ArrayProvider.TILE_L, "L", Color.YELLOW, board));
-        tiles.add(new Tile(ArrayProvider.TILE_t, "t", Color.CYAN, board));
-        tiles.add(new Tile(ArrayProvider.TILE_O, "O", Color.GREEN, board));
-        tiles.add(new Tile(ArrayProvider.TILE_s, "s", Color.GRAY, board));
-        tiles.add(new Tile(ArrayProvider.TILE_P, "P", Color.PINK, board));
-        tiles.add(new Tile(ArrayProvider.TILE_C, "C", Color.ORANGE, board));
+        for (String key : config.ACTIVE_TILES) {
+            tiles.add(new Tile(config.TILES.get(key), key, RandomColor.get(), board));
+        }
 
-      /*  tiles.add(new Tile(ArrayProvider.TILE_P, "P", Color.PINK, board));
-        tiles.add(new Tile(ArrayProvider.TILE_O, "O", Color.GREEN, board));
-        // tiles.add(new Tile(ArrayProvider.TILE_H, "H", Color.WHITE, board));
-        //tiles.add(new Tile(ArrayProvider.TILE_I, "I", Color.LIGHT_GRAY, board));
-        //tiles.add(new Tile(ArrayProvider.TILE_4, "4", Color.LIGHT_GRAY, board));
-        tiles.add(new Tile(ArrayProvider.TILE_2, "2", Color.LIGHT_GRAY, board));
-        tiles.add(new Tile(ArrayProvider.TILE_2x, "2x", Color.RED, board));
-        //tiles.add(new Tile(ArrayProvider.TILE_p, "p", Color.DARK_GRAY, board));
-        // tiles.add(new Tile(ArrayProvider.TILE_T, "T", Color.LIGHT_GRAY, board));
-        tiles.add(new Tile(ArrayProvider.TILE_1, "1", Color.RED, board));
-*/
+
         if (!PlausibilityCheck.check(board, tiles)) {
             System.out.println("Not Plausible!!");
             return;
