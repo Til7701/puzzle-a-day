@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9576cb07-6120-490d-8823-4a149303a815" name="Changes" comment="maybe config">
+    <list default="true" id="9576cb07-6120-490d-8823-4a149303a815" name="Changes" comment="basic text output">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/YearBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/YearBoard.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/AbstractStats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/AbstractStats.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/DefaultStats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/DefaultStats.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/YearSolutionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/YearSolutionHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/YearStats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/YearStats.java" afterDir="false" />
     </list>
@@ -108,7 +109,7 @@
       <workItem from="1684661275123" duration="3295000" />
       <workItem from="1687856322147" duration="526000" />
       <workItem from="1695726028547" duration="10552000" />
-      <workItem from="1695894623293" duration="1121000" />
+      <workItem from="1695894623293" duration="2073000" />
     </task>
     <task id="LOCAL-00001" summary="rotation">
       <created>1674643471145</created>
@@ -236,7 +237,14 @@
       <option name="project" value="LOCAL" />
       <updated>1695808578890</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="basic text output">
+      <created>1695895779330</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1695895779330</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -285,6 +293,7 @@
     <MESSAGE value="PlausibilityCheck" />
     <MESSAGE value="runs" />
     <MESSAGE value="maybe config" />
-    <option name="LAST_COMMIT_MESSAGE" value="maybe config" />
+    <MESSAGE value="basic text output" />
+    <option name="LAST_COMMIT_MESSAGE" value="basic text output" />
   </component>
 </project>

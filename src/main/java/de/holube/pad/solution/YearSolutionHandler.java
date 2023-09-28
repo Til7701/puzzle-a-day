@@ -17,7 +17,7 @@ public class YearSolutionHandler extends AbstractSolutionHandler {
 
     static {
         try {
-            output = new BufferedWriter(new FileWriter(new Date().toString()));
+            output = new BufferedWriter(new FileWriter("Solutions_" + new Date()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
