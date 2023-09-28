@@ -14,7 +14,7 @@ public class PuzzleADaySolver {
 
     private final Tile[] tiles;
 
-    private final ForkJoinPool pool = new ForkJoinPool(10);
+    private final ForkJoinPool pool;
 
     private final SolutionHandlerFactory shf;
 
@@ -22,6 +22,9 @@ public class PuzzleADaySolver {
         this.board = board;
         this.tiles = tiles;
         this.shf = shf;
+        int parallelism = (int) (Runtime.getRuntime().availableProcessors() * 0.7);
+        pool = new ForkJoinPool(parallelism);
+        System.out.println("Parallelism: " + parallelism);
     }
 
     public void solve() {
