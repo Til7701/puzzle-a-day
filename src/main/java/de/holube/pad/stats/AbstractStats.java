@@ -7,7 +7,9 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 
 public abstract class AbstractStats implements Stats {
@@ -16,8 +18,16 @@ public abstract class AbstractStats implements Stats {
 
     @Getter
     protected final List<Board> results = new ArrayList<>();
-    private final int[][][][] days = new int[10][10][12][31];
     protected int totalSolutions = 0;
+
+    @Getter
+    protected int min;
+    @Getter
+    protected int max;
+    @Getter
+    protected double average;
+
+    protected abstract void addToDaysArray(int[] values);
 
     public void addSolution(Board board) {
         try {
@@ -27,7 +37,7 @@ public abstract class AbstractStats implements Stats {
             }*/
             //results.add(board);
             int[] values = board.getSolutionStore().getValues();
-            days[values[0]][values[1]][values[2] - 1][values[3] - 1] += 1;
+            addToDaysArray(values);
             totalSolutions++;
             if (totalSolutions % 100 == 0) {
                 System.out.println("Solutions received: " + totalSolutions);
@@ -44,15 +54,11 @@ public abstract class AbstractStats implements Stats {
     public void save() {
         Writer output = null;
         try {
-            output = new BufferedWriter(new FileWriter("Stats_" + new Date().toString()));
-            IntSummaryStatistics stats = Arrays.stream(days)
-                    .flatMap(Arrays::stream)
-                    .flatMap(Arrays::stream)
-                    .flatMapToInt(Arrays::stream)
-                    .summaryStatistics();
-            output.append("Min: ").append(String.valueOf(stats.getMin())).append("\n")
-                    .append("Max: ").append(String.valueOf(stats.getMax())).append("\n")
-                    .append("Average: ").append(String.valueOf(stats.getAverage())).append("\n");
+            output = new BufferedWriter(new FileWriter("Stats_" + new Date().toString().replace(":", "-")));
+
+            output.append("Min: ").append(String.valueOf(getMin())).append("\n")
+                    .append("Max: ").append(String.valueOf(getMax())).append("\n")
+                    .append("Average: ").append(String.valueOf(getAverage())).append("\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
@@ -64,6 +70,14 @@ public abstract class AbstractStats implements Stats {
                 }
             }
         }
+    }
+
+    @Override
+    public void printStats() {
+        System.out.println("Total: " + totalSolutions);
+        System.out.println("Average: " + getAverage());
+        System.out.println("Min: " + getMin());
+        System.out.println("Max: " + getMax());
     }
 
 }

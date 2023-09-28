@@ -40,7 +40,7 @@ public class PuzzleADaySolver {
 
         for (int i = 0; i < tasks.size(); i++) {
             pool.invoke(tasks.get(i));
-            System.out.println("Progress: " + i + "/" + tasks.size() + "%");
+            System.out.println("Progress: " + (i + 1) + "/" + tasks.size());
         }
     }
 

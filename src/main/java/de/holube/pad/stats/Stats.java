@@ -12,4 +12,10 @@ public interface Stats {
 
     void save();
 
+    int getMin();
+
+    int getMax();
+
+    double getAverage();
+
 }

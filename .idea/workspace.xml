@@ -4,22 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9576cb07-6120-490d-8823-4a149303a815" name="Changes" comment="progress and TODO save to text file">
+    <list default="true" id="9576cb07-6120-490d-8823-4a149303a815" name="Changes" comment="small improvements">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/PuzzleADaySolver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/PuzzleADaySolver.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/AbstractBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/AbstractBoard.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/DefaultBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/DefaultBoard.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/YearBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/YearBoard.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/AbstractSolutionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/AbstractSolutionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/AbstractStats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/stats/AbstractStats.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/DefaultSolutionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/DefaultSolutionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/DefaultStats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/stats/DefaultStats.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/SolutionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/SolutionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/Stats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/stats/Stats.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/YearSolutionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/YearSolutionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/YearStats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/stats/YearStats.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/SolutionStore.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/SolutionStore.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/stats/AbstractStats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/stats/AbstractStats.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/stats/DefaultStats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/stats/DefaultStats.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/stats/Stats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/stats/Stats.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/stats/YearStats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/stats/YearStats.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -245,7 +237,14 @@
       <option name="project" value="LOCAL" />
       <updated>1695808578890</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="small improvements">
+      <created>1695927916681</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1695927916681</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -294,6 +293,7 @@
     <MESSAGE value="PlausibilityCheck" />
     <MESSAGE value="runs" />
     <MESSAGE value="maybe config" />
-    <option name="LAST_COMMIT_MESSAGE" value="maybe config" />
+    <MESSAGE value="small improvements" />
+    <option name="LAST_COMMIT_MESSAGE" value="small improvements" />
   </component>
 </project>
