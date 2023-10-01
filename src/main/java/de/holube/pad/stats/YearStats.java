@@ -12,6 +12,11 @@ public class YearStats extends AbstractStats {
         days[values[0]][values[1]][values[2] - 1][values[3] - 1] += 1;
     }
 
+    @Override
+    protected String getDaysArrayString() {
+        return Arrays.deepToString(days);
+    }
+
     public void calculateStats() {
         IntSummaryStatistics stats = Arrays.stream(days)
                 .flatMap(Arrays::stream)

@@ -29,6 +29,8 @@ public abstract class AbstractStats implements Stats {
 
     protected abstract void addToDaysArray(byte[] values);
 
+    protected abstract String getDaysArrayString();
+
     public void addSolution(Board board) {
         try {
             semaphore.acquire();
@@ -58,7 +60,8 @@ public abstract class AbstractStats implements Stats {
 
             output.append("Min: ").append(String.valueOf(getMin())).append("\n")
                     .append("Max: ").append(String.valueOf(getMax())).append("\n")
-                    .append("Average: ").append(String.valueOf(getAverage())).append("\n");
+                    .append("Average: ").append(String.valueOf(getAverage())).append("\n")
+                    .append(getDaysArrayString()).append("\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
