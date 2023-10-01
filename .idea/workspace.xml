@@ -4,11 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9576cb07-6120-490d-8823-4a149303a815" name="Changes" comment="more config settings">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/stats/AbstractStats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/stats/AbstractStats.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/stats/DefaultStats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/stats/DefaultStats.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/stats/YearStats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/stats/YearStats.java" afterDir="false" />
+    <list default="true" id="9576cb07-6120-490d-8823-4a149303a815" name="Changes" comment="print days array at the end">
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/Main.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -148,7 +145,7 @@
       <workItem from="1687856322147" duration="526000" />
       <workItem from="1695726028547" duration="10552000" />
       <workItem from="1695936587417" duration="31000" />
-      <workItem from="1696176604590" duration="2291000" />
+      <workItem from="1696176604590" duration="2529000" />
     </task>
     <task id="LOCAL-00001" summary="rotation">
       <created>1674643471145</created>
@@ -311,7 +308,14 @@
       <option name="project" value="LOCAL" />
       <updated>1696178775228</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="print days array at the end">
+      <created>1696178918880</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1696178918880</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -365,7 +369,8 @@
     <MESSAGE value="read config from file" />
     <MESSAGE value="year config maybe" />
     <MESSAGE value="more config settings" />
-    <option name="LAST_COMMIT_MESSAGE" value="more config settings" />
+    <MESSAGE value="print days array at the end" />
+    <option name="LAST_COMMIT_MESSAGE" value="print days array at the end" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

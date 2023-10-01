@@ -56,6 +56,12 @@ public class Main {
 
         // final int parallelism = (int) (Runtime.getRuntime().availableProcessors() * 0.7);
         final int parallelism = config.PARALLELISM;
+        Thread printingHook = new Thread(() -> {
+            stats.calculateStats();
+            stats.printStats();
+            stats.save();
+        });
+        Runtime.getRuntime().addShutdownHook(printingHook);
         final long startTime = System.currentTimeMillis();
         final PuzzleADaySolver padSolver = new PuzzleADaySolver(board, tiles.toArray(new Tile[0]), shf, parallelism);
         padSolver.solve();
