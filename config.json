@@ -1,6 +1,9 @@
 {
   "TARGET": "YEAR",
   "ACTIVE_TILES": ["S", "l", "L", "t", "O", "s", "P", "C", "2x", "p", "2x", "I"],
+  "SAVE_SOLUTIONS": false,
+  "SAVE_IMAGES": false,
+  "PARALLELISM": 13,
   "TILES": {
     "S": [
       [ 1, 0, 0 ],

@@ -18,11 +18,10 @@ public class PuzzleADaySolver {
 
     private final SolutionHandlerFactory shf;
 
-    public PuzzleADaySolver(Board board, Tile[] tiles, SolutionHandlerFactory shf) {
+    public PuzzleADaySolver(Board board, Tile[] tiles, SolutionHandlerFactory shf, int parallelism) {
         this.board = board;
         this.tiles = tiles;
         this.shf = shf;
-        final int parallelism = (int) (Runtime.getRuntime().availableProcessors() * 0.7);
         this.pool = new ForkJoinPool(parallelism);
         System.out.println("Parallelism: " + parallelism);
     }

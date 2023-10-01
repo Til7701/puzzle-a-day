@@ -1,17 +1,21 @@
 package de.holube.pad.util;
 
 import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.util.List;
 import java.util.Map;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Config {
 
-    public Target TARGET;
-    public List<String> ACTIVE_TILES;
-    public Map<String, byte[][]> TILES;
+    public final Target TARGET;
+    public final List<String> ACTIVE_TILES;
+    public final Map<String, byte[][]> TILES;
+
+    public final boolean SAVE_SOLUTIONS;
+    public final boolean SAVE_IMAGES;
+    public final int PARALLELISM;
 
     public enum Target {
         DEFAULT,

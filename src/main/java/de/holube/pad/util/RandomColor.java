@@ -7,6 +7,15 @@ public class RandomColor {
 
     private static final Random random = new Random();
 
+    public static Color getBright() {
+        Color color = get();
+        int sum = color.getRed() + color.getGreen() + color.getBlue();
+        if (sum < 300) {
+            return color.brighter();
+        }
+        return color;
+    }
+
     public static Color get() {
         int r = random.nextInt(256);
         int g = random.nextInt(256);

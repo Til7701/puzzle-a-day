@@ -4,9 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9576cb07-6120-490d-8823-4a149303a815" name="Changes" comment="trying things out with custom pools">
+    <list default="true" id="9576cb07-6120-490d-8823-4a149303a815" name="Changes" comment="year config maybe">
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/EmptySolutionSaver.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/FileSolutionSaver.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/ImageSolutionSaver.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/SolutionSaver.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/PuzzleADaySolver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/PuzzleADaySolver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/AbstractSolutionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/AbstractSolutionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/SolutionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/SolutionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/Config.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/Config.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/RandomColor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/RandomColor.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,8 +27,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Enum" />
-        <option value="Interface" />
         <option value="package.json" />
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -146,7 +156,7 @@
       <workItem from="1687856322147" duration="526000" />
       <workItem from="1695726028547" duration="10552000" />
       <workItem from="1695936587417" duration="31000" />
-      <workItem from="1696176604590" duration="611000" />
+      <workItem from="1696176604590" duration="2158000" />
     </task>
     <task id="LOCAL-00001" summary="rotation">
       <created>1674643471145</created>
@@ -295,7 +305,14 @@
       <option name="project" value="LOCAL" />
       <updated>1695931082410</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="year config maybe">
+      <created>1696177243002</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1696177243002</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -347,7 +364,8 @@
     <MESSAGE value="small improvements" />
     <MESSAGE value="bug fixes from small improvements :)" />
     <MESSAGE value="read config from file" />
-    <option name="LAST_COMMIT_MESSAGE" value="read config from file" />
+    <MESSAGE value="year config maybe" />
+    <option name="LAST_COMMIT_MESSAGE" value="year config maybe" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

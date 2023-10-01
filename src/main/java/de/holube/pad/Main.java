@@ -5,6 +5,7 @@ import de.holube.pad.model.Board;
 import de.holube.pad.model.DefaultBoard;
 import de.holube.pad.model.Tile;
 import de.holube.pad.model.YearBoard;
+import de.holube.pad.solution.AbstractSolutionHandler;
 import de.holube.pad.solution.DefaultSolutionHandlerFactory;
 import de.holube.pad.solution.SolutionHandlerFactory;
 import de.holube.pad.solution.YearSolutionHandlerFactory;
@@ -38,7 +39,7 @@ public class Main {
 
         final List<Tile> tiles = new ArrayList<>();
         for (String key : config.ACTIVE_TILES) {
-            tiles.add(new Tile(config.TILES.get(key), key, RandomColor.get(), board));
+            tiles.add(new Tile(config.TILES.get(key), key, RandomColor.getBright(), board));
         }
 
 
@@ -53,8 +54,10 @@ public class Main {
         }
         System.out.println("Total number of possible boards: " + totalOptions);
 
+        // final int parallelism = (int) (Runtime.getRuntime().availableProcessors() * 0.7);
+        final int parallelism = config.PARALLELISM;
         final long startTime = System.currentTimeMillis();
-        final PuzzleADaySolver padSolver = new PuzzleADaySolver(board, tiles.toArray(new Tile[0]), shf);
+        final PuzzleADaySolver padSolver = new PuzzleADaySolver(board, tiles.toArray(new Tile[0]), shf, parallelism);
         padSolver.solve();
         final long endTime = System.currentTimeMillis();
         final long time = endTime - startTime;
@@ -64,7 +67,7 @@ public class Main {
         stats.printStats();
         stats.save();
 
-        shf.create().close();
+        AbstractSolutionHandler.getSaver().close();
 
         //Distance distance = new Distance(SolutionHandler.getStats().getResults());
         //distance.calculateDistances();
