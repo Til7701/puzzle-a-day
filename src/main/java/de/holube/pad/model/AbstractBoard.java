@@ -27,6 +27,10 @@ public abstract class AbstractBoard implements Board {
     }
 
     private int getValueOfIndex(int i, int j) {
+        return getValueOfIndex(i, j, tileIndices);
+    }
+
+    private int getValueOfIndex(int i, int j, int[] tileIndices) {
         int tmp = getBoardLayout()[i][j];
         for (int k = 0; k < tileIndices.length; k++) {
             tmp += positionedTiles[k][tileIndices[k]].getCumulativeBoard()[i][j];
@@ -41,8 +45,8 @@ public abstract class AbstractBoard implements Board {
         newTileIndices[newTileIndices.length - 1] = positionedTile.getId();
 
         for (int i = 0; i < getBoardLayout().length; i++) {
-            for (int j = 0; j < getBoardMeaning()[0].length; j++) {
-                if (getValueOfIndex(i, j) >= 2) {
+            for (int j = 0; j < getBoardLayout()[0].length; j++) {
+                if (getValueOfIndex(i, j, newTileIndices) >= 2) {
                     return null;
                 }
             }
@@ -54,7 +58,7 @@ public abstract class AbstractBoard implements Board {
     protected abstract Board createNewBoard(int[] tileIndices, PositionedTile[][] newPositionedTiles);
 
     public int[][] getBoard() {
-        final int[][] board = new int[getBoardLayout().length][getBoardMeaning()[0].length];
+        final int[][] board = new int[getBoardLayout().length][getBoardLayout()[0].length];
 
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
