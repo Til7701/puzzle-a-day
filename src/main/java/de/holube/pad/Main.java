@@ -26,6 +26,7 @@ public class Main {
         String json = Files.readString(Path.of("config.json"));
         Gson gson = new Gson();
         Config config = gson.fromJson(json, Config.class);
+        System.out.println("Config: \n" + json);
 
         final Board board = switch (config.TARGET) {
             case DEFAULT -> new DefaultBoard();
@@ -59,7 +60,7 @@ public class Main {
         Thread printingHook = new Thread(() -> {
             stats.calculateStats();
             stats.printStats();
-            stats.save();
+            stats.save(json);
         });
         Runtime.getRuntime().addShutdownHook(printingHook);
         final long startTime = System.currentTimeMillis();
@@ -71,7 +72,7 @@ public class Main {
 
         stats.calculateStats();
         stats.printStats();
-        stats.save();
+        stats.save(json);
 
         AbstractSolutionHandler.getSaver().close();
 

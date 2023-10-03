@@ -53,7 +53,7 @@ public abstract class AbstractStats implements Stats {
     }
 
     @Override
-    public void save() {
+    public void save(String jsonConfig) {
         Writer output = null;
         try {
             output = new BufferedWriter(new FileWriter("Stats_" + new Date().toString().replace(":", "-")));
@@ -61,7 +61,8 @@ public abstract class AbstractStats implements Stats {
             output.append("Min: ").append(String.valueOf(getMin())).append("\n")
                     .append("Max: ").append(String.valueOf(getMax())).append("\n")
                     .append("Average: ").append(String.valueOf(getAverage())).append("\n")
-                    .append(getDaysArrayString()).append("\n");
+                    .append(getDaysArrayString()).append("\n")
+                    .append(jsonConfig);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {

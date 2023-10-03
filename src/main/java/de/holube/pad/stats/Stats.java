@@ -10,7 +10,7 @@ public interface Stats {
 
     void printStats();
 
-    void save();
+    void save(String jsonConfig);
 
     int getMin();
 
