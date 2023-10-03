@@ -7,14 +7,14 @@ import java.util.Arrays;
 public class SolutionStore {
 
     @Getter
-    private final byte[] values;
+    private final int[] values;
 
-    public SolutionStore(byte maxKey) {
-        values = new byte[maxKey + 1];
+    public SolutionStore(int maxKey) {
+        values = new int[maxKey + 1];
         reset();
     }
 
-    public boolean add(byte key, byte value) {
+    public boolean add(int key, int value) {
         if (key < 0)
             return true;
         if (values[key] > -1)
@@ -24,7 +24,7 @@ public class SolutionStore {
     }
 
     public boolean isComplete() {
-        for (byte v : values) {
+        for (int v : values) {
             if (v == -1) {
                 return false;
             }
@@ -33,7 +33,7 @@ public class SolutionStore {
     }
 
     public void reset() {
-        Arrays.fill(values, (byte) -1);
+        Arrays.fill(values, -1);
     }
 
 }

@@ -17,7 +17,7 @@ public class PlausibilityCheck {
             tileOccupiedSpaces += tile.getOccupiedSpaces();
         }
 
-        int boardFreeSpaces = board.getFreeSpaces();
+        int boardFreeSpaces = board.getLayoutFreeSpaces();
 
         int difference = Math.abs(boardFreeSpaces - (tileOccupiedSpaces + board.getMaxKey() + 1));
 

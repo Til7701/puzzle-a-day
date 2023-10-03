@@ -3,37 +3,40 @@ package de.holube.pad.model;
 import lombok.Getter;
 
 import java.awt.*;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 public class Tile {
 
     @Getter
     private final String name;
     @Getter
+    private final int tileNumber;
+    @Getter
     private final Color color;
 
     @Getter
-    private final byte[][] base;
+    private final int[][] base;
     @Getter
-    private final List<PositionedTile> allPositions;
+    private final PositionedTile[] allPositions;
 
-    public Tile(byte[][] base, String name, Color color, Board board) {
+    private int positionedTileCounter = 0;
+
+    public Tile(int[][] base, String name, int tileNumber, Color color, Board board) {
         this.name = name;
+        this.tileNumber = tileNumber;
         this.color = color;
         this.base = base;
         System.out.println("Creating Tile: " + name);
         print(base);
-        List<byte[][]> baseRotated = getAllRotations(base);
+        List<int[][]> baseRotated = getAllRotations(base);
         System.out.println("Number of Rotations: " + baseRotated.size());
-        allPositions = getAllPositions(baseRotated, board);
-        System.out.println("Number of Boards: " + allPositions.size());
+        allPositions = getAllPositions(baseRotated, board).toArray(new PositionedTile[0]);
+        System.out.println("Number of Boards: " + allPositions.length);
     }
 
-    private static byte[][] rotate90Clockwise(byte[][] origin) {
-        byte[][] result = new byte[origin[0].length][origin.length];
+    private static int[][] rotate90Clockwise(int[][] origin) {
+        int[][] result = new int[origin[0].length][origin.length];
 
         for (int i = 0; i < origin.length; i++) {
             for (int j = 0; j < origin[i].length; j++) {
@@ -45,8 +48,8 @@ public class Tile {
         return result;
     }
 
-    private static byte[][] flip(byte[][] origin) {
-        byte[][] result = new byte[origin[0].length][origin.length];
+    private static int[][] flip(int[][] origin) {
+        int[][] result = new int[origin[0].length][origin.length];
 
         for (int i = 0; i < origin.length; i++) {
             for (int j = 0; j < origin[i].length; j++) {
@@ -57,8 +60,8 @@ public class Tile {
         return result;
     }
 
-    private static List<byte[][]> getAllRotations(byte[][] base) {
-        Set<byte[][]> results = new TreeSet<>((a1, a2) -> {
+    private static List<int[][]> getAllRotations(int[][] base) {
+        Set<int[][]> results = new TreeSet<>((a1, a2) -> {
             if (a1.length > a2.length)
                 return 1;
             if (a1.length < a2.length)
@@ -81,7 +84,7 @@ public class Tile {
         });
 
         results.add(base);
-        byte[][] tmp = rotate90Clockwise(base);
+        int[][] tmp = rotate90Clockwise(base);
         results.add(tmp);
         tmp = rotate90Clockwise(tmp);
         results.add(tmp);
@@ -99,7 +102,7 @@ public class Tile {
         return results.stream().toList();
     }
 
-    private static void removeBoard(byte[][] newBoard, byte[][] boardArray) {
+    private static void removeBoard(int[][] newBoard, int[][] boardArray) {
         for (int i = 0; i < newBoard.length; i++) {
             for (int j = 0; j < newBoard[i].length; j++) {
                 newBoard[i][j] -= boardArray[i][j];
@@ -107,8 +110,8 @@ public class Tile {
         }
     }
 
-    private static byte[][] place(byte[][] tile, byte[][] boardArray, int i, int j) {
-        byte[][] copy = new byte[boardArray.length][boardArray[0].length];
+    private static int[][] place(int[][] tile, int[][] boardArray, int i, int j) {
+        int[][] copy = new int[boardArray.length][boardArray[0].length];
 
         for (int m = 0; m < boardArray.length; m++) {
             System.arraycopy(boardArray[m], 0, copy[m], 0, boardArray[m].length);
@@ -122,35 +125,36 @@ public class Tile {
         return copy;
     }
 
-    private static void print(byte[][] array) {
-        for (byte[] bytes : array) {
-            for (byte b : bytes) {
-                System.out.print(b + " ");
+    private static void print(int[][] array) {
+        for (int[] row : array) {
+            for (int cell : row) {
+                System.out.print(cell + " ");
             }
             System.out.println();
         }
     }
 
-    private List<PositionedTile> getAllPositions(List<byte[][]> baseRotated, Board board) {
+    private List<PositionedTile> getAllPositions(List<int[][]> baseRotated, Board board) {
         Set<PositionedTile> results = new HashSet<>();
 
-        for (byte[][] tile : baseRotated) {
+        for (int[][] tile : baseRotated) {
             results.addAll(getAllPositionsForTile(tile, board));
         }
-
-        return results.stream().toList();
+        List<PositionedTile> tiles = new ArrayList<>(results.stream().toList());
+        tiles.sort(Comparator.comparingInt(PositionedTile::getId));
+        return tiles;
     }
 
-    private List<PositionedTile> getAllPositionsForTile(byte[][] tile, Board board) {
+    private List<PositionedTile> getAllPositionsForTile(int[][] tile, Board board) {
         Set<PositionedTile> results = new HashSet<>();
-        byte[][] boardArray = board.getBoard();
+        int[][] boardArray = board.getBoard();
 
         for (int i = 0; i < boardArray.length - tile.length + 1; i++) {
             for (int j = 0; j < boardArray[i].length - tile[0].length + 1; j++) {
-                byte[][] newBoard = place(tile, boardArray, i, j);
+                int[][] newBoard = place(tile, boardArray, i, j);
                 if (Board.isValid(newBoard)) {
                     removeBoard(newBoard, boardArray);
-                    results.add(new PositionedTile(this, newBoard));
+                    results.add(new PositionedTile(this, newBoard, positionedTileCounter++, tileNumber));
                 }
             }
         }
@@ -160,9 +164,9 @@ public class Tile {
 
     public int getOccupiedSpaces() {
         int result = 0;
-        for (byte[] bytes : base) {
-            for (byte b : bytes) {
-                if (b == 1)
+        for (int[] row : base) {
+            for (int cell : row) {
+                if (cell == 1)
                     result++;
             }
         }

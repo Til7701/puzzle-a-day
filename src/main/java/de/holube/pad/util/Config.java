@@ -11,7 +11,7 @@ public class Config {
 
     public final Target TARGET;
     public final List<String> ACTIVE_TILES;
-    public final Map<String, byte[][]> TILES;
+    public final Map<String, int[][]> TILES;
 
     public final boolean SAVE_SOLUTIONS;
     public final boolean SAVE_IMAGES;

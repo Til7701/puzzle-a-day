@@ -4,23 +4,21 @@ import de.holube.pad.util.SolutionStore;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 @EqualsAndHashCode
 public abstract class AbstractBoard implements Board {
 
     @Getter
-    protected final byte[][] board;
-    @Getter
-    protected final List<PositionedTile> positionedTiles = new ArrayList<>();
+    protected final int[] tileIndices;
+
+    protected final PositionedTile[][] positionedTiles;
     @Getter
     protected final SolutionStore solutionStore;
 
-    public AbstractBoard(byte[][] board, List<PositionedTile> positionedTiles, byte maxKey) {
-        this.board = board;
-        this.positionedTiles.addAll(positionedTiles);
+    public AbstractBoard(int[] tileIndices, PositionedTile[][] positionedTiles, int maxKey) {
+        this.tileIndices = tileIndices;
+        this.positionedTiles = positionedTiles;
         this.solutionStore = new SolutionStore(maxKey);
     }
 
@@ -28,37 +26,65 @@ public abstract class AbstractBoard implements Board {
         return Board.isValid(getBoard());
     }
 
-    public Board addTile(PositionedTile positionedTile) {
-        byte[][] newBoard = new byte[board.length][board[0].length];
+    private int getValueOfIndex(int i, int j) {
+        int tmp = getBoardLayout()[i][j];
+        for (int k = 0; k < tileIndices.length; k++) {
+            tmp += positionedTiles[k][tileIndices[k]].getCumulativeBoard()[i][j];
+        }
+        return tmp;
+    }
 
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                newBoard[i][j] = (byte) (board[i][j] + positionedTile.getCumulativeBoard()[i][j]);
-                if (newBoard[i][j] >= 2) {
+    public Board addTile(PositionedTile positionedTile) {
+        int[] newTileIndices = new int[tileIndices.length + 1];
+
+        System.arraycopy(tileIndices, 0, newTileIndices, 0, tileIndices.length);
+        newTileIndices[newTileIndices.length - 1] = positionedTile.getId();
+
+        for (int i = 0; i < getBoardLayout().length; i++) {
+            for (int j = 0; j < getBoardMeaning()[0].length; j++) {
+                if (getValueOfIndex(i, j) >= 2) {
                     return null;
                 }
             }
         }
 
-        List<PositionedTile> newTiles = new ArrayList<>(positionedTiles.size() + 1);
-        newTiles.addAll(positionedTiles);
-        newTiles.add(positionedTile);
-
-        return createNewBoard(newBoard, newTiles);
+        return createNewBoard(newTileIndices, positionedTiles);
     }
 
-    protected abstract Board createNewBoard(byte[][] newBoard, List<PositionedTile> newPositionedTiles);
+    protected abstract Board createNewBoard(int[] tileIndices, PositionedTile[][] newPositionedTiles);
+
+    public int[][] getBoard() {
+        final int[][] board = new int[getBoardLayout().length][getBoardMeaning()[0].length];
+
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                board[i][j] = getValueOfIndex(i, j);
+            }
+        }
+
+        return board;
+    }
+
+    public PositionedTile[] getPositionedTiles() {
+        PositionedTile[] result = new PositionedTile[tileIndices.length];
+        for (byte i = 0; i < result.length; i++) {
+            result[i] = positionedTiles[i][tileIndices[i]];
+        }
+
+        return result;
+    }
 
     @Override
     public boolean isValidSolution() {
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                if (board[i][j] == 0) {
-                    if (!solutionStore.add((byte) getBoardMeaning()[0][i][j], (byte) getBoardMeaning()[1][i][j])) {
+        for (int i = 0; i < getBoardLayout().length; i++) {
+            for (int j = 0; j < getBoardLayout()[0].length; j++) {
+                int tmp = getValueOfIndex(i, j);
+                if (tmp == 0) {
+                    if (!solutionStore.add(getBoardMeaning()[0][i][j], getBoardMeaning()[1][i][j])) {
                         solutionStore.reset();
                         return false;
                     }
-                } else if (board[i][j] > 1) {
+                } else if (tmp > 1) {
                     solutionStore.reset();
                     return false;
                 }
@@ -73,19 +99,19 @@ public abstract class AbstractBoard implements Board {
     }
 
     public String getPath() {
-        byte[] solution = solutionStore.getValues();
+        int[] solution = solutionStore.getValues();
         StringBuilder path = new StringBuilder();
-        for (byte s : solution) {
+        for (int s : solution) {
             path.append(s).append("/");
         }
         return path.toString();
     }
 
-    public int getFreeSpaces() {
+    public int getLayoutFreeSpaces() {
         int result = 0;
-        for (byte[] bytes : board) {
-            for (byte v : bytes) {
-                if (v == 0)
+        for (int[] row : getBoardLayout()) {
+            for (int cell : row) {
+                if (cell == 0)
                     result++;
             }
         }

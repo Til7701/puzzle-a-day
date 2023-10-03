@@ -2,7 +2,6 @@ package de.holube.pad;
 
 import de.holube.pad.model.Board;
 import de.holube.pad.model.PositionedTile;
-import de.holube.pad.model.Tile;
 import de.holube.pad.solution.SolutionHandlerFactory;
 
 import java.util.ArrayList;
@@ -13,22 +12,22 @@ public class PaDTask extends RecursiveTask<Boolean> {
 
     private final Board board;
 
-    private final Tile[] tiles;
+    private final PositionedTile[][] positionedTiles;
 
     private final int tileIndex;
 
     private final SolutionHandlerFactory shf;
 
-    public PaDTask(Board board, Tile[] tiles, int tileIndex, SolutionHandlerFactory shf) {
+    public PaDTask(Board board, PositionedTile[][] positionedTiles, int tileIndex, SolutionHandlerFactory shf) {
         this.board = board;
-        this.tiles = tiles;
+        this.positionedTiles = positionedTiles;
         this.tileIndex = tileIndex;
         this.shf = shf;
     }
 
     @Override
     protected Boolean compute() {
-        if (tileIndex >= tiles.length) {
+        if (tileIndex >= positionedTiles.length) {
             if (board.isValidSolution()) {
                 shf.create().handleSolution(board);
                 return true;
@@ -36,13 +35,12 @@ public class PaDTask extends RecursiveTask<Boolean> {
             return false;
         }
 
-        List<PositionedTile> positionedTiles = tiles[tileIndex].getAllPositions();
         List<PaDTask> nextTasks = new ArrayList<>();
 
-        for (PositionedTile positionedTile : positionedTiles) {
+        for (PositionedTile positionedTile : positionedTiles[tileIndex]) {
             Board potentialNextBoard = board.addTile(positionedTile);
             if (potentialNextBoard != null) {
-                nextTasks.add(new PaDTask(potentialNextBoard, tiles, tileIndex + 1, shf));
+                nextTasks.add(new PaDTask(potentialNextBoard, positionedTiles, tileIndex + 1, shf));
             }
         }
 

@@ -1,12 +1,10 @@
 package de.holube.pad.model;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class YearBoard extends AbstractBoard {
 
-    public static final byte[][] BOARD_LAYOUT = new byte[][]{
+    public static final int[][] BOARD_LAYOUT = new int[][]{
             {1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1},
             {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -37,29 +35,33 @@ public class YearBoard extends AbstractBoard {
             }
     };
 
-    protected static final byte MAX_KEY;
+    protected static final int MAX_KEY;
 
     static {
-        MAX_KEY = (byte) Arrays.stream(BOARD_MEANING[0])
+        MAX_KEY = Arrays.stream(BOARD_MEANING[0])
                 .flatMapToInt(Arrays::stream)
                 .summaryStatistics().getMax();
     }
 
     public YearBoard() {
-        this(BOARD_LAYOUT, new ArrayList<>());
+        this(new int[0], new PositionedTile[0][0]);
     }
 
-    public YearBoard(byte[][] board, List<PositionedTile> tiles) {
-        super(board, tiles, MAX_KEY);
+    public YearBoard(PositionedTile[][] positionedTiles) {
+        this(new int[0], positionedTiles);
+    }
+
+    public YearBoard(int[] tileIndices, PositionedTile[][] newPositionedTiles) {
+        super(tileIndices, newPositionedTiles, MAX_KEY);
     }
 
     @Override
-    protected Board createNewBoard(byte[][] newBoard, List<PositionedTile> newTiles) {
-        return new YearBoard(newBoard, newTiles);
+    protected Board createNewBoard(int[] tileIndices, PositionedTile[][] newPositionedTiles) {
+        return new YearBoard(tileIndices, newPositionedTiles);
     }
 
     @Override
-    public byte[][] getBoardLayout() {
+    public int[][] getBoardLayout() {
         return BOARD_LAYOUT;
     }
 
@@ -69,7 +71,7 @@ public class YearBoard extends AbstractBoard {
     }
 
     @Override
-    public byte getMaxKey() {
+    public int getMaxKey() {
         return MAX_KEY;
     }
 

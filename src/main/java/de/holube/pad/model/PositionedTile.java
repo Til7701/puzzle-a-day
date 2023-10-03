@@ -10,11 +10,18 @@ public class PositionedTile {
     private final Tile parent;
 
     @Getter
-    private final byte[][] cumulativeBoard;
+    private final int[][] cumulativeBoard;
 
-    PositionedTile(Tile parent, byte[][] cumulativeBoard) {
+    @Getter
+    private final int id;
+    @Getter
+    private final int tileNumber;
+
+    PositionedTile(Tile parent, int[][] cumulativeBoard, int id, int tileNumber) {
         this.parent = parent;
         this.cumulativeBoard = cumulativeBoard;
+        this.id = id;
+        this.tileNumber = tileNumber;
     }
 
 }

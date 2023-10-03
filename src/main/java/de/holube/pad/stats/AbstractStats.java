@@ -27,7 +27,7 @@ public abstract class AbstractStats implements Stats {
     @Getter
     protected double average;
 
-    protected abstract void addToDaysArray(byte[] values);
+    protected abstract void addToDaysArray(int[] values);
 
     protected abstract String getDaysArrayString();
 
@@ -38,7 +38,7 @@ public abstract class AbstractStats implements Stats {
                 System.out.println("Duplicate detected! Month: " + board.getMonth() + " Day: " + board.getDay());
             }*/
             //results.add(board);
-            byte[] values = board.getSolutionStore().getValues();
+            int[] values = board.getSolutionStore().getValues();
             addToDaysArray(values);
             totalSolutions++;
             if (totalSolutions % 100 == 0) {

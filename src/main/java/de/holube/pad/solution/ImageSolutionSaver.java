@@ -8,7 +8,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ImageSolutionSaver implements SolutionSaver {
@@ -24,17 +23,17 @@ public class ImageSolutionSaver implements SolutionSaver {
     }
 
     protected BufferedImage createImage(Board board) {
-        byte[][] array = board.getBoard();
+        int[][] array = board.getBoard();
         int height = IMAGE_SIZE_PER_CELL * array.length;
         int width = IMAGE_SIZE_PER_CELL * array[0].length;
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics2D = image.createGraphics();
 
-        List<PositionedTile> tileBoards = board.getPositionedTiles();
+        PositionedTile[] tileBoards = board.getPositionedTiles();
 
         for (PositionedTile tile : tileBoards) {
             Color color = tile.getParent().getColor();
-            byte[][] tileCumArray = tile.getCumulativeBoard();
+            int[][] tileCumArray = tile.getCumulativeBoard();
             graphics2D.setColor(color);
 
             for (int j = 0; j < tileCumArray.length; j++) {

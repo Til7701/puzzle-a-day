@@ -2,13 +2,11 @@ package de.holube.pad.model;
 
 import de.holube.pad.util.SolutionStore;
 
-import java.util.List;
-
 public interface Board {
 
-    static boolean isValid(byte[][] board) {
-        for (byte[] row : board) {
-            for (byte cell : row) {
+    static boolean isValid(int[][] board) {
+        for (int[] row : board) {
+            for (int cell : row) {
                 if (cell > 1)
                     return false;
             }
@@ -17,7 +15,9 @@ public interface Board {
         return true;
     }
 
-    byte[][] getBoard();
+    int[][] getBoard();
+
+    int[] getTileIndices();
 
     boolean isValid();
 
@@ -25,19 +25,19 @@ public interface Board {
 
     Board addTile(PositionedTile positionedTile);
 
-    List<PositionedTile> getPositionedTiles();
+    PositionedTile[] getPositionedTiles();
 
     String getPath();
 
     SolutionStore getSolutionStore();
 
-    int getFreeSpaces();
+    int getLayoutFreeSpaces();
 
-    byte getMaxKey();
 
+    int getMaxKey();
 
     int[][][] getBoardMeaning();
 
-    byte[][] getBoardLayout();
+    int[][] getBoardLayout();
 
 }
