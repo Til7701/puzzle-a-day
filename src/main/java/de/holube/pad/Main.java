@@ -48,7 +48,7 @@ public class Main {
             return;
         }
 
-        int totalOptions = 1;
+        long totalOptions = 1;
         for (Tile tile : tiles) {
             totalOptions *= tile.getAllPositions().size();
         }
