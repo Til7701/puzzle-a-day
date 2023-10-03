@@ -18,7 +18,7 @@ public class Tile {
     @Getter
     private final byte[][] base;
     @Getter
-    private final List<byte[][]> allPositions;
+    private final List<PositionedTile> allPositions;
 
     public Tile(byte[][] base, String name, Color color, Board board) {
         this.name = name;
@@ -99,33 +99,6 @@ public class Tile {
         return results.stream().toList();
     }
 
-    private static List<byte[][]> getAllPositions(List<byte[][]> baseRotated, Board board) {
-        Set<byte[][]> results = new HashSet<>();
-
-        for (byte[][] tile : baseRotated) {
-            results.addAll(getAllPositionsForTile(tile, board));
-        }
-
-        return results.stream().toList();
-    }
-
-    private static List<byte[][]> getAllPositionsForTile(byte[][] tile, Board board) {
-        Set<byte[][]> results = new HashSet<>();
-        byte[][] boardArray = board.getBoard();
-
-        for (int i = 0; i < boardArray.length - tile.length + 1; i++) {
-            for (int j = 0; j < boardArray[i].length - tile[0].length + 1; j++) {
-                byte[][] newBoard = place(tile, boardArray, i, j);
-                if (Board.isValid(newBoard)) {
-                    removeBoard(newBoard, boardArray);
-                    results.add(newBoard);
-                }
-            }
-        }
-
-        return results.stream().toList();
-    }
-
     private static void removeBoard(byte[][] newBoard, byte[][] boardArray) {
         for (int i = 0; i < newBoard.length; i++) {
             for (int j = 0; j < newBoard[i].length; j++) {
@@ -158,11 +131,31 @@ public class Tile {
         }
     }
 
-    private static void printAll(List<byte[][]> list) {
-        for (byte[][] bytes : list) {
-            print(bytes);
-            System.out.println();
+    private List<PositionedTile> getAllPositions(List<byte[][]> baseRotated, Board board) {
+        Set<PositionedTile> results = new HashSet<>();
+
+        for (byte[][] tile : baseRotated) {
+            results.addAll(getAllPositionsForTile(tile, board));
         }
+
+        return results.stream().toList();
+    }
+
+    private List<PositionedTile> getAllPositionsForTile(byte[][] tile, Board board) {
+        Set<PositionedTile> results = new HashSet<>();
+        byte[][] boardArray = board.getBoard();
+
+        for (int i = 0; i < boardArray.length - tile.length + 1; i++) {
+            for (int j = 0; j < boardArray[i].length - tile[0].length + 1; j++) {
+                byte[][] newBoard = place(tile, boardArray, i, j);
+                if (Board.isValid(newBoard)) {
+                    removeBoard(newBoard, boardArray);
+                    results.add(new PositionedTile(this, newBoard));
+                }
+            }
+        }
+
+        return results.stream().toList();
     }
 
     public int getOccupiedSpaces() {

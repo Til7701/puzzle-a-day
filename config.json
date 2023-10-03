@@ -1,8 +1,8 @@
 {
-  "TARGET": "YEAR",
-  "ACTIVE_TILES": ["S", "l", "L", "t", "O", "s", "P", "C", "2x", "p", "2x", "I"],
+  "TARGET": "DEFAULT",
+  "ACTIVE_TILES": ["S", "l", "L", "t", "O", "s", "P", "C"],
   "SAVE_SOLUTIONS": false,
-  "SAVE_IMAGES": false,
+  "SAVE_IMAGES": true,
   "PARALLELISM": 13,
   "TILES": {
     "S": [

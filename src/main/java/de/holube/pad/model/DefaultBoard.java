@@ -48,11 +48,11 @@ public class DefaultBoard extends AbstractBoard {
     }
 
     public DefaultBoard() {
-        this(BOARD_LAYOUT, new ArrayList<>(), new ArrayList<>());
+        this(BOARD_LAYOUT, new ArrayList<>());
     }
 
-    public DefaultBoard(byte[][] board, List<Tile> tiles, List<byte[][]> tileCumArrays) {
-        super(board, tiles, tileCumArrays, MAX_KEY);
+    public DefaultBoard(byte[][] board, List<PositionedTile> tiles) {
+        super(board, tiles, MAX_KEY);
     }
 
     @Override
@@ -66,8 +66,8 @@ public class DefaultBoard extends AbstractBoard {
     }
 
     @Override
-    protected Board createNewBoard(byte[][] newBoard, List<Tile> newTiles, List<byte[][]> newTileCumBoards) {
-        return new DefaultBoard(newBoard, newTiles, newTileCumBoards);
+    protected Board createNewBoard(byte[][] newBoard, List<PositionedTile> newTiles) {
+        return new DefaultBoard(newBoard, newTiles);
     }
 
     @Override

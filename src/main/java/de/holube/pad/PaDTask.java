@@ -1,6 +1,7 @@
 package de.holube.pad;
 
 import de.holube.pad.model.Board;
+import de.holube.pad.model.PositionedTile;
 import de.holube.pad.model.Tile;
 import de.holube.pad.solution.SolutionHandlerFactory;
 
@@ -35,11 +36,11 @@ public class PaDTask extends RecursiveTask<Boolean> {
             return false;
         }
 
-        List<byte[][]> tileCumBoards = tiles[tileIndex].getAllPositions();
+        List<PositionedTile> positionedTiles = tiles[tileIndex].getAllPositions();
         List<PaDTask> nextTasks = new ArrayList<>();
 
-        for (byte[][] tileCumBoard : tileCumBoards) {
-            Board potentialNextBoard = board.addTile(tileCumBoard, tiles[tileIndex]);
+        for (PositionedTile positionedTile : positionedTiles) {
+            Board potentialNextBoard = board.addTile(positionedTile);
             if (potentialNextBoard != null) {
                 nextTasks.add(new PaDTask(potentialNextBoard, tiles, tileIndex + 1, shf));
             }

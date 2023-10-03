@@ -23,11 +23,9 @@ public interface Board {
 
     boolean isValidSolution();
 
-    Board addTile(byte[][] tileBoard, Tile tile);
+    Board addTile(PositionedTile positionedTile);
 
-    List<Tile> getTiles();
-
-    List<byte[][]> getTileCumArrays();
+    List<PositionedTile> getPositionedTiles();
 
     String getPath();
 

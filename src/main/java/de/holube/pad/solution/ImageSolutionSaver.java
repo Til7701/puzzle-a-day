@@ -1,7 +1,7 @@
 package de.holube.pad.solution;
 
 import de.holube.pad.model.Board;
-import de.holube.pad.model.Tile;
+import de.holube.pad.model.PositionedTile;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -30,13 +30,11 @@ public class ImageSolutionSaver implements SolutionSaver {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics2D = image.createGraphics();
 
-        java.util.List<Tile> tileBoards = board.getTiles();
-        List<byte[][]> tileCumArrays = board.getTileCumArrays();
+        List<PositionedTile> tileBoards = board.getPositionedTiles();
 
-        for (int i = 0; i < tileBoards.size(); i++) {
-            Tile tile = tileBoards.get(i);
-            Color color = tile.getColor();
-            byte[][] tileCumArray = tileCumArrays.get(i);
+        for (PositionedTile tile : tileBoards) {
+            Color color = tile.getParent().getColor();
+            byte[][] tileCumArray = tile.getCumulativeBoard();
             graphics2D.setColor(color);
 
             for (int j = 0; j < tileCumArray.length; j++) {

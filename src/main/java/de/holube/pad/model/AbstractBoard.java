@@ -11,19 +11,16 @@ import java.util.List;
 @EqualsAndHashCode
 public abstract class AbstractBoard implements Board {
 
-
+    @Getter
     protected final byte[][] board;
     @Getter
-    protected final List<Tile> tiles = new ArrayList<>();
+    protected final List<PositionedTile> positionedTiles = new ArrayList<>();
     @Getter
-    protected final List<byte[][]> tileCumArrays = new ArrayList<>();
-    @Getter
-    protected SolutionStore solutionStore;
+    protected final SolutionStore solutionStore;
 
-    public AbstractBoard(byte[][] board, List<Tile> tiles, List<byte[][]> tileCumArrays, byte maxKey) {
+    public AbstractBoard(byte[][] board, List<PositionedTile> positionedTiles, byte maxKey) {
         this.board = board;
-        this.tiles.addAll(tiles);
-        this.tileCumArrays.addAll(tileCumArrays);
+        this.positionedTiles.addAll(positionedTiles);
         this.solutionStore = new SolutionStore(maxKey);
     }
 
@@ -31,39 +28,26 @@ public abstract class AbstractBoard implements Board {
         return Board.isValid(getBoard());
     }
 
-    public byte[][] getBoard() {
-        byte[][] copy = new byte[board.length][board[0].length];
-
-        for (int i = 0; i < board.length; i++) {
-            System.arraycopy(board[i], 0, copy[i], 0, board[i].length);
-        }
-
-        return copy;
-    }
-
-    public Board addTile(byte[][] tileCumBoard, Tile tile) {
+    public Board addTile(PositionedTile positionedTile) {
         byte[][] newBoard = new byte[board.length][board[0].length];
 
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
-                newBoard[i][j] = (byte) (board[i][j] + tileCumBoard[i][j]);
+                newBoard[i][j] = (byte) (board[i][j] + positionedTile.getCumulativeBoard()[i][j]);
                 if (newBoard[i][j] >= 2) {
                     return null;
                 }
             }
         }
 
-        List<Tile> newTiles = new ArrayList<>(tiles.size() + 1);
-        newTiles.addAll(tiles);
-        newTiles.add(tile);
-        List<byte[][]> newTileCumArrays = new ArrayList<>(tileCumArrays.size() + 1);
-        newTileCumArrays.addAll(tileCumArrays);
-        newTileCumArrays.add(tileCumBoard);
+        List<PositionedTile> newTiles = new ArrayList<>(positionedTiles.size() + 1);
+        newTiles.addAll(positionedTiles);
+        newTiles.add(positionedTile);
 
-        return createNewBoard(newBoard, newTiles, newTileCumArrays);
+        return createNewBoard(newBoard, newTiles);
     }
 
-    protected abstract Board createNewBoard(byte[][] newBoard, List<Tile> newTiles, List<byte[][]> newTileCumBoards);
+    protected abstract Board createNewBoard(byte[][] newBoard, List<PositionedTile> newPositionedTiles);
 
     @Override
     public boolean isValidSolution() {

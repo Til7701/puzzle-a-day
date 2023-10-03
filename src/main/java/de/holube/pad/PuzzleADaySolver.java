@@ -1,6 +1,7 @@
 package de.holube.pad;
 
 import de.holube.pad.model.Board;
+import de.holube.pad.model.PositionedTile;
 import de.holube.pad.model.Tile;
 import de.holube.pad.solution.SolutionHandlerFactory;
 
@@ -27,11 +28,11 @@ public class PuzzleADaySolver {
     }
 
     public void solve() {
-        List<byte[][]> tileCumBoards = tiles[0].getAllPositions();
+        List<PositionedTile> tileCumBoards = tiles[0].getAllPositions();
         List<PaDTask> tasks = new ArrayList<>();
 
-        for (byte[][] tileCumBoard : tileCumBoards) {
-            Board potentialNextBoard = board.addTile(tileCumBoard, tiles[0]);
+        for (PositionedTile positionedTile : tileCumBoards) {
+            Board potentialNextBoard = board.addTile(positionedTile);
             if (potentialNextBoard != null) {
                 tasks.add(new PaDTask(potentialNextBoard, tiles, 1, shf));
             }

@@ -46,16 +46,16 @@ public class YearBoard extends AbstractBoard {
     }
 
     public YearBoard() {
-        this(BOARD_LAYOUT, new ArrayList<>(), new ArrayList<>());
+        this(BOARD_LAYOUT, new ArrayList<>());
     }
 
-    public YearBoard(byte[][] board, List<Tile> tiles, List<byte[][]> tileCumArrays) {
-        super(board, tiles, tileCumArrays, MAX_KEY);
+    public YearBoard(byte[][] board, List<PositionedTile> tiles) {
+        super(board, tiles, MAX_KEY);
     }
 
     @Override
-    protected Board createNewBoard(byte[][] newBoard, List<Tile> newTiles, List<byte[][]> newTileCumBoards) {
-        return new YearBoard(newBoard, newTiles, newTileCumBoards);
+    protected Board createNewBoard(byte[][] newBoard, List<PositionedTile> newTiles) {
+        return new YearBoard(newBoard, newTiles);
     }
 
     @Override
