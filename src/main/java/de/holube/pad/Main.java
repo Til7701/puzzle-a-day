@@ -10,6 +10,7 @@ import de.holube.pad.stats.Stats;
 import de.holube.pad.util.*;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -58,9 +59,9 @@ public class Main {
             return;
         }
 
-        long totalOptions = 1;
+        BigInteger totalOptions = new BigInteger(String.valueOf(1));
         for (Tile tile : tiles) {
-            totalOptions *= tile.getAllPositions().length;
+            totalOptions = totalOptions.multiply(BigInteger.valueOf(tile.getAllPositions().length));
         }
         System.out.println("Total number of possible boards: " + totalOptions);
 
