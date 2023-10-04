@@ -4,22 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9576cb07-6120-490d-8823-4a149303a815" name="Changes" comment="print config at the beginning and in the stats">
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/PositionedTileAmountException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/PositionedTileIdException.java" afterDir="false" />
+    <list default="true" id="9576cb07-6120-490d-8823-4a149303a815" name="Changes" comment="fixed">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/PaDTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/PaDTask.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/PuzzleADaySolver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/PuzzleADaySolver.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/AbstractBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/AbstractBoard.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/Board.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/DefaultBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/DefaultBoard.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/PositionedTile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/PositionedTile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/Tile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/Tile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/YearBoard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/model/YearBoard.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/ImageSolutionSaver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/solution/ImageSolutionSaver.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/PlausibilityCheck.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/PlausibilityCheck.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/SolutionStore.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/holube/pad/util/SolutionStore.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -161,7 +148,8 @@
       <workItem from="1695936587417" duration="31000" />
       <workItem from="1696176604590" duration="2642000" />
       <workItem from="1696320169402" duration="2537000" />
-      <workItem from="1696348251724" duration="5250000" />
+      <workItem from="1696348251724" duration="7369000" />
+      <workItem from="1696411887595" duration="2139000" />
     </task>
     <task id="LOCAL-00001" summary="rotation">
       <created>1674643471145</created>
@@ -359,7 +347,21 @@
       <option name="project" value="LOCAL" />
       <updated>1696321662720</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="restructure 2d PositionedTile array not working">
+      <created>1696353727625</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1696353727625</updated>
+    </task>
+    <task id="LOCAL-00030" summary="fixed">
+      <created>1696354881285</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1696354881285</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -389,9 +391,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="placements" />
-    <MESSAGE value="stuff" />
-    <MESSAGE value="fettig" />
     <MESSAGE value="error correction" />
     <MESSAGE value="hand over output folder creation to first solution" />
     <MESSAGE value="model package" />
@@ -414,23 +413,26 @@
     <MESSAGE value="total options as long" />
     <MESSAGE value="PositionedTile" />
     <MESSAGE value="print config at the beginning and in the stats" />
-    <option name="LAST_COMMIT_MESSAGE" value="print config at the beginning and in the stats" />
+    <MESSAGE value="restructure 2d PositionedTile array" />
+    <MESSAGE value="restructure 2d PositionedTile array not working" />
+    <MESSAGE value="fixed" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/de/holube/pad/Main.java</url>
-          <line>47</line>
-          <option name="timeStamp" value="3" />
+          <url>file://$PROJECT_DIR$/src/main/java/de/holube/pad/model/AbstractBoard.java</url>
+          <line>110</line>
+          <option name="timeStamp" value="23" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/de/holube/pad/model/AbstractBoard.java</url>
+          <line>104</line>
+          <option name="timeStamp" value="24" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
-    <watches-manager>
-      <configuration name="Application">
-        <watch expression="positionedTile" />
-      </configuration>
-    </watches-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

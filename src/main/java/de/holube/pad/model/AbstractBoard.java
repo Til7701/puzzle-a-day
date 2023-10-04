@@ -16,10 +16,22 @@ public abstract class AbstractBoard implements Board {
     @Getter
     protected final SolutionStore solutionStore;
 
+    private transient final int[][] tmpBoard;
+
     public AbstractBoard(int[] tileIndices, PositionedTile[][] positionedTiles, int maxKey) {
         this.tileIndices = tileIndices;
         this.positionedTiles = positionedTiles;
         this.solutionStore = new SolutionStore(maxKey);
+
+        tmpBoard = new int[getBoardLayout().length][getBoardLayout()[0].length];
+        for (int i = 0; i < tmpBoard.length; i++) {
+            for (int j = 0; j < tmpBoard[0].length; j++) {
+                tmpBoard[i][j] = getBoardLayout()[i][j];
+                for (int k = 0; k < tileIndices.length; k++) {
+                    tmpBoard[i][j] += positionedTiles[k][tileIndices[k]].getCumulativeBoard()[i][j];
+                }
+            }
+        }
     }
 
     public boolean isValid() {
@@ -39,18 +51,18 @@ public abstract class AbstractBoard implements Board {
     }
 
     public Board addTile(PositionedTile positionedTile) {
-        int[] newTileIndices = new int[tileIndices.length + 1];
-
-        System.arraycopy(tileIndices, 0, newTileIndices, 0, tileIndices.length);
-        newTileIndices[newTileIndices.length - 1] = positionedTile.getId();
-
         for (int i = 0; i < getBoardLayout().length; i++) {
             for (int j = 0; j < getBoardLayout()[0].length; j++) {
-                if (getValueOfIndex(i, j, newTileIndices) >= 2) {
+                int tmp = tmpBoard[i][j] + positionedTile.getCumulativeBoard()[i][j];
+                if (tmp >= 2) {
                     return null;
                 }
             }
         }
+
+        int[] newTileIndices = new int[tileIndices.length + 1];
+        System.arraycopy(tileIndices, 0, newTileIndices, 0, tileIndices.length);
+        newTileIndices[newTileIndices.length - 1] = positionedTile.getId();
 
         return createNewBoard(newTileIndices, positionedTiles);
     }
@@ -82,13 +94,12 @@ public abstract class AbstractBoard implements Board {
     public boolean isValidSolution() {
         for (int i = 0; i < getBoardLayout().length; i++) {
             for (int j = 0; j < getBoardLayout()[0].length; j++) {
-                int tmp = getValueOfIndex(i, j);
-                if (tmp == 0) {
+                if (tmpBoard[i][j] == 0) {
                     if (!solutionStore.add(getBoardMeaning()[0][i][j], getBoardMeaning()[1][i][j])) {
                         solutionStore.reset();
                         return false;
                     }
-                } else if (tmp > 1) {
+                } else if (tmpBoard[i][j] > 1) {
                     solutionStore.reset();
                     return false;
                 }
