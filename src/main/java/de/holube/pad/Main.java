@@ -19,7 +19,7 @@ public class Main {
       final  Config config = loadConfig();
         final int parallelism = config.getParallelism();
 
-        Board board = new BoardImpl(config.getBoard().getLAYOUT(), config.getBoard().getMEANING());
+        Board board = new Board(config.getBoard().getLAYOUT(), config.getBoard().getMEANING());
 
         final SolutionHandler solutionHandler = new SolutionHandler(config.isSaveSolutions(), config.isSaveImages());
         final Stats stats = solutionHandler.getStats();
@@ -27,7 +27,7 @@ public class Main {
         final List<Tile> tiles = createTiles(config, board);
         final PositionedTile[][] positionedTiles = createPositionedTiles(tiles);
 
-        board = new BoardImpl(positionedTiles, config.getBoard().getLAYOUT(), config.getBoard().getMEANING());
+        board = new Board(positionedTiles, config.getBoard().getLAYOUT(), config.getBoard().getMEANING());
 
         if (!PlausibilityCheck.check(board, tiles)) {
             System.out.println("Not Plausible!!");

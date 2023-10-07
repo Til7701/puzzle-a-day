@@ -3,7 +3,6 @@ package de.holube.pad.solution;
 import de.holube.pad.model.Board;
 import de.holube.pad.stats.DefaultStats;
 import de.holube.pad.stats.Stats;
-import de.holube.pad.stats.YearStats;
 import lombok.Getter;
 
 import java.io.IOException;
