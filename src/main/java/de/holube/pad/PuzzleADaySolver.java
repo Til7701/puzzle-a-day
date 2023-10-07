@@ -2,7 +2,7 @@ package de.holube.pad;
 
 import de.holube.pad.model.Board;
 import de.holube.pad.model.PositionedTile;
-import de.holube.pad.solution.SolutionHandlerFactory;
+import de.holube.pad.solution.SolutionHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +16,12 @@ public class PuzzleADaySolver {
 
     private final ForkJoinPool pool;
 
-    private final SolutionHandlerFactory shf;
+    private final SolutionHandler solutionHandler;
 
-    public PuzzleADaySolver(Board board, PositionedTile[][] positionedTiles, SolutionHandlerFactory shf, int parallelism) {
+    public PuzzleADaySolver(Board board, PositionedTile[][] positionedTiles, SolutionHandler solutionHandler, int parallelism) {
         this.board = board;
         this.positionedTiles = positionedTiles;
-        this.shf = shf;
+        this.solutionHandler = solutionHandler;
         this.pool = new ForkJoinPool(parallelism);
         System.out.println("Parallelism: " + parallelism);
     }
@@ -32,7 +32,7 @@ public class PuzzleADaySolver {
         for (PositionedTile positionedTile : positionedTiles[0]) {
             Board potentialNextBoard = board.addTile(positionedTile);
             if (potentialNextBoard != null) {
-                tasks.add(new PaDTask(potentialNextBoard, positionedTiles, 1, shf));
+                tasks.add(new PaDTask(potentialNextBoard, positionedTiles, 1, solutionHandler));
             }
         }
 

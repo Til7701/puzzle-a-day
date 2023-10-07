@@ -4,7 +4,7 @@ import de.holube.pad.model.Board;
 
 import java.io.IOException;
 
-public interface SolutionSaver {
+interface SolutionHandlerComponent {
 
     void save(Board board);
 

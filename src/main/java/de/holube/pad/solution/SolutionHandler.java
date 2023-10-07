@@ -1,12 +1,42 @@
 package de.holube.pad.solution;
 
 import de.holube.pad.model.Board;
+import de.holube.pad.stats.DefaultStats;
 import de.holube.pad.stats.Stats;
+import de.holube.pad.stats.YearStats;
+import lombok.Getter;
 
-public interface SolutionHandler {
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-    void handleSolution(Board board);
+@Getter
+public class SolutionHandler {
 
-    Stats getStats();
+    private final List<SolutionHandlerComponent> components = new ArrayList<>();
+
+    private final Stats stats;
+
+    public SolutionHandler(boolean saveToFile, boolean saveImages) {
+        stats = new DefaultStats();
+
+        if (saveToFile)
+            components.add(new FileSolutionSaver());
+        if (saveImages)
+            components.add(new ImageSolutionSaver());
+    }
+
+    public void handleSolution(Board board) {
+        for(SolutionHandlerComponent component : components) {
+            component.save(board);
+        }
+        stats.addSolution(board);
+    }
+
+    public void close() throws IOException {
+        for(SolutionHandlerComponent component : components) {
+            component.close();
+        }
+    }
 
 }

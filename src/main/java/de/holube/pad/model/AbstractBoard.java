@@ -9,6 +9,10 @@ import java.util.Arrays;
 @EqualsAndHashCode
 public abstract class AbstractBoard implements Board {
 
+    private final int[][] BOARD_LAYOUT;
+    private final int[][][] BOARD_MEANING;
+
+
     @Getter
     protected final int[] tileIndices;
 
@@ -18,10 +22,12 @@ public abstract class AbstractBoard implements Board {
 
     private transient final int[][] tmpBoard;
 
-    public AbstractBoard(int[] tileIndices, PositionedTile[][] positionedTiles, int maxKey) {
+    public AbstractBoard(int[] tileIndices, PositionedTile[][] positionedTiles, int maxKey, int[][] boardLayout, int[][][] boardMeaning) {
         this.tileIndices = tileIndices;
         this.positionedTiles = positionedTiles;
         this.solutionStore = new SolutionStore(maxKey);
+        this.BOARD_LAYOUT = boardLayout;
+        this.BOARD_MEANING = boardMeaning;
 
         tmpBoard = new int[getBoardLayout().length][getBoardLayout()[0].length];
         for (int i = 0; i < tmpBoard.length; i++) {
@@ -147,6 +153,16 @@ public abstract class AbstractBoard implements Board {
         }
 
         return builder.toString();*/
+    }
+
+    @Override
+    public int[][] getBoardLayout() {
+        return BOARD_LAYOUT;
+    }
+
+    @Override
+    public int[][][] getBoardMeaning() {
+        return BOARD_MEANING;
     }
 
 }

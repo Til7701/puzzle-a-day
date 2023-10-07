@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ImageSolutionSaver implements SolutionSaver {
+public class ImageSolutionSaver implements SolutionHandlerComponent {
 
     protected static final String OUTPUT_FOLDER = "output";
     private static final int IMAGE_SIZE_PER_CELL = 50;
@@ -67,7 +67,7 @@ public class ImageSolutionSaver implements SolutionSaver {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
 
     }
 

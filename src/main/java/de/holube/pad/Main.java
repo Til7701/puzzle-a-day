@@ -2,10 +2,7 @@ package de.holube.pad;
 
 import com.google.gson.Gson;
 import de.holube.pad.model.*;
-import de.holube.pad.solution.AbstractSolutionHandler;
-import de.holube.pad.solution.DefaultSolutionHandlerFactory;
-import de.holube.pad.solution.SolutionHandlerFactory;
-import de.holube.pad.solution.YearSolutionHandlerFactory;
+import de.holube.pad.solution.*;
 import de.holube.pad.stats.Stats;
 import de.holube.pad.util.*;
 
@@ -18,27 +15,65 @@ import java.util.List;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException, PositionedTileIdException, PositionedTileAmountException {
-        String json = Files.readString(Path.of("config.json"));
-        Gson gson = new Gson();
-        Config config = gson.fromJson(json, Config.class);
-        System.out.println("Config: \n" + json);
+    public static void main(String[] args) throws IOException, PositionedTileIdException {
+      final  Config config = loadConfig();
+        final int parallelism = config.getParallelism();
 
-        Board board = switch (config.TARGET) {
-            case DEFAULT -> new DefaultBoard();
-            case YEAR -> new YearBoard();
-        };
-        final SolutionHandlerFactory shf = switch (config.TARGET) {
-            case DEFAULT -> DefaultSolutionHandlerFactory.get();
-            case YEAR -> YearSolutionHandlerFactory.get();
-        };
-        final Stats stats = shf.create().getStats();
+        Board board = new BoardImpl(config.getBoard().getLAYOUT(), config.getBoard().getMEANING());
 
-        final List<Tile> tiles = new ArrayList<>();
-        for (byte i = 0; i < config.ACTIVE_TILES.size(); i++) {
-            tiles.add(new Tile(config.TILES.get(config.ACTIVE_TILES.get(i)), config.ACTIVE_TILES.get(i), i, RandomColor.getBright(), board));
+        final SolutionHandler solutionHandler = new SolutionHandler(config.isSaveSolutions(), config.isSaveImages());
+        final Stats stats = solutionHandler.getStats();
+
+        final List<Tile> tiles = createTiles(config, board);
+        final PositionedTile[][] positionedTiles = createPositionedTiles(tiles);
+
+        board = new BoardImpl(positionedTiles, config.getBoard().getLAYOUT(), config.getBoard().getMEANING());
+
+        if (!PlausibilityCheck.check(board, tiles)) {
+            System.out.println("Not Plausible!!");
+            return;
         }
 
+        calculateTotalOptions(tiles);
+
+        Thread printingHook = new Thread(() -> {
+            stats.calculateStats();
+            stats.printStats();
+            stats.save(config.getJsonSource());
+        });
+        Runtime.getRuntime().addShutdownHook(printingHook);
+        final long startTime = System.currentTimeMillis();
+        final PuzzleADaySolver padSolver = new PuzzleADaySolver(board, positionedTiles, solutionHandler, parallelism);
+        padSolver.solve();
+        final long endTime = System.currentTimeMillis();
+        final long time = endTime - startTime;
+        System.out.println("done in: " + time + "ms");
+
+        solutionHandler.close();
+
+        //Distance distance = new Distance(SolutionHandler.getStats().getResults());
+        //distance.calculateDistances();
+
+    }
+
+    private static Config loadConfig() throws IOException {
+        String json = Files.readString(Path.of("config.json"));
+        System.out.println("Read Config: \n" + json);
+        Gson gson = new Gson();
+        Config config = gson.fromJson(json, Config.class);
+        config.setJsonSource(json);
+        return config;
+    }
+
+    private static List<Tile> createTiles(Config config, Board board) {
+        final List<Tile> tiles = new ArrayList<>();
+        for (byte i = 0; i < config.getTiles().size(); i++) {
+            tiles.add(new Tile(config.getTiles().get(i), i, RandomColor.getBright(), board));
+        }
+        return tiles;
+    }
+
+    private static PositionedTile[][] createPositionedTiles(List<Tile> tiles) throws PositionedTileIdException {
         final PositionedTile[][] positionedTiles = new PositionedTile[tiles.size()][];
         for (int i = 0; i < tiles.size(); i++) {
             PositionedTile[] positionedTilesFromTile = tiles.get(i).getAllPositions();
@@ -49,45 +84,15 @@ public class Main {
                     throw new PositionedTileIdException();
             }
         }
+        return positionedTiles;
+    }
 
-        board = switch (config.TARGET) {
-            case DEFAULT -> new DefaultBoard(positionedTiles);
-            case YEAR -> new YearBoard(positionedTiles);
-        };
-        if (!PlausibilityCheck.check(board, tiles)) {
-            System.out.println("Not Plausible!!");
-            return;
-        }
-
+    private static void calculateTotalOptions(List<Tile> tiles) {
         BigInteger totalOptions = new BigInteger(String.valueOf(1));
         for (Tile tile : tiles) {
             totalOptions = totalOptions.multiply(BigInteger.valueOf(tile.getAllPositions().length));
         }
         System.out.println("Total number of possible boards: " + totalOptions);
-
-        final int parallelism = config.PARALLELISM;
-        Thread printingHook = new Thread(() -> {
-            stats.calculateStats();
-            stats.printStats();
-            stats.save(json);
-        });
-        Runtime.getRuntime().addShutdownHook(printingHook);
-        final long startTime = System.currentTimeMillis();
-        final PuzzleADaySolver padSolver = new PuzzleADaySolver(board, positionedTiles, shf, parallelism);
-        padSolver.solve();
-        final long endTime = System.currentTimeMillis();
-        final long time = endTime - startTime;
-        System.out.println("done in: " + time + "ms");
-
-        stats.calculateStats();
-        stats.printStats();
-        stats.save(json);
-
-        AbstractSolutionHandler.getSaver().close();
-
-        //Distance distance = new Distance(SolutionHandler.getStats().getResults());
-        //distance.calculateDistances();
-
     }
 
 }

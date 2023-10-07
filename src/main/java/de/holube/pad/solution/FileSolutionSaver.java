@@ -9,7 +9,7 @@ import java.io.Writer;
 import java.util.Date;
 import java.util.concurrent.Semaphore;
 
-public class FileSolutionSaver implements SolutionSaver {
+public class FileSolutionSaver implements SolutionHandlerComponent {
 
     private static final Writer output;
     private static final Semaphore mutex = new Semaphore(1);

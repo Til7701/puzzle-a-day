@@ -41,7 +41,7 @@ public abstract class AbstractStats implements Stats {
             int[] values = board.getSolutionStore().getValues();
             addToDaysArray(values);
             totalSolutions++;
-            if (totalSolutions % 100 == 0) {
+            if (totalSolutions % 1000 == 0) {
                 System.out.println("Solutions received: " + totalSolutions);
             }
         } catch (InterruptedException e) {

@@ -9,8 +9,6 @@ import java.util.*;
 public class Tile {
 
     @Getter
-    private final String name;
-    @Getter
     private final int tileNumber;
     @Getter
     private final Color color;
@@ -22,12 +20,11 @@ public class Tile {
 
     private int positionedTileCounter = 0;
 
-    public Tile(int[][] base, String name, int tileNumber, Color color, Board board) {
-        this.name = name;
+    public Tile(int[][] base, int tileNumber, Color color, Board board) {
         this.tileNumber = tileNumber;
         this.color = color;
         this.base = base;
-        System.out.println("Creating Tile: " + name);
+        System.out.println("Creating Tile: " + tileNumber);
         print(base);
         List<int[][]> baseRotated = getAllRotations(base);
         System.out.println("Number of Rotations: " + baseRotated.size());
