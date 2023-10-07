@@ -9,18 +9,20 @@ import java.util.Arrays;
 @EqualsAndHashCode
 public class Board {
 
-    private final int[][] BOARD_LAYOUT;
-    private final int[][][] BOARD_MEANING;
-
-
     @Getter
     protected final int[] tileIndices;
 
     protected final PositionedTile[][] positionedTiles;
+
     @Getter
     protected final SolutionStore solutionStore;
 
-    private transient final int[][] tmpBoard;
+    @Getter
+    private final int[][] boardLayout;
+    @Getter
+    private final int[][][] boardMeaning;
+
+    private final int[][] tmpBoard;
 
     public Board(int[][] boardLayout, int[][][] boardMeaning) {
         this(new int[0], new PositionedTile[0][0], boardLayout, boardMeaning);
@@ -41,13 +43,13 @@ public class Board {
         this.tileIndices = tileIndices;
         this.positionedTiles = positionedTiles;
         this.solutionStore = new SolutionStore(maxKey);
-        this.BOARD_LAYOUT = boardLayout;
-        this.BOARD_MEANING = boardMeaning;
+        this.boardLayout = boardLayout;
+        this.boardMeaning = boardMeaning;
 
-        tmpBoard = new int[getBoardLayout().length][getBoardLayout()[0].length];
+        tmpBoard = new int[boardLayout.length][boardLayout[0].length];
         for (int i = 0; i < tmpBoard.length; i++) {
             for (int j = 0; j < tmpBoard[0].length; j++) {
-                tmpBoard[i][j] = getBoardLayout()[i][j];
+                tmpBoard[i][j] = boardLayout[i][j];
                 for (int k = 0; k < tileIndices.length; k++) {
                     tmpBoard[i][j] += positionedTiles[k][tileIndices[k]].getCumulativeBoard()[i][j];
                 }
@@ -55,12 +57,22 @@ public class Board {
         }
     }
 
+    public static boolean isValid(int[][] board) {
+        for (int[] row : board) {
+            for (int cell : row) {
+                if (cell > 1)
+                    return false;
+            }
+        }
+        return true;
+    }
+
     private int getValueOfIndex(int i, int j) {
         return getValueOfIndex(i, j, tileIndices);
     }
 
     private int getValueOfIndex(int i, int j, int[] tileIndices) {
-        int tmp = getBoardLayout()[i][j];
+        int tmp = boardLayout[i][j];
         for (int k = 0; k < tileIndices.length; k++) {
             tmp += positionedTiles[k][tileIndices[k]].getCumulativeBoard()[i][j];
         }
@@ -68,8 +80,8 @@ public class Board {
     }
 
     public Board addTile(PositionedTile positionedTile) {
-        for (int i = 0; i < getBoardLayout().length; i++) {
-            for (int j = 0; j < getBoardLayout()[0].length; j++) {
+        for (int i = 0; i < boardLayout.length; i++) {
+            for (int j = 0; j < boardLayout[0].length; j++) {
                 int tmp = tmpBoard[i][j] + positionedTile.getCumulativeBoard()[i][j];
                 if (tmp >= 2) {
                     return null;
@@ -81,18 +93,19 @@ public class Board {
         System.arraycopy(tileIndices, 0, newTileIndices, 0, tileIndices.length);
         newTileIndices[newTileIndices.length - 1] = positionedTile.getId();
 
-        return new Board(newTileIndices, positionedTiles, getMaxKey(), BOARD_LAYOUT, BOARD_MEANING);
+        return new Board(newTileIndices, positionedTiles, boardLayout, boardMeaning);
     }
 
     public int[][] getBoard() {
-        final int[][] board = new int[getBoardLayout().length][getBoardLayout()[0].length];
-
+        final int[][] board = new int[boardLayout.length][boardLayout[0].length];
         for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                board[i][j] = getValueOfIndex(i, j);
+            for (int j = 0; j < board[0].length; j++) {
+                board[i][j] = boardLayout[i][j];
+                for (int k = 0; k < tileIndices.length; k++) {
+                    board[i][j] += positionedTiles[k][tileIndices[k]].getCumulativeBoard()[i][j];
+                }
             }
         }
-
         return board;
     }
 
@@ -105,22 +118,11 @@ public class Board {
         return result;
     }
 
-    public static boolean isValid(int[][] board) {
-        for (int[] row : board) {
-            for (int cell : row) {
-                if (cell > 1)
-                    return false;
-            }
-        }
-
-        return true;
-    }
-
     public boolean isValidSolution() {
-        for (int i = 0; i < getBoardLayout().length; i++) {
-            for (int j = 0; j < getBoardLayout()[0].length; j++) {
+        for (int i = 0; i < boardLayout.length; i++) {
+            for (int j = 0; j < boardLayout[0].length; j++) {
                 if (tmpBoard[i][j] == 0) {
-                    if (!solutionStore.add(getBoardMeaning()[0][i][j], getBoardMeaning()[1][i][j])) {
+                    if (!solutionStore.add(boardMeaning[0][i][j], boardMeaning[1][i][j])) {
                         solutionStore.reset();
                         return false;
                     }
@@ -160,30 +162,12 @@ public class Board {
 
     @Override
     public String toString() {
-        //StringBuilder builder = new StringBuilder();
-
-        SolutionStore solutionStore = getSolutionStore();
-        return Arrays.toString(solutionStore.getValues());
-        /* builder.append(Arrays.toString(solutionStore.getValues())).append("&");
-
-        List<int[][]> tileArrays = getTileCumArrays();
-        for (int[][] array : tileArrays) {
-            builder.append(Arrays.deepToString(array)).append("#");
-        }
-
-        return builder.toString();*/
-    }
-
-    public int[][] getBoardLayout() {
-        return BOARD_LAYOUT;
-    }
-
-    public int[][][] getBoardMeaning() {
-        return BOARD_MEANING;
+        String result = Arrays.toString(tileIndices);
+        return result.substring(1, result.length() - 1);
     }
 
     public int getMaxKey() {
-        return Arrays.stream(getBoardMeaning()[0])
+        return Arrays.stream(boardMeaning[0])
                 .flatMapToInt(Arrays::stream)
                 .summaryStatistics().getMax();
     }

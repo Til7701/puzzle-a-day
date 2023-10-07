@@ -14,44 +14,35 @@ public class Config {
     @Getter
     @Setter
     private String jsonSource;
-    private final String ACTIVE_BOARD;
-    private final Map<String, BoardConfig> BOARDS;
-    private final List<String> ACTIVE_TILES;
-    private final Map<String, int[][]> TILES;
+    private final String activeBoard;
+    private final Map<String, BoardConfig> boards;
+    private final List<String> activeTiles;
+    private final Map<String, int[][]> tiles;
 
-    private final boolean SAVE_SOLUTIONS;
-    private final boolean SAVE_IMAGES;
-    private final int PARALLELISM;
+    @Getter
+    private final boolean saveSolutions;
+    @Getter
+    private final boolean saveImages;
+    @Getter
+    private final int parallelism;
 
     public BoardConfig getBoard() {
-        return BOARDS.get(ACTIVE_BOARD);
+        return boards.get(activeBoard);
     }
 
     public List<int[][]> getTiles() {
-     return TILES.entrySet().stream()
-        .filter(e -> ACTIVE_TILES.contains(e.getKey()))
+     return tiles.entrySet().stream()
+        .filter(e -> activeTiles.contains(e.getKey()))
         .map(Map.Entry::getValue)
         .toList();
-    }
-
-    public boolean isSaveSolutions() {
-        return SAVE_SOLUTIONS;
-    }
-
-    public boolean isSaveImages() {
-        return SAVE_IMAGES;
-    }
-
-    public int getParallelism() {
-        return PARALLELISM;
     }
 
     @Getter
     public static class BoardConfig {
 
-        private int[][] LAYOUT;
+        private int[][] layout;
 
-        private int[][][] MEANING;
+        private int[][][] meaning;
 
     }
 

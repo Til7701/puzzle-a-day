@@ -2,9 +2,12 @@ package de.holube.pad.util;
 
 import de.holube.pad.model.Board;
 import de.holube.pad.model.Tile;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PlausibilityCheck {
 
     public static boolean check(Board board, List<Tile> tiles) {

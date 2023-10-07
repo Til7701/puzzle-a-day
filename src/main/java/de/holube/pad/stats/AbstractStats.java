@@ -34,10 +34,6 @@ public abstract class AbstractStats implements Stats {
     public void addSolution(Board board) {
         try {
             semaphore.acquire();
-            /*if (results.contains(board)) {
-                System.out.println("Duplicate detected! Month: " + board.getMonth() + " Day: " + board.getDay());
-            }*/
-            //results.add(board);
             int[] values = board.getSolutionStore().getValues();
             addToDaysArray(values);
             totalSolutions++;

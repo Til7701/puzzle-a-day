@@ -23,7 +23,7 @@ public class ImageSolutionSaver implements SolutionHandlerComponent {
     }
 
     protected BufferedImage createImage(Board board) {
-        int[][] array = board.getBoard();
+        int[][] array = board.getBoardLayout();
         int height = IMAGE_SIZE_PER_CELL * array.length;
         int width = IMAGE_SIZE_PER_CELL * array[0].length;
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -68,7 +68,7 @@ public class ImageSolutionSaver implements SolutionHandlerComponent {
 
     @Override
     public void close() {
-
+        // not needed
     }
 
 }

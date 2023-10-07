@@ -1,10 +1,15 @@
 package de.holube.pad;
 
 import com.google.gson.Gson;
-import de.holube.pad.model.*;
-import de.holube.pad.solution.*;
+import de.holube.pad.model.Board;
+import de.holube.pad.model.PositionedTile;
+import de.holube.pad.model.Tile;
+import de.holube.pad.solution.SolutionHandler;
 import de.holube.pad.stats.Stats;
-import de.holube.pad.util.*;
+import de.holube.pad.util.Config;
+import de.holube.pad.util.PlausibilityCheck;
+import de.holube.pad.util.PositionedTileIdException;
+import de.holube.pad.util.RandomColor;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -16,18 +21,17 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) throws IOException, PositionedTileIdException {
-      final  Config config = loadConfig();
+        final Config config = loadConfig();
         final int parallelism = config.getParallelism();
 
-        Board board = new Board(config.getBoard().getLAYOUT(), config.getBoard().getMEANING());
+        Board board = new Board(config.getBoard().getLayout(), config.getBoard().getMeaning());
 
         final SolutionHandler solutionHandler = new SolutionHandler(config.isSaveSolutions(), config.isSaveImages());
-        final Stats stats = solutionHandler.getStats();
 
         final List<Tile> tiles = createTiles(config, board);
         final PositionedTile[][] positionedTiles = createPositionedTiles(tiles);
 
-        board = new Board(positionedTiles, config.getBoard().getLAYOUT(), config.getBoard().getMEANING());
+        board = new Board(positionedTiles, config.getBoard().getLayout(), config.getBoard().getMeaning());
 
         if (!PlausibilityCheck.check(board, tiles)) {
             System.out.println("Not Plausible!!");
@@ -36,12 +40,8 @@ public class Main {
 
         calculateTotalOptions(tiles);
 
-        Thread printingHook = new Thread(() -> {
-            stats.calculateStats();
-            stats.printStats();
-            stats.save(config.getJsonSource());
-        });
-        Runtime.getRuntime().addShutdownHook(printingHook);
+        createShutdownHook(config, solutionHandler.getStats());
+
         final long startTime = System.currentTimeMillis();
         final PuzzleADaySolver padSolver = new PuzzleADaySolver(board, positionedTiles, solutionHandler, parallelism);
         padSolver.solve();
@@ -51,9 +51,10 @@ public class Main {
 
         solutionHandler.close();
 
-        //Distance distance = new Distance(SolutionHandler.getStats().getResults());
-        //distance.calculateDistances();
-
+        Stats stats = solutionHandler.getStats();
+        stats.calculateStats();
+        stats.printStats();
+        stats.save(config.getJsonSource());
     }
 
     private static Config loadConfig() throws IOException {
@@ -93,6 +94,15 @@ public class Main {
             totalOptions = totalOptions.multiply(BigInteger.valueOf(tile.getAllPositions().length));
         }
         System.out.println("Total number of possible boards: " + totalOptions);
+    }
+
+    private static void createShutdownHook(Config config, Stats stats) {
+        Thread hook = new Thread(() -> {
+            stats.calculateStats();
+            stats.printStats();
+            stats.save(config.getJsonSource());
+        });
+        Runtime.getRuntime().addShutdownHook(hook);
     }
 
 }

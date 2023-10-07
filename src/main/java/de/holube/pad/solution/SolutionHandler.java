@@ -26,14 +26,14 @@ public class SolutionHandler {
     }
 
     public void handleSolution(Board board) {
-        for(SolutionHandlerComponent component : components) {
+        for (SolutionHandlerComponent component : components) {
             component.save(board);
         }
         stats.addSolution(board);
     }
 
     public void close() throws IOException {
-        for(SolutionHandlerComponent component : components) {
+        for (SolutionHandlerComponent component : components) {
             component.close();
         }
     }

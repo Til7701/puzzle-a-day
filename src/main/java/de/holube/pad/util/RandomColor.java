@@ -1,8 +1,12 @@
 package de.holube.pad.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.awt.*;
 import java.util.Random;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RandomColor {
 
     private static final Random random = new Random();
