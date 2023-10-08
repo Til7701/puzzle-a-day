@@ -2,7 +2,7 @@
   "activeBoard": "DEFAULT",
   "activeTiles": ["S", "l", "L", "t", "O", "s", "P", "C"],
   "saveSolutions": false,
-  "saveImages": true,
+  "saveImages": false,
   "parallelism": 13,
   "tiles": {
     "S": [

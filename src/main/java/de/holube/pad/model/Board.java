@@ -22,7 +22,7 @@ public class Board {
     @Getter
     private final int[][][] boardMeaning;
 
-    private final int[][] tmpBoard;
+    private final long bitmask;
 
     public Board(int[][] boardLayout, int[][][] boardMeaning) {
         this(new int[0], new PositionedTile[0][0], boardLayout, boardMeaning);
@@ -46,15 +46,11 @@ public class Board {
         this.boardLayout = boardLayout;
         this.boardMeaning = boardMeaning;
 
-        tmpBoard = new int[boardLayout.length][boardLayout[0].length];
-        for (int i = 0; i < tmpBoard.length; i++) {
-            for (int j = 0; j < tmpBoard[0].length; j++) {
-                tmpBoard[i][j] = boardLayout[i][j];
-                for (int k = 0; k < tileIndices.length; k++) {
-                    tmpBoard[i][j] += positionedTiles[k][tileIndices[k]].getCumulativeBoard()[i][j];
-                }
-            }
+        long tmp = 0;
+        for (int i = 0; i < tileIndices.length; i++) {
+            tmp = tmp | positionedTiles[i][tileIndices[i]].getBitmask();
         }
+        this.bitmask = tmp;
     }
 
     public static boolean isValid(int[][] board) {
@@ -80,13 +76,8 @@ public class Board {
     }
 
     public Board addTile(PositionedTile positionedTile) {
-        for (int i = 0; i < boardLayout.length; i++) {
-            for (int j = 0; j < boardLayout[0].length; j++) {
-                int tmp = tmpBoard[i][j] + positionedTile.getCumulativeBoard()[i][j];
-                if (tmp >= 2) {
-                    return null;
-                }
-            }
+        if ((bitmask & positionedTile.getBitmask()) != 0) {
+            return null;
         }
 
         int[] newTileIndices = new int[tileIndices.length + 1];
@@ -119,14 +110,10 @@ public class Board {
     }
 
     public boolean isValidSolution() {
+        int[][] tmpBoard = getBoard();
         for (int i = 0; i < boardLayout.length; i++) {
             for (int j = 0; j < boardLayout[0].length; j++) {
-                if (tmpBoard[i][j] == 0) {
-                    if (!solutionStore.add(boardMeaning[0][i][j], boardMeaning[1][i][j])) {
-                        solutionStore.reset();
-                        return false;
-                    }
-                } else if (tmpBoard[i][j] > 1) {
+                if (tmpBoard[i][j] == 0 && !solutionStore.add(boardMeaning[0][i][j], boardMeaning[1][i][j])) {
                     solutionStore.reset();
                     return false;
                 }

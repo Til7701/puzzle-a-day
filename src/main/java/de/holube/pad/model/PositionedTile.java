@@ -1,5 +1,6 @@
 package de.holube.pad.model;
 
+import de.holube.pad.util.BitMaskUtil;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -11,6 +12,8 @@ public class PositionedTile {
 
     @Getter
     private final int[][] cumulativeBoard;
+    @Getter
+    private final long bitmask;
 
     @Getter
     private final int id;
@@ -22,6 +25,7 @@ public class PositionedTile {
         this.cumulativeBoard = cumulativeBoard;
         this.id = id;
         this.tileNumber = tileNumber;
+        this.bitmask = BitMaskUtil.fromArray(cumulativeBoard);
     }
 
 }
