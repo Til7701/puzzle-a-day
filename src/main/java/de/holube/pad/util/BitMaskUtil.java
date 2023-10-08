@@ -6,21 +6,32 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BitMaskUtil {
 
-    public static long fromArray(int[][] array) {
-        long mask = 0;
+    public static long[] fromArray(int[][] array) {
+        long[] mask = new long[(array.length * array[0].length) / 64];
+        int counter = 0;
+        int index = 0;
         for (int[] row : array) {
             for (int cell : row) {
-                mask = mask << 1;
-                mask = mask | cell;
+                mask[index] = mask[index] << 1;
+                mask[index] = mask[index] | cell;
+                counter++;
+                if (counter == 64) {
+                    counter = 0;
+                    index++;
+                }
             }
         }
         return mask;
     }
 
-    public static int[][] toArray(long bitmask, int rows, int columns) {
-        int[][] result = new int[rows][columns];
-        int relevantLength = rows * columns;
-        long firstBit = 1L << 63;
+    public static int[][] toArray(long[] bitmask, int rows, int columns) {
+        final long firstBit = 1L << 63;
+        final int[][] result = new int[rows][columns];
+        final int relevantLength = rows * columns;
+
+        int counter = 0;
+        int index = 0;
+
         bitmask = bitmask << (64 - relevantLength);
 
         for (int i = 0; i < rows; i++) {
@@ -38,9 +49,9 @@ public class BitMaskUtil {
                 {1, 0, 0},
                 {0, 0, 1}
         };
-        long bitmask = fromArray(array);
+        long[] bitmask = fromArray(array);
 
-        if (bitmask != 33) {
+        if (bitmask[0] != 33) {
             throw new IllegalStateException();
         }
 
