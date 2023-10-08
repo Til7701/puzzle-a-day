@@ -1,6 +1,6 @@
 {
-  "activeBoard": "DEFAULT",
-  "activeTiles": ["S", "l", "L", "t", "O", "s", "P", "C"],
+  "activeBoard": "YEAR",
+  "activeTiles": ["S", "l", "L", "t", "O", "s", "P", "C", "H", "O", "2x", "2"],
   "saveSolutions": false,
   "saveImages": false,
   "parallelism": 13,
