@@ -5,10 +5,11 @@ import de.holube.pad.model.PositionedTile;
 import de.holube.pad.solution.SolutionHandler;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.RecursiveTask;
+import java.util.concurrent.Callable;
 
-public class PaDTask extends RecursiveTask<Boolean> {
+public class PaDTask implements Callable<List<Board>> {
 
     private final Board board;
 
@@ -26,25 +27,23 @@ public class PaDTask extends RecursiveTask<Boolean> {
     }
 
     @Override
-    protected Boolean compute() {
+    public List<Board> call() {
         if (tileIndex >= positionedTiles.length) {
             if (board.isValidSolution()) {
                 solutionHandler.handleSolution(board);
-                return true;
             }
-            return false;
+            return Collections.emptyList();
         }
 
-        List<PaDTask> nextTasks = new ArrayList<>();
+        List<Board> nextBoards = new ArrayList<>();
 
         for (PositionedTile positionedTile : positionedTiles[tileIndex]) {
             Board potentialNextBoard = board.addTile(positionedTile);
             if (potentialNextBoard != null) {
-                nextTasks.add(new PaDTask(potentialNextBoard, positionedTiles, tileIndex + 1, solutionHandler));
+                nextBoards.add(potentialNextBoard);
             }
         }
 
-        invokeAll(nextTasks);
-        return false;
+        return nextBoards;
     }
 }

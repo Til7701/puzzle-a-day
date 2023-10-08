@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import de.holube.pad.model.Board;
 import de.holube.pad.model.PositionedTile;
 import de.holube.pad.model.Tile;
+import de.holube.pad.solution.FileSolutionSaver;
 import de.holube.pad.solution.SolutionHandler;
 import de.holube.pad.stats.Stats;
 import de.holube.pad.util.Config;
@@ -16,13 +17,16 @@ import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException, PositionedTileIdException {
+    public static void main(String[] args) throws IOException, PositionedTileIdException, ExecutionException, InterruptedException {
         final Config config = loadConfig();
-        final int parallelism = config.getParallelism();
 
         Board board = new Board(config.getBoard().getLayout(), config.getBoard().getMeaning());
 
@@ -31,7 +35,8 @@ public class Main {
         final List<Tile> tiles = createTiles(config, board);
         final PositionedTile[][] positionedTiles = createPositionedTiles(tiles);
 
-        board = new Board(positionedTiles, config.getBoard().getLayout(), config.getBoard().getMeaning());
+        List<Board> startBoards = loadStartBoards(config, positionedTiles);
+        final int startIndex = startBoards.get(0).getTileIndices().length;
 
         if (!PlausibilityCheck.check(board, tiles)) {
             System.out.println("Not Plausible!!");
@@ -40,21 +45,33 @@ public class Main {
 
         calculateTotalOptions(tiles);
 
-        createShutdownHook(config, solutionHandler.getStats());
+        // createShutdownHook(config, solutionHandler.getStats());
+        ExecutorService pool = null;
+        try {
+            pool = Executors.newFixedThreadPool(config.getParallelism());
+            final long startTime = System.currentTimeMillis();
+            for (int i = 0; i < Math.min(config.getLayers(), startIndex + tiles.size()); i++) {
+                try (FileSolutionSaver intermediateSolutionSaver = new FileSolutionSaver("intermediateSolutions_index-" + (startIndex + i))) {
+                    final PuzzleADaySolver padSolver = new PuzzleADaySolver(pool, startBoards, startIndex + i, positionedTiles, solutionHandler);
+                    startBoards = padSolver.solve();
+                    startBoards.forEach(intermediateSolutionSaver::save);
+                }
+            }
+            final long endTime = System.currentTimeMillis();
 
-        final long startTime = System.currentTimeMillis();
-        final PuzzleADaySolver padSolver = new PuzzleADaySolver(board, positionedTiles, solutionHandler, parallelism);
-        padSolver.solve();
-        final long endTime = System.currentTimeMillis();
-        final long time = endTime - startTime;
-        System.out.println("done in: " + time + "ms");
+            final long time = endTime - startTime;
+            System.out.println("done in: " + time + "ms");
+        } finally {
+            if (pool != null)
+                pool.shutdown();
+            solutionHandler.close();
+        }
 
-        solutionHandler.close();
 
         Stats stats = solutionHandler.getStats();
         stats.calculateStats();
         stats.printStats();
-        stats.save(config.getJsonSource());
+        // stats.save(config.getJsonSource());
     }
 
     private static Config loadConfig() throws IOException {
@@ -64,6 +81,24 @@ public class Main {
         Config config = gson.fromJson(json, Config.class);
         config.setJsonSource(json);
         return config;
+    }
+
+    private static List<Board> loadStartBoards(Config config, PositionedTile[][] positionedTiles) throws IOException {
+        String string = Files.readString(Path.of(config.getStartBoardsFile()));
+        String[] boardStrings = string.split(";", -1);
+
+        List<Board> boards = new ArrayList<>(boardStrings.length);
+        for (int i = 0; i < boardStrings.length - 1; i++) {
+            String[] splitBoard = boardStrings[i].split(",");
+            int[] tileIndices;
+            if (splitBoard.length == 0)
+                tileIndices = new int[0];
+            else
+                tileIndices = Arrays.stream(splitBoard).filter(s -> !s.isEmpty()).mapToInt(Integer::valueOf).toArray();
+            boards.add(new Board(tileIndices, positionedTiles, config.getBoard().getLayout(), config.getBoard().getMeaning()));
+        }
+
+        return boards;
     }
 
     private static List<Tile> createTiles(Config config, Board board) {

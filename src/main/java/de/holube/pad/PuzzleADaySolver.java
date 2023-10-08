@@ -6,40 +6,40 @@ import de.holube.pad.solution.SolutionHandler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 public class PuzzleADaySolver {
 
-    private final Board board;
+    private final ExecutorService pool;
 
+    private final List<Board> boards;
+    private final int tileIndex;
     private final PositionedTile[][] positionedTiles;
-
-    private final ForkJoinPool pool;
-
     private final SolutionHandler solutionHandler;
 
-    public PuzzleADaySolver(Board board, PositionedTile[][] positionedTiles, SolutionHandler solutionHandler, int parallelism) {
-        this.board = board;
+    public PuzzleADaySolver(ExecutorService pool, List<Board> boards, int tileIndex, PositionedTile[][] positionedTiles, SolutionHandler solutionHandler) {
+        this.boards = boards;
+        this.tileIndex = tileIndex;
         this.positionedTiles = positionedTiles;
         this.solutionHandler = solutionHandler;
-        this.pool = new ForkJoinPool(parallelism);
-        System.out.println("Parallelism: " + parallelism);
+        this.pool = pool;
     }
 
-    public void solve() {
-        List<PaDTask> tasks = new ArrayList<>();
+    public List<Board> solve() throws ExecutionException, InterruptedException {
+        List<Board> nextBoards = new ArrayList<>();
+        List<Future<List<Board>>> futures = new ArrayList<>();
 
-        for (PositionedTile positionedTile : positionedTiles[0]) {
-            Board potentialNextBoard = board.addTile(positionedTile);
-            if (potentialNextBoard != null) {
-                tasks.add(new PaDTask(potentialNextBoard, positionedTiles, 1, solutionHandler));
-            }
+        for (Board board : boards) {
+            futures.add(pool.submit(new PaDTask(board, positionedTiles, tileIndex, solutionHandler)));
         }
 
-        for (int i = 0; i < tasks.size(); i++) {
-            pool.invoke(tasks.get(i));
-            System.out.println("Progress: " + (i + 1) + "/" + tasks.size());
+        for (Future<List<Board>> future : futures) {
+            nextBoards.addAll(future.get());
         }
+
+        return nextBoards;
     }
 
 }

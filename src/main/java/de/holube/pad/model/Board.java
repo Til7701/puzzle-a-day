@@ -163,7 +163,7 @@ public class Board {
     @Override
     public String toString() {
         String result = Arrays.toString(tileIndices);
-        return result.substring(1, result.length() - 1);
+        return result.substring(1, result.length() - 1).replace(" ", "");
     }
 
     public int getMaxKey() {

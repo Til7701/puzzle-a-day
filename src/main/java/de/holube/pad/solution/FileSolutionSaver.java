@@ -9,18 +9,22 @@ import java.io.Writer;
 import java.util.Date;
 import java.util.concurrent.Semaphore;
 
-public class FileSolutionSaver implements SolutionHandlerComponent {
+public class FileSolutionSaver implements SolutionHandlerComponent, AutoCloseable {
 
-    private static final Writer output;
-    private static final Semaphore mutex = new Semaphore(1);
+    private final Writer output;
+    private final Semaphore mutex = new Semaphore(1);
 
-    static {
+    public FileSolutionSaver() {
+        this("Solutions_" + new Date().toString().replace(":", "-"));
+    }
+
+    public FileSolutionSaver(String filename) {
         try {
-            output = new BufferedWriter(new FileWriter("Solutions_" + new Date().toString().replace(":", "-")));
+            output = new BufferedWriter(new FileWriter(filename));
         } catch (IOException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
-
     }
 
     @Override
@@ -28,12 +32,14 @@ public class FileSolutionSaver implements SolutionHandlerComponent {
         try {
             mutex.acquire();
             try {
-                output.append(board.toString()).append("\n");
+                output.append(board.toString()).append(";");
             } catch (IOException e) {
+                e.printStackTrace();
                 throw new RuntimeException(e);
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
+            Thread.currentThread().interrupt();
         } finally {
             mutex.release();
         }
@@ -46,6 +52,7 @@ public class FileSolutionSaver implements SolutionHandlerComponent {
             output.close();
         } catch (InterruptedException e) {
             e.printStackTrace();
+            Thread.currentThread().interrupt();
         } finally {
             mutex.release();
         }
