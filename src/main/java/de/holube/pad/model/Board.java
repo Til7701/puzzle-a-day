@@ -1,5 +1,6 @@
 package de.holube.pad.model;
 
+import de.holube.pad.util.BitMaskUtil;
 import de.holube.pad.util.SolutionStore;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -21,30 +22,34 @@ public class Board {
     private final int[][] boardLayout;
     @Getter
     private final int[][][] boardMeaning;
+    private final int maxKey;
 
     private final long bitmask;
+    private final long layoutBitmask;
 
-    public Board(int[][] boardLayout, int[][][] boardMeaning) {
-        this(new int[0], new PositionedTile[0][0], boardLayout, boardMeaning);
+    public Board(int[][] boardLayout, int[][][] boardMeaning, long layoutBitmask) {
+        this(new int[0], new PositionedTile[0][0], boardLayout, boardMeaning, layoutBitmask);
     }
 
-    public Board(PositionedTile[][] positionedTiles, int[][] boardLayout, int[][][] boardMeaning) {
-        this(new int[0], positionedTiles, boardLayout, boardMeaning);
+    public Board(PositionedTile[][] positionedTiles, int[][] boardLayout, int[][][] boardMeaning, long layoutBitmask) {
+        this(new int[0], positionedTiles, boardLayout, boardMeaning, layoutBitmask);
     }
 
-    public Board(int[] tileIndices, PositionedTile[][] newPositionedTiles, int[][] boardLayout, int[][][] boardMeaning) {
+    public Board(int[] tileIndices, PositionedTile[][] newPositionedTiles, int[][] boardLayout, int[][][] boardMeaning, long layoutBitmask) {
         this(tileIndices, newPositionedTiles,
                 Arrays.stream(boardMeaning[0])
                         .flatMapToInt(Arrays::stream)
-                        .summaryStatistics().getMax(), boardLayout, boardMeaning);
+                        .summaryStatistics().getMax(), boardLayout, boardMeaning, layoutBitmask);
     }
 
-    public Board(int[] tileIndices, PositionedTile[][] positionedTiles, int maxKey, int[][] boardLayout, int[][][] boardMeaning) {
+    public Board(int[] tileIndices, PositionedTile[][] positionedTiles, int maxKey, int[][] boardLayout, int[][][] boardMeaning, long layoutBitmask) {
         this.tileIndices = tileIndices;
         this.positionedTiles = positionedTiles;
         this.solutionStore = new SolutionStore(maxKey);
         this.boardLayout = boardLayout;
         this.boardMeaning = boardMeaning;
+        this.layoutBitmask = layoutBitmask;
+        this.maxKey = maxKey;
 
         long tmp = 0;
         for (int i = 0; i < tileIndices.length; i++) {
@@ -84,20 +89,11 @@ public class Board {
         System.arraycopy(tileIndices, 0, newTileIndices, 0, tileIndices.length);
         newTileIndices[newTileIndices.length - 1] = positionedTile.getId();
 
-        return new Board(newTileIndices, positionedTiles, boardLayout, boardMeaning);
+        return new Board(newTileIndices, positionedTiles, maxKey, boardLayout, boardMeaning, layoutBitmask);
     }
 
     public int[][] getBoard() {
-        final int[][] board = new int[boardLayout.length][boardLayout[0].length];
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[0].length; j++) {
-                board[i][j] = boardLayout[i][j];
-                for (int k = 0; k < tileIndices.length; k++) {
-                    board[i][j] += positionedTiles[k][tileIndices[k]].getCumulativeBoard()[i][j];
-                }
-            }
-        }
-        return board;
+        return BitMaskUtil.toArray(bitmask | layoutBitmask, boardLayout.length, boardLayout[0].length);
     }
 
     public PositionedTile[] getPositionedTiles() {

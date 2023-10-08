@@ -6,10 +6,7 @@ import de.holube.pad.model.PositionedTile;
 import de.holube.pad.model.Tile;
 import de.holube.pad.solution.SolutionHandler;
 import de.holube.pad.stats.Stats;
-import de.holube.pad.util.Config;
-import de.holube.pad.util.PlausibilityCheck;
-import de.holube.pad.util.PositionedTileIdException;
-import de.holube.pad.util.RandomColor;
+import de.holube.pad.util.*;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -21,17 +18,19 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) throws IOException, PositionedTileIdException {
+        BitMaskUtil.test();
+
         final Config config = loadConfig();
         final int parallelism = config.getParallelism();
 
-        Board board = new Board(config.getBoard().getLayout(), config.getBoard().getMeaning());
+        Board board = new Board(config.getBoard().getLayout(), config.getBoard().getMeaning(), BitMaskUtil.fromArray(config.getBoard().getLayout()));
 
         final SolutionHandler solutionHandler = new SolutionHandler(config.isSaveSolutions(), config.isSaveImages());
 
         final List<Tile> tiles = createTiles(config, board);
         final PositionedTile[][] positionedTiles = createPositionedTiles(tiles);
 
-        board = new Board(positionedTiles, config.getBoard().getLayout(), config.getBoard().getMeaning());
+        board = new Board(positionedTiles, config.getBoard().getLayout(), config.getBoard().getMeaning(), BitMaskUtil.fromArray(config.getBoard().getLayout()));
 
         if (!PlausibilityCheck.check(board, tiles)) {
             System.out.println("Not Plausible!!");
