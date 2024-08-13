@@ -6,25 +6,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BitMaskUtil {
 
-    public static long[] fromArray(int[][] array) {
-        long[] mask = new long[(array.length * array[0].length) / 64];
-        int counter = 0;
-        int index = 0;
+    public static long fromArray(int[][] array) {
+        long mask = 0L;
         for (int[] row : array) {
             for (int cell : row) {
-                mask[index] = mask[index] << 1;
-                mask[index] = mask[index] | cell;
-                counter++;
-                if (counter == 64) {
-                    counter = 0;
-                    index++;
-                }
+                mask = mask << 1;
+                mask = mask | cell;
             }
         }
         return mask;
     }
 
-    public static int[][] toArray(long[] bitmask, int rows, int columns) {
+    public static int[][] toArray(long bitmask, int rows, int columns) {
         final long firstBit = 1L << 63;
         final int[][] result = new int[rows][columns];
         final int relevantLength = rows * columns;
@@ -49,11 +42,7 @@ public class BitMaskUtil {
                 {1, 0, 0},
                 {0, 0, 1}
         };
-        long[] bitmask = fromArray(array);
-
-        if (bitmask[0] != 33) {
-            throw new IllegalStateException();
-        }
+        long bitmask = fromArray(array);
 
         array = toArray(bitmask, array.length, array[0].length);
 
