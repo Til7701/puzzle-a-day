@@ -226,7 +226,7 @@ public final class StaticMain {
             Task task;
             while ((task = TASK_QUEUE.poll()) != null && !Thread.currentThread().isInterrupted()) {
                 calculate(task);
-                System.out.println(Thread.currentThread().getName() + " processed a task. Remaining tasks: " + TASK_QUEUE.size());
+//                System.out.println(Thread.currentThread().getName() + " processed a task. Remaining tasks: " + TASK_QUEUE.size());
             }
         }
 
@@ -239,7 +239,7 @@ public final class StaticMain {
         }
 
         private void calculateRecursive(int tileIndex, long boardBitmask) {
-            if (tileIndex >= StaticMain.TILES.size()) {
+            if (tileIndex == StaticMain.TILES.size()) {
                 submitSolution(usedPositionedTileIds);
                 return;
             }
@@ -546,7 +546,6 @@ public final class StaticMain {
 
     private static void submitSolution(int[] usedPositionedTileIds) {
         long finalBoardBitmask = constructBoardBitmask(usedPositionedTileIds, usedPositionedTileIds.length - 1);
-        int[][] solutionBoardArray = toArray(finalBoardBitmask, ORIGINAL_BOARD_LAYOUT.length, ORIGINAL_BOARD_LAYOUT[0].length);
         for (long meaningBitmask : BOARD_MEANING_BITMASKS) {
             long meaningBitmaskEntry = (finalBoardBitmask & meaningBitmask) ^ meaningBitmask;
             int oneCount = Long.bitCount(meaningBitmaskEntry);
@@ -554,6 +553,7 @@ public final class StaticMain {
                 return;
             }
         }
+        int[][] solutionBoardArray = toArray(finalBoardBitmask, ORIGINAL_BOARD_LAYOUT.length, ORIGINAL_BOARD_LAYOUT[0].length);
         int[] solutionMeanings = new int[BOARD_MEANING_BITMASKS.length];
         for (int i = 0; i < solutionBoardArray.length; i++) {
             for (int j = 0; j < solutionBoardArray[i].length; j++) {
