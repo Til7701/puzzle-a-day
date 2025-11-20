@@ -145,6 +145,9 @@ public final class StaticLongArrayMain {
                     {1, 1}
             },
             {
+                    {1, 1}
+            },
+            {
                     {1, 1, 1, 1}
             }
     };
@@ -248,6 +251,7 @@ public final class StaticLongArrayMain {
 
     static void main() {
         test();
+        plausibilityChecks();
 
         System.out.println("Original Tiles: ");
         for (int i = 0; i < ORIGINAL_TILES.length; i++) {
@@ -275,6 +279,32 @@ public final class StaticLongArrayMain {
         long endTime = System.currentTimeMillis();
         System.out.println("Time taken: " + (endTime - startTime) + " ms");
         printSolutionSummary();
+    }
+
+    private static void plausibilityChecks() {
+        int cellsInBoard = 0;
+        for (int[] row : ORIGINAL_BOARD_LAYOUT) {
+            for (int cell : row) {
+                if (cell == 0) {
+                    cellsInBoard++;
+                }
+            }
+        }
+
+        int cellsInTiles = 0;
+        for (int[][] tile : ORIGINAL_TILES) {
+            for (int[] row : tile) {
+                for (int cell : row) {
+                    if (cell == 1) {
+                        cellsInTiles++;
+                    }
+                }
+            }
+        }
+
+        if (cellsInBoard != cellsInTiles) {
+            throw new IllegalStateException("Number of empty cells in board (" + cellsInBoard + ") does not match number of cells in tiles (" + cellsInTiles + ")");
+        }
     }
 
     private static void solve() {
