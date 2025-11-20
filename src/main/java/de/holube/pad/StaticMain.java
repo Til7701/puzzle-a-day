@@ -204,9 +204,9 @@ public final class StaticMain {
 
     private static void prepareTasks() {
         Tile firstTile = TILES[0];
-        for (int i = 0; i < firstTile.allPositions().size(); i++) {
+        for (int i = 0; i < firstTile.allPositions().length; i++) {
             int[] usedPositionedTileIds = new int[TILE_COUNT];
-            usedPositionedTileIds[0] = firstTile.allPositions.get(i).id();
+            usedPositionedTileIds[0] = firstTile.allPositions[i].id();
             TASK_QUEUE.add(new Task(
                     usedPositionedTileIds,
                     1
@@ -244,7 +244,7 @@ public final class StaticMain {
 
             Tile tile = StaticMain.TILES[tileIndex];
             tileLoop:
-            for (PositionedTile positionedTile : tile.allPositionsArray) {
+            for (PositionedTile positionedTile : tile.allPositions()) {
                 long positionedTileBitmask = positionedTile.bitmask();
                 if ((boardBitmask & positionedTileBitmask) == 0) {
                     long newBoardBitmask = boardBitmask | positionedTileBitmask;
@@ -382,7 +382,7 @@ public final class StaticMain {
     private static long constructBoardBitmask(int[] usedPositionedTileIds, int upToIndex) {
         long bitmask = EMPTY_BOARD_BITMASK;
         for (int i = 0; i <= upToIndex; i++) {
-            StaticMain.PositionedTile positionedTile = StaticMain.TILES[i].allPositions().get(usedPositionedTileIds[i]);
+            StaticMain.PositionedTile positionedTile = StaticMain.TILES[i].allPositions()[usedPositionedTileIds[i]];
             bitmask = bitmask | positionedTile.bitmask();
         }
         return bitmask;
@@ -424,8 +424,7 @@ public final class StaticMain {
             int[][] base,
             int tileNumber,
             Color color,
-            List<PositionedTile> allPositions,
-            PositionedTile[] allPositionsArray
+            PositionedTile[] allPositions
     ) {
 
         private Tile(int[][] base, int tileNumber, Color color) {
@@ -434,13 +433,13 @@ public final class StaticMain {
             List<int[][]> baseRotated = getAllRotations(base);
             System.out.println("Number of Rotations: " + baseRotated.size());
             List<PositionedTile> ap = getAllPositions(baseRotated, tileNumber);
-            this(base, tileNumber, color, ap, ap.toArray(new PositionedTile[0]));
-            System.out.println("Number of Boards: " + allPositions.size());
+            this(base, tileNumber, color, ap.toArray(new PositionedTile[0]));
+            System.out.println("Number of Boards: " + allPositions.length);
 
             // test if all positioned tiles are in the correct order with their ids
-            for (int i = 0; i < allPositions.size(); i++) {
-                if (allPositions.get(i).id() != i) {
-                    throw new IllegalStateException("PositionedTile id mismatch: expected " + i + " but got " + allPositions.get(i).id());
+            for (int i = 0; i < allPositions.length; i++) {
+                if (allPositions[i].id() != i) {
+                    throw new IllegalStateException("PositionedTile id mismatch: expected " + i + " but got " + allPositions[i].id());
                 }
             }
         }
@@ -520,7 +519,7 @@ public final class StaticMain {
                     "base=" + System.lineSeparator() + arrayToString(base) +
                     ", tileNumber=" + tileNumber +
                     ", color=" + color +
-                    ", allPositions=" + allPositions.stream()
+                    ", allPositions=" + Arrays.stream(allPositions)
                     .map(StaticMain.PositionedTile::toString)
                     .map(s -> System.lineSeparator() + s)
                     .reduce("", String::concat)
@@ -748,7 +747,7 @@ public final class StaticMain {
 
         List<PositionedTile> positionedTiles = new ArrayList<>();
         for (int i = 0; i < usedPositionedTileIds.length; i++) {
-            PositionedTile positionedTile = StaticMain.TILES[i].allPositions().get(usedPositionedTileIds[i]);
+            PositionedTile positionedTile = StaticMain.TILES[i].allPositions()[usedPositionedTileIds[i]];
             positionedTiles.add(positionedTile);
         }
 
@@ -782,7 +781,7 @@ public final class StaticMain {
 
         List<PositionedTile> positionedTiles = new ArrayList<>();
         for (int i = 0; i < upToIndex; i++) {
-            PositionedTile positionedTile = StaticMain.TILES[i].allPositions().get(usedPositionedTileIds[i]);
+            PositionedTile positionedTile = StaticMain.TILES[i].allPositions()[usedPositionedTileIds[i]];
             positionedTiles.add(positionedTile);
         }
 
