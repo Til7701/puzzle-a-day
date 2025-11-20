@@ -168,6 +168,11 @@ public final class StaticLongArrayMain {
                     COLORS.get(i % COLORS.size())
             ));
         }
+        tiles.sort((o1, o2) -> {
+            int size1 = o1.base.length * o1.base[0].length;
+            int size2 = o2.base.length * o2.base[0].length;
+            return Integer.compare(size2, size1);
+        });
         TILES = tiles.toArray(new Tile[0]);
         TILE_COUNT = TILES.length;
 
@@ -277,7 +282,7 @@ public final class StaticLongArrayMain {
                 return;
             }
 
-            Tile tile = StaticLongArrayMain.TILES[tileIndex];
+            Tile tile = TILES[tileIndex];
             tileLoop:
             for (PositionedTile positionedTile : tile.allPositions()) {
                 long[] positionedTileBitmask = positionedTile.bitmask();
@@ -423,7 +428,7 @@ public final class StaticLongArrayMain {
     private static long[] constructBoardBitmask(int[] usedPositionedTileIds, int upToIndex) {
         long[] bitmask = EMPTY_BOARD_BITMASK;
         for (int i = 0; i <= upToIndex; i++) {
-            StaticLongArrayMain.PositionedTile positionedTile = StaticLongArrayMain.TILES[i].allPositions()[usedPositionedTileIds[i]];
+            PositionedTile positionedTile = TILES[i].allPositions()[usedPositionedTileIds[i]];
             bitmask = bitmaskOr(bitmask, positionedTile.bitmask(), new long[BITMASK_ARRAY_LENGTH]);
         }
         return bitmask;
@@ -518,8 +523,7 @@ public final class StaticLongArrayMain {
                     .distinct()
                     .map(bitmask -> new PositionedTile(
                             bitmask,
-                            results.indexOf(bitmask),
-                            tileNumber
+                            results.indexOf(bitmask)
                     ))
                     .toList());
             tiles.sort(Comparator.comparingInt(PositionedTile::id));
@@ -571,15 +575,13 @@ public final class StaticLongArrayMain {
 
     private record PositionedTile(
             long[] bitmask,
-            int id,
-            int tileNumber
+            int id
     ) {
         @Override
         public String toString() {
             return "PositionedTile{" +
                     "bitmask=" + bitmaskToBinaryString(bitmask) +
                     ", id=" + id +
-                    ", tileNumber=" + tileNumber +
                     '}';
         }
     }
