@@ -612,7 +612,7 @@ public final class StaticLongArrayMain {
     private static void submitSolution(int[] usedPositionedTileIds, long[] finalBoardBitmask) {
         for (long[] meaningBitmask : BOARD_MEANING_BITMASKS) {
             long[] tmpBitmask = new long[BITMASK_ARRAY_LENGTH];
-            long[] meaningBitmaskEntry = bitmaskXor(bitmaskAnd(tmpBitmask, meaningBitmask, tmpBitmask), meaningBitmask, tmpBitmask);
+            long[] meaningBitmaskEntry = bitmaskXor(bitmaskAnd(finalBoardBitmask, meaningBitmask, tmpBitmask), meaningBitmask, tmpBitmask);
             int oneCount = bitmaskCountOnes(meaningBitmaskEntry);
             if (oneCount != 1) {
                 return;
