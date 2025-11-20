@@ -362,6 +362,23 @@ public final class StaticMain {
         return result;
     }
 
+    public static byte[][] toByteArray(long bitmask, int rows, int columns) {
+        final long firstBit = 1L << 63;
+        final byte[][] result = new byte[rows][columns];
+        final int relevantLength = rows * columns;
+
+        bitmask = bitmask << (64 - relevantLength);
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                result[i][j] = (byte) ((bitmask & firstBit) >>> 63);
+                bitmask = bitmask << 1;
+            }
+        }
+
+        return result;
+    }
+
     private static long constructBoardBitmask(int[] usedPositionedTileIds, int upToIndex) {
         long bitmask = EMPTY_BOARD_BITMASK;
         for (int i = 0; i <= upToIndex; i++) {
@@ -560,7 +577,7 @@ public final class StaticMain {
                 return;
             }
         }
-        int[][] solutionBoardArray = toArray(finalBoardBitmask, ORIGINAL_BOARD_LAYOUT.length, ORIGINAL_BOARD_LAYOUT[0].length);
+        byte[][] solutionBoardArray = toByteArray(finalBoardBitmask, ORIGINAL_BOARD_LAYOUT.length, ORIGINAL_BOARD_LAYOUT[0].length);
         int[] solutionMeanings = new int[BOARD_MEANING_BITMASKS.length];
         for (int i = 0; i < solutionBoardArray.length; i++) {
             for (int j = 0; j < solutionBoardArray[i].length; j++) {
