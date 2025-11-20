@@ -105,7 +105,7 @@ public final class StaticMain {
     private static final int[][][] ORIGINAL_BOARD_MEANING = DEFAULT_BOARD_MEANING;
     private static final int BOARD_CELL_COUNT = Arrays.stream(ORIGINAL_BOARD_LAYOUT).mapToInt(row -> row.length).sum();
 
-    private static final List<Tile> TILES;
+    private static final Tile[] TILES;
     private static final int TILE_COUNT;
     private static final long EMPTY_BOARD_BITMASK;
     private static final long[] BOARD_MEANING_BITMASKS;
@@ -135,8 +135,8 @@ public final class StaticMain {
                     COLORS.get(i % COLORS.size())
             ));
         }
-        TILES = Collections.unmodifiableList(tiles);
-        TILE_COUNT = TILES.size();
+        TILES = tiles.toArray(new Tile[0]);
+        TILE_COUNT = TILES.length;
 
         EMPTY_BOARD_BITMASK = fromArray(ORIGINAL_BOARD_LAYOUT);
     }
@@ -203,9 +203,9 @@ public final class StaticMain {
     }
 
     private static void prepareTasks() {
-        Tile firstTile = TILES.getFirst();
+        Tile firstTile = TILES[0];
         for (int i = 0; i < firstTile.allPositions().size(); i++) {
-            int[] usedPositionedTileIds = new int[StaticMain.TILES.size()];
+            int[] usedPositionedTileIds = new int[TILE_COUNT];
             usedPositionedTileIds[0] = firstTile.allPositions.get(i).id();
             TASK_QUEUE.add(new Task(
                     usedPositionedTileIds,
@@ -228,7 +228,7 @@ public final class StaticMain {
         }
 
         private void calculate(Task task) {
-            int[] usedPositionedTileIds = new int[StaticMain.TILES.size()];
+            int[] usedPositionedTileIds = new int[TILE_COUNT];
             System.arraycopy(task.usedPositionedTileIds(), 0, usedPositionedTileIds, 0, usedPositionedTileIds.length);
             int tileIndex = task.startTileIndex();
             long boardBitmask = constructBoardBitmask(usedPositionedTileIds, tileIndex - 1);
@@ -242,9 +242,9 @@ public final class StaticMain {
                 return;
             }
 
-            Tile tile = StaticMain.TILES.get(tileIndex);
+            Tile tile = StaticMain.TILES[tileIndex];
             tileLoop:
-            for (StaticMain.PositionedTile positionedTile : tile.allPositionsArray) {
+            for (PositionedTile positionedTile : tile.allPositionsArray) {
                 long positionedTileBitmask = positionedTile.bitmask();
                 if ((boardBitmask & positionedTileBitmask) == 0) {
                     long newBoardBitmask = boardBitmask | positionedTileBitmask;
@@ -382,7 +382,7 @@ public final class StaticMain {
     private static long constructBoardBitmask(int[] usedPositionedTileIds, int upToIndex) {
         long bitmask = EMPTY_BOARD_BITMASK;
         for (int i = 0; i <= upToIndex; i++) {
-            StaticMain.PositionedTile positionedTile = StaticMain.TILES.get(i).allPositions().get(usedPositionedTileIds[i]);
+            StaticMain.PositionedTile positionedTile = StaticMain.TILES[i].allPositions().get(usedPositionedTileIds[i]);
             bitmask = bitmask | positionedTile.bitmask();
         }
         return bitmask;
@@ -748,13 +748,13 @@ public final class StaticMain {
 
         List<PositionedTile> positionedTiles = new ArrayList<>();
         for (int i = 0; i < usedPositionedTileIds.length; i++) {
-            PositionedTile positionedTile = StaticMain.TILES.get(i).allPositions().get(usedPositionedTileIds[i]);
+            PositionedTile positionedTile = StaticMain.TILES[i].allPositions().get(usedPositionedTileIds[i]);
             positionedTiles.add(positionedTile);
         }
 
         for (int i = 0; i < positionedTiles.size(); i++) {
             PositionedTile tile = positionedTiles.get(i);
-            Color color = StaticMain.TILES.get(i).color();
+            Color color = StaticMain.TILES[i].color();
             int[][] tileCumArray = toArray(tile.bitmask(), ORIGINAL_BOARD_LAYOUT.length, ORIGINAL_BOARD_LAYOUT[0].length);
             graphics2D.setColor(color);
 
@@ -782,13 +782,13 @@ public final class StaticMain {
 
         List<PositionedTile> positionedTiles = new ArrayList<>();
         for (int i = 0; i < upToIndex; i++) {
-            PositionedTile positionedTile = StaticMain.TILES.get(i).allPositions().get(usedPositionedTileIds[i]);
+            PositionedTile positionedTile = StaticMain.TILES[i].allPositions().get(usedPositionedTileIds[i]);
             positionedTiles.add(positionedTile);
         }
 
         for (int i = 0; i < positionedTiles.size(); i++) {
             PositionedTile tile = positionedTiles.get(i);
-            Color color = StaticMain.TILES.get(i).color();
+            Color color = StaticMain.TILES[i].color();
             int[][] tileCumArray = toArray(tile.bitmask(), ORIGINAL_BOARD_LAYOUT.length, ORIGINAL_BOARD_LAYOUT[0].length);
             graphics2D.setColor(color);
 
