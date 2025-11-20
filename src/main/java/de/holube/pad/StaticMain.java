@@ -606,16 +606,19 @@ public final class StaticMain {
 
     private static void printSolutionSummary() {
         System.out.println("Total Solutions Found: " + SOLUTIONS.size());
-        Map<int[], Integer> meaningsCount = new HashMap<>();
+        Map<int[], Integer> meaningsCount = new TreeMap<>((o1, o2) -> {
+            for (int i = 0; i < o1.length; i++) {
+                int compared = Integer.compare(o1[i], o2[i]);
+                if (compared != 0) {
+                    return compared;
+                }
+            }
+            return 0;
+        });
         List<int[]> allPossibleMeanings = constructAllPossibleMeanings();
-        System.out.println("Total Possible Meanings: " + allPossibleMeanings.size());
-        System.out.println("All Possible Meanings: " + allPossibleMeanings.stream()
-                .map(Arrays::toString)
-                .reduce("", (a, b) -> a + System.lineSeparator() + b));
         for (int[] meaning : allPossibleMeanings) {
             meaningsCount.put(meaning, 0);
         }
-        System.out.println(meaningsCount.get(new int[]{4, 7}));
         for (Solution solution : SOLUTIONS) {
             int[] key = solution.meaningValues();
             Integer count = meaningsCount.get(key);

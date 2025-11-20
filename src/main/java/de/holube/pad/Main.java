@@ -17,6 +17,13 @@ import java.util.List;
 
 public class Main {
 
+    /*
+    Total: 25061
+    Average: 67.36827956989248
+    Min: 7
+    Max: 216
+     */
+
     public static void main(String[] args) throws IOException, PositionedTileIdException {
         BitMaskUtil.test();
 
