@@ -87,33 +87,95 @@ public final class StaticLongArrayMain {
             }
     };
 
+    private static final int[][][] YEAR_TILES = {
+            {
+                    {1, 0, 0},
+                    {1, 1, 1},
+                    {0, 0, 1},
+            },
+            {
+                    {1, 0, 0, 0},
+                    {1, 1, 1, 1},
+            },
+            {
+                    {1, 0},
+                    {1, 1},
+                    {1, 0},
+                    {1, 0},
+            },
+            {
+                    {1, 1},
+                    {1, 1},
+                    {1, 1},
+            },
+            {
+                    {1, 0},
+                    {1, 1},
+                    {0, 1},
+                    {0, 1},
+            },
+            {
+                    {1, 1},
+                    {1, 1},
+                    {1, 0},
+            },
+            {
+                    {1, 1},
+                    {1, 0},
+                    {1, 1},
+            },
+            {
+                    {1, 0, 0},
+                    {1, 0, 0},
+                    {1, 1, 1},
+            },
+            {
+                    {1, 1, 1},
+                    {1, 1, 1},
+                    {1, 1, 1},
+            },
+            {
+                    {1},
+            },
+            {
+                    {1, 1},
+                    {1, 1},
+            },
+            {
+                    {1, 1}
+            },
+            {
+                    {1, 1, 1, 1}
+            }
+    };
+
     private static final int[][] YEAR_BOARD_LAYOUT = {
             {1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1},
-            {1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1},
-            {1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-            {1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-            {1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-            {1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1},
+            {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
             {1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1}
     };
 
     private static final int[][][] YEAR_BOARD_MEANING = {
             {
                     {-1, -1, 0, 0, 0, 0, 0, 0, -1, -1, -1},
-                    {-1, -1, 0, 0, 0, 0, 0, 0, -1, -1, -1},
-                    {-1, -1, 1, 1, 1, 1, 1, 1, 1, -1, -1},
-                    {-1, -1, 1, 1, 1, 1, 1, 1, 1, -1, -1},
-                    {-1, -1, 1, 1, 1, 1, 1, 1, 1, -1, -1},
-                    {-1, -1, 1, 1, 1, 1, 1, 1, 1, -1, -1},
+                    {2, 2, 0, 0, 0, 0, 0, 0, -1, 3, 3},
+                    {2, 2, 1, 1, 1, 1, 1, 1, 1, 3, 3},
+                    {2, 2, 1, 1, 1, 1, 1, 1, 1, 3, 3},
+                    {2, 2, 1, 1, 1, 1, 1, 1, 1, 3, 3},
+                    {2, 2, 1, 1, 1, 1, 1, 1, 1, 3, 3},
                     {-1, -1, 1, 1, 1, -1, -1, -1, -1, -1, -1}
             },
             {
                     {-1, -1, 1, 2, 3, 4, 5, 6, -1, -1, -1},
-                    {-1, -1, 7, 8, 9, 10, 11, 12, -1, -1, -1},
-                    {-1, -1, 1, 2, 3, 4, 5, 6, 7, -1, -1},
-                    {-1, -1, 8, 9, 10, 11, 12, 13, 14, -1, -1},
-                    {-1, -1, 15, 16, 17, 18, 19, 20, 21, -1, -1},
-                    {-1, -1, 22, 23, 24, 25, 26, 27, 28, -1, -1},
+                    {1, 2, 7, 8, 9, 10, 11, 12, -1, 1, 2},
+                    {3, 4, 1, 2, 3, 4, 5, 6, 7, 3, 4},
+                    {5, 6, 8, 9, 10, 11, 12, 13, 14, 5, 6},
+                    {7, 8, 15, 16, 17, 18, 19, 20, 21, 7, 8},
+                    {9, 0, 22, 23, 24, 25, 26, 27, 28, 9, 0},
                     {-1, -1, 29, 30, 31, -1, -1, -1, -1, -1, -1}
             }
     };
@@ -131,7 +193,7 @@ public final class StaticLongArrayMain {
             Color.YELLOW
     );
 
-    private static final int[][][] ORIGINAL_TILES = DEFAULT_TILES;
+    private static final int[][][] ORIGINAL_TILES = YEAR_TILES;
     private static final int[][] ORIGINAL_BOARD_LAYOUT = YEAR_BOARD_LAYOUT;
     private static final int[][][] ORIGINAL_BOARD_MEANING = YEAR_BOARD_MEANING;
     private static final int BOARD_CELL_COUNT = Arrays.stream(ORIGINAL_BOARD_LAYOUT).mapToInt(row -> row.length).sum();
@@ -158,6 +220,8 @@ public final class StaticLongArrayMain {
     }
 
     private static final Deque<Task> TASK_QUEUE = new ConcurrentLinkedDeque<>();
+    private static int TOTAL_TASKS;
+    private static final AtomicInteger TASK_COUNTER = new AtomicInteger(0);
 
     static {
         List<Tile> tiles = new ArrayList<>();
@@ -215,6 +279,7 @@ public final class StaticLongArrayMain {
 
     private static void solve() {
         prepareTasks();
+        TOTAL_TASKS = TASK_QUEUE.size();
 
         List<TaskRunner> taskRunners = new ArrayList<>();
         for (int i = 0; i < PARALLELISM; i++) {
@@ -261,7 +326,9 @@ public final class StaticLongArrayMain {
             Task task;
             while ((task = TASK_QUEUE.poll()) != null && !Thread.currentThread().isInterrupted()) {
                 calculate(task);
-//                System.out.println(Thread.currentThread().getName() + " processed a task. Remaining tasks: " + TASK_QUEUE.size());
+                int completedTasks = TASK_COUNTER.incrementAndGet();
+                System.out.println(completedTasks + " / " + TOTAL_TASKS + " tasks completed");
+                printSolutionSummary();
             }
         }
 
@@ -296,12 +363,6 @@ public final class StaticLongArrayMain {
                         }
                     }
                     usedPositionedTileIds[tileIndex] = positionedTile.id();
-
-//                    System.out.println(longToBinaryString(positionedTileBitmask));
-//                    System.out.println(longToBinaryString(boardBitmask));
-//                    System.out.println(longToBinaryString(newBoardBitmask));
-//                    generateImageForBoard(usedPositionedTileIds, tileIndex + 1);
-
                     calculateRecursive(tileIndex + 1, Arrays.copyOf(tmpBoardBitmask, BITMASK_ARRAY_LENGTH), usedPositionedTileIds, tmpBoardBitmask, tmpBitmask);
                 }
             }
