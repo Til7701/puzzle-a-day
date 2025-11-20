@@ -606,6 +606,82 @@ public final class StaticMain {
 
     private static void printSolutionSummary() {
         System.out.println("Total Solutions Found: " + SOLUTIONS.size());
+        Map<int[], Integer> meaningsCount = new HashMap<>();
+        List<int[]> allPossibleMeanings = constructAllPossibleMeanings();
+        System.out.println("Total Possible Meanings: " + allPossibleMeanings.size());
+        System.out.println("All Possible Meanings: " + allPossibleMeanings.stream()
+                .map(Arrays::toString)
+                .reduce("", (a, b) -> a + System.lineSeparator() + b));
+        for (int[] meaning : allPossibleMeanings) {
+            meaningsCount.put(meaning, 0);
+        }
+        System.out.println(meaningsCount.get(new int[]{4, 7}));
+        for (Solution solution : SOLUTIONS) {
+            int[] key = solution.meaningValues();
+            Integer count = meaningsCount.get(key);
+            if (count == null) {
+                throw new IllegalStateException("Unknown meaning found in solution: " + Arrays.toString(key));
+            }
+            meaningsCount.put(key, count + 1);
+        }
+        int min = 0;
+        int max = 0;
+        double sum = 0;
+        for (Map.Entry<int[], Integer> entry : meaningsCount.entrySet()) {
+            int count = entry.getValue();
+            if (count > max) {
+                max = count;
+            }
+            if (count < min || min == 0) {
+                min = count;
+            }
+            sum += count;
+        }
+        double average = sum / meaningsCount.size();
+        System.out.println("Meanings Summary:");
+        System.out.println("Total Different Meanings: " + meaningsCount.size());
+        System.out.println("Min Solutions per Meaning: " + min);
+        System.out.println("Max Solutions per Meaning: " + max);
+        System.out.println("Average Solutions per Meaning: " + average);
+    }
+
+    private static List<int[]> constructAllPossibleMeanings() {
+        List<int[]> results = constructAllPossibleMeaningsForIndexRecursive(0);
+
+        return results;
+    }
+
+    private static List<int[]> constructAllPossibleMeaningsForIndexRecursive(int meaningIndex) {
+        List<int[]> results = new ArrayList<>();
+        int maxMeaningValue = 0;
+        int[][] ints = ORIGINAL_BOARD_MEANING[1];
+        for (int j = 0; j < ints.length; j++) {
+            int[] row = ints[j];
+            for (int i = 0; i < row.length; i++) {
+                int cell = row[i];
+                if (ORIGINAL_BOARD_MEANING[0][j][i] == meaningIndex && cell > maxMeaningValue) {
+                    maxMeaningValue = cell;
+                }
+            }
+        }
+
+        for (int meaningValue = 1; meaningValue <= maxMeaningValue; meaningValue++) {
+            if (meaningIndex == BOARD_MEANING_BITMASKS.length - 1) {
+                int[] meaningArray = new int[BOARD_MEANING_BITMASKS.length];
+                meaningArray[meaningIndex] = meaningValue;
+                results.add(meaningArray);
+            } else {
+                List<int[]> subResults = constructAllPossibleMeaningsForIndexRecursive(meaningIndex + 1);
+                for (int[] subResult : subResults) {
+                    int[] meaningArray = new int[BOARD_MEANING_BITMASKS.length];
+                    meaningArray[meaningIndex] = meaningValue;
+                    System.arraycopy(subResult, meaningIndex + 1, meaningArray, meaningIndex + 1, subResult.length - (meaningIndex + 1));
+                    results.add(meaningArray);
+                }
+            }
+        }
+
+        return results;
     }
 
     public static void test() {
