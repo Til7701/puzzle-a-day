@@ -88,7 +88,7 @@ public final class StaticMain {
     };
 
     private static final int PARALLELISM = Runtime.getRuntime().availableProcessors() - 2;
-    //    private static final int PARALLELISM = 1;
+    //private static final int PARALLELISM = 1;
     private static final List<Color> COLORS = List.of(
             Color.RED,
             Color.BLUE,
@@ -106,6 +106,7 @@ public final class StaticMain {
     private static final int BOARD_CELL_COUNT = Arrays.stream(ORIGINAL_BOARD_LAYOUT).mapToInt(row -> row.length).sum();
 
     private static final List<Tile> TILES;
+    private static final int TILE_COUNT;
     private static final long EMPTY_BOARD_BITMASK;
     private static final long[] BOARD_MEANING_BITMASKS;
 
@@ -135,6 +136,7 @@ public final class StaticMain {
             ));
         }
         TILES = Collections.unmodifiableList(tiles);
+        TILE_COUNT = TILES.size();
 
         EMPTY_BOARD_BITMASK = fromArray(ORIGINAL_BOARD_LAYOUT);
     }
@@ -214,13 +216,8 @@ public final class StaticMain {
     }
 
     private record TaskRunner(
-            int index,
-            int[] usedPositionedTileIds
+            int index
     ) implements Runnable {
-        TaskRunner(int index) {
-            this(index, new int[StaticMain.TILES.size()]);
-        }
-
         @Override
         public void run() {
             Task task;
@@ -231,24 +228,33 @@ public final class StaticMain {
         }
 
         private void calculate(Task task) {
+            int[] usedPositionedTileIds = new int[StaticMain.TILES.size()];
             System.arraycopy(task.usedPositionedTileIds(), 0, usedPositionedTileIds, 0, usedPositionedTileIds.length);
             int tileIndex = task.startTileIndex();
             long boardBitmask = constructBoardBitmask(usedPositionedTileIds, tileIndex - 1);
 
-            calculateRecursive(tileIndex, boardBitmask);
+            calculateRecursive(tileIndex, boardBitmask, usedPositionedTileIds);
         }
 
-        private void calculateRecursive(int tileIndex, long boardBitmask) {
-            if (tileIndex == StaticMain.TILES.size()) {
-                submitSolution(usedPositionedTileIds);
+        private void calculateRecursive(int tileIndex, long boardBitmask, int[] usedPositionedTileIds) {
+            if (tileIndex == TILE_COUNT) {
+                submitSolution(usedPositionedTileIds, boardBitmask);
                 return;
             }
 
             Tile tile = StaticMain.TILES.get(tileIndex);
-            for (StaticMain.PositionedTile positionedTile : tile.allPositions()) {
+            tileLoop:
+            for (StaticMain.PositionedTile positionedTile : tile.allPositionsArray) {
                 long positionedTileBitmask = positionedTile.bitmask();
                 if ((boardBitmask & positionedTileBitmask) == 0) {
                     long newBoardBitmask = boardBitmask | positionedTileBitmask;
+                    for (long meaningBitmask : BOARD_MEANING_BITMASKS) {
+                        long meaningBitmaskEntry = (newBoardBitmask & meaningBitmask) ^ meaningBitmask;
+                        int oneCount = Long.bitCount(meaningBitmaskEntry);
+                        if (oneCount == 0) {
+                            continue tileLoop;
+                        }
+                    }
                     usedPositionedTileIds[tileIndex] = positionedTile.id();
 
 //                    System.out.println(longToBinaryString(positionedTileBitmask));
@@ -256,7 +262,7 @@ public final class StaticMain {
 //                    System.out.println(longToBinaryString(newBoardBitmask));
 //                    generateImageForBoard(usedPositionedTileIds, tileIndex + 1);
 
-                    calculateRecursive(tileIndex + 1, newBoardBitmask);
+                    calculateRecursive(tileIndex + 1, newBoardBitmask, usedPositionedTileIds);
                 }
             }
         }
@@ -401,7 +407,8 @@ public final class StaticMain {
             int[][] base,
             int tileNumber,
             Color color,
-            List<PositionedTile> allPositions
+            List<PositionedTile> allPositions,
+            PositionedTile[] allPositionsArray
     ) {
 
         private Tile(int[][] base, int tileNumber, Color color) {
@@ -409,7 +416,8 @@ public final class StaticMain {
             print(base);
             List<int[][]> baseRotated = getAllRotations(base);
             System.out.println("Number of Rotations: " + baseRotated.size());
-            this(base, tileNumber, color, getAllPositions(baseRotated, tileNumber));
+            List<PositionedTile> ap = getAllPositions(baseRotated, tileNumber);
+            this(base, tileNumber, color, ap, ap.toArray(new PositionedTile[0]));
             System.out.println("Number of Boards: " + allPositions.size());
 
             // test if all positioned tiles are in the correct order with their ids
@@ -544,8 +552,7 @@ public final class StaticMain {
         }
     }
 
-    private static void submitSolution(int[] usedPositionedTileIds) {
-        long finalBoardBitmask = constructBoardBitmask(usedPositionedTileIds, usedPositionedTileIds.length - 1);
+    private static void submitSolution(int[] usedPositionedTileIds, long finalBoardBitmask) {
         for (long meaningBitmask : BOARD_MEANING_BITMASKS) {
             long meaningBitmaskEntry = (finalBoardBitmask & meaningBitmask) ^ meaningBitmask;
             int oneCount = Long.bitCount(meaningBitmaskEntry);
@@ -584,6 +591,14 @@ public final class StaticMain {
         @Override
         public int hashCode() {
             return Objects.hash(Arrays.hashCode(usedPositionedTileIds), Arrays.hashCode(meaningValues));
+        }
+
+        @Override
+        public String toString() {
+            return "Solution{" +
+                    "usedPositionedTileIds=" + Arrays.toString(usedPositionedTileIds) +
+                    ", meaningValues=" + Arrays.toString(meaningValues) +
+                    '}';
         }
     }
 
