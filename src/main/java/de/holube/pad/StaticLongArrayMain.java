@@ -87,6 +87,37 @@ public final class StaticLongArrayMain {
             }
     };
 
+    private static final int[][] YEAR_BOARD_LAYOUT = {
+            {1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1},
+            {1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1},
+            {1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1},
+            {1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1},
+            {1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1},
+            {1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1},
+            {1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1}
+    };
+
+    private static final int[][][] YEAR_BOARD_MEANING = {
+            {
+                    {-1, -1, 0, 0, 0, 0, 0, 0, -1, -1, -1},
+                    {-1, -1, 0, 0, 0, 0, 0, 0, -1, -1, -1},
+                    {-1, -1, 1, 1, 1, 1, 1, 1, 1, -1, -1},
+                    {-1, -1, 1, 1, 1, 1, 1, 1, 1, -1, -1},
+                    {-1, -1, 1, 1, 1, 1, 1, 1, 1, -1, -1},
+                    {-1, -1, 1, 1, 1, 1, 1, 1, 1, -1, -1},
+                    {-1, -1, 1, 1, 1, -1, -1, -1, -1, -1, -1}
+            },
+            {
+                    {-1, -1, 1, 2, 3, 4, 5, 6, -1, -1, -1},
+                    {-1, -1, 7, 8, 9, 10, 11, 12, -1, -1, -1},
+                    {-1, -1, 1, 2, 3, 4, 5, 6, 7, -1, -1},
+                    {-1, -1, 8, 9, 10, 11, 12, 13, 14, -1, -1},
+                    {-1, -1, 15, 16, 17, 18, 19, 20, 21, -1, -1},
+                    {-1, -1, 22, 23, 24, 25, 26, 27, 28, -1, -1},
+                    {-1, -1, 29, 30, 31, -1, -1, -1, -1, -1, -1}
+            }
+    };
+
     private static final int PARALLELISM = Runtime.getRuntime().availableProcessors() - 2;
     //private static final int PARALLELISM = 1;
     private static final List<Color> COLORS = List.of(
@@ -101,24 +132,26 @@ public final class StaticLongArrayMain {
     );
 
     private static final int[][][] ORIGINAL_TILES = DEFAULT_TILES;
-    private static final int[][] ORIGINAL_BOARD_LAYOUT = DEFAULT_BOARD_LAYOUT;
-    private static final int[][][] ORIGINAL_BOARD_MEANING = DEFAULT_BOARD_MEANING;
+    private static final int[][] ORIGINAL_BOARD_LAYOUT = YEAR_BOARD_LAYOUT;
+    private static final int[][][] ORIGINAL_BOARD_MEANING = YEAR_BOARD_MEANING;
     private static final int BOARD_CELL_COUNT = Arrays.stream(ORIGINAL_BOARD_LAYOUT).mapToInt(row -> row.length).sum();
+    private static final int BITMASK_ARRAY_LENGTH = (int) Math.ceil(BOARD_CELL_COUNT / 64d);
 
     private static final Tile[] TILES;
     private static final int TILE_COUNT;
-    private static final long EMPTY_BOARD_BITMASK;
-    private static final long[] BOARD_MEANING_BITMASKS;
+    private static final long[] EMPTY_BOARD_BITMASK;
+    private static final long[][] BOARD_MEANING_BITMASKS;
 
     static {
         int[][] meaningArray = ORIGINAL_BOARD_MEANING[0];
         int max = max(meaningArray);
-        BOARD_MEANING_BITMASKS = new long[max + 1];
+        BOARD_MEANING_BITMASKS = new long[max + 1][BITMASK_ARRAY_LENGTH];
         for (int j = 0; j < meaningArray.length; j++) {
             for (int k = 0; k < meaningArray[j].length; k++) {
                 int cell = meaningArray[j][k];
                 if (cell >= 0) {
-                    BOARD_MEANING_BITMASKS[cell] = BOARD_MEANING_BITMASKS[cell] | (1L << (meaningArray.length * meaningArray[j].length - (j * meaningArray[j].length + k) - 1));
+                    int bitToSet = (j * meaningArray[j].length + k);
+                    setBitInBitmask(BOARD_MEANING_BITMASKS[cell], bitToSet);
                 }
             }
         }
@@ -163,10 +196,10 @@ public final class StaticLongArrayMain {
             System.out.println(tile);
         }
         System.out.println("Parallelism: " + PARALLELISM);
-        System.out.println("Empty Board Bitmask: " + longToBinaryString(EMPTY_BOARD_BITMASK));
+        System.out.println("Empty Board Bitmask: " + bitmaskToBinaryString(EMPTY_BOARD_BITMASK));
         System.out.println("Board Meaning Bitmasks: ");
-        for (long bitmask : BOARD_MEANING_BITMASKS) {
-            System.out.println(longToBinaryString(bitmask));
+        for (long[] bitmask : BOARD_MEANING_BITMASKS) {
+            System.out.println(bitmaskToBinaryString(bitmask));
         }
         long startTime = System.currentTimeMillis();
         solve();
@@ -231,12 +264,14 @@ public final class StaticLongArrayMain {
             int[] usedPositionedTileIds = new int[TILE_COUNT];
             System.arraycopy(task.usedPositionedTileIds(), 0, usedPositionedTileIds, 0, usedPositionedTileIds.length);
             int tileIndex = task.startTileIndex();
-            long boardBitmask = constructBoardBitmask(usedPositionedTileIds, tileIndex - 1);
+            long[] boardBitmask = constructBoardBitmask(usedPositionedTileIds, tileIndex - 1);
+            long[] tmpBoardBitmask = new long[BITMASK_ARRAY_LENGTH];
+            long[] tmpBitmask = new long[BITMASK_ARRAY_LENGTH];
 
-            calculateRecursive(tileIndex, boardBitmask, usedPositionedTileIds);
+            calculateRecursive(tileIndex, boardBitmask, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask);
         }
 
-        private void calculateRecursive(int tileIndex, long boardBitmask, int[] usedPositionedTileIds) {
+        private void calculateRecursive(int tileIndex, long[] boardBitmask, int[] usedPositionedTileIds, long[] tmpBoardBitmask, long[] tmpBitmask) {
             if (tileIndex == TILE_COUNT) {
                 submitSolution(usedPositionedTileIds, boardBitmask);
                 return;
@@ -245,12 +280,12 @@ public final class StaticLongArrayMain {
             Tile tile = StaticLongArrayMain.TILES[tileIndex];
             tileLoop:
             for (PositionedTile positionedTile : tile.allPositions()) {
-                long positionedTileBitmask = positionedTile.bitmask();
-                if ((boardBitmask & positionedTileBitmask) == 0) {
-                    long newBoardBitmask = boardBitmask | positionedTileBitmask;
-                    for (long meaningBitmask : BOARD_MEANING_BITMASKS) {
-                        long meaningBitmaskEntry = (newBoardBitmask & meaningBitmask) ^ meaningBitmask;
-                        int oneCount = Long.bitCount(meaningBitmaskEntry);
+                long[] positionedTileBitmask = positionedTile.bitmask();
+                if (bitmaskAndIsZero(boardBitmask, positionedTileBitmask)) {
+                    bitmaskOr(boardBitmask, positionedTileBitmask, tmpBoardBitmask);
+                    for (long[] meaningBitmask : BOARD_MEANING_BITMASKS) {
+                        long[] meaningBitmaskEntry = bitmaskXor(bitmaskAnd(tmpBitmask, meaningBitmask, tmpBitmask), meaningBitmask, tmpBitmask);
+                        int oneCount = bitmaskCountOnes(meaningBitmaskEntry);
                         if (oneCount == 0) {
                             continue tileLoop;
                         }
@@ -262,7 +297,7 @@ public final class StaticLongArrayMain {
 //                    System.out.println(longToBinaryString(newBoardBitmask));
 //                    generateImageForBoard(usedPositionedTileIds, tileIndex + 1);
 
-                    calculateRecursive(tileIndex + 1, newBoardBitmask, usedPositionedTileIds);
+                    calculateRecursive(tileIndex + 1, Arrays.copyOf(tmpBoardBitmask, BITMASK_ARRAY_LENGTH), usedPositionedTileIds, tmpBoardBitmask, tmpBitmask);
                 }
             }
         }
@@ -334,56 +369,62 @@ public final class StaticLongArrayMain {
         return results.stream().toList();
     }
 
-    public static long fromArray(int[][] array) {
-        long mask = 0;
+    public static long[] fromArray(int[][] array) {
+        long[] mask = new long[BITMASK_ARRAY_LENGTH];
+
+        int bitIndex = 0;
         for (int[] row : array) {
             for (int cell : row) {
-                mask = mask << 1;
-                mask = mask | cell;
+                if (cell != 0) {
+                    setBitInBitmask(mask, bitIndex);
+                }
+                bitIndex++;
             }
         }
         return mask;
     }
 
-    public static int[][] toArray(long bitmask, int rows, int columns) {
-        final long firstBit = 1L << 63;
+    public static int[][] toArray(long[] bitmask, int rows, int columns) {
         final int[][] result = new int[rows][columns];
         final int relevantLength = rows * columns;
 
-        bitmask = bitmask << (64 - relevantLength);
+        for (int pos = 0; pos < relevantLength; pos++) {
+            int arrayIndex = pos / 64;
+            int bitIndex = pos % 64;
+            int row = pos / columns;
+            int col = pos % columns;
 
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++) {
-                result[i][j] = (int) ((bitmask & firstBit) >>> 63);
-                bitmask = bitmask << 1;
-            }
+            long word = bitmask[arrayIndex];
+            int bit = (int) ((word >>> (63 - bitIndex)) & 1L);
+            result[row][col] = bit;
         }
 
         return result;
     }
 
-    public static byte[][] toByteArray(long bitmask, int rows, int columns) {
-        final long firstBit = 1L << 63;
+    public static byte[][] toByteArray(long[] bitmask, int rows, int columns) {
         final byte[][] result = new byte[rows][columns];
         final int relevantLength = rows * columns;
 
-        bitmask = bitmask << (64 - relevantLength);
+        for (int pos = 0; pos < relevantLength; pos++) {
+            int arrayIndex = pos / 64;
+            int bitIndex = pos % 64;
+            int row = pos / columns;
+            int col = pos % columns;
 
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++) {
-                result[i][j] = (byte) ((bitmask & firstBit) >>> 63);
-                bitmask = bitmask << 1;
-            }
+            long word = bitmask[arrayIndex];
+            int bit = (int) ((word >>> (63 - bitIndex)) & 1L);
+            result[row][col] = (byte) bit;
         }
 
         return result;
     }
 
-    private static long constructBoardBitmask(int[] usedPositionedTileIds, int upToIndex) {
-        long bitmask = EMPTY_BOARD_BITMASK;
+    private static long[] constructBoardBitmask(int[] usedPositionedTileIds, int upToIndex) {
+        long[] bitmask = EMPTY_BOARD_BITMASK;
         for (int i = 0; i <= upToIndex; i++) {
             StaticLongArrayMain.PositionedTile positionedTile = StaticLongArrayMain.TILES[i].allPositions()[usedPositionedTileIds[i]];
-            bitmask = bitmask | positionedTile.bitmask();
+            bitmask = bitmaskOr(bitmask, positionedTile.bitmask(), new long[BITMASK_ARRAY_LENGTH]);
         }
         return bitmask;
     }
@@ -467,26 +508,26 @@ public final class StaticLongArrayMain {
             return copy;
         }
 
-        private static List<StaticLongArrayMain.PositionedTile> getAllPositions(List<int[][]> baseRotated, int tileNumber) {
-            List<Long> results = new ArrayList<>();
+        private static List<PositionedTile> getAllPositions(List<int[][]> baseRotated, int tileNumber) {
+            List<long[]> results = new ArrayList<>();
 
             for (int[][] tile : baseRotated) {
                 results.addAll(getAllPositionsForTile(tile));
             }
-            List<StaticLongArrayMain.PositionedTile> tiles = new ArrayList<>(results.stream()
+            List<PositionedTile> tiles = new ArrayList<>(results.stream()
                     .distinct()
-                    .map(bitmask -> new StaticLongArrayMain.PositionedTile(
+                    .map(bitmask -> new PositionedTile(
                             bitmask,
                             results.indexOf(bitmask),
                             tileNumber
                     ))
                     .toList());
-            tiles.sort(Comparator.comparingInt(StaticLongArrayMain.PositionedTile::id));
+            tiles.sort(Comparator.comparingInt(PositionedTile::id));
             return Collections.unmodifiableList(tiles);
         }
 
-        private static List<Long> getAllPositionsForTile(int[][] tile) {
-            List<Long> results = new ArrayList<>();
+        private static List<long[]> getAllPositionsForTile(int[][] tile) {
+            List<long[]> results = new ArrayList<>();
             int[][] boardArray = ORIGINAL_BOARD_LAYOUT;
 
             for (int i = 0; i < boardArray.length - tile.length + 1; i++) {
@@ -494,7 +535,7 @@ public final class StaticLongArrayMain {
                     int[][] newBoard = place(tile, boardArray, i, j);
                     if (isValid(newBoard)) {
                         removeBoard(newBoard, boardArray);
-                        long boardBitmask = fromArray(newBoard);
+                        long[] boardBitmask = fromArray(newBoard);
                         results.add(boardBitmask);
                     }
                 }
@@ -529,14 +570,14 @@ public final class StaticLongArrayMain {
 
 
     private record PositionedTile(
-            long bitmask,
+            long[] bitmask,
             int id,
             int tileNumber
     ) {
         @Override
         public String toString() {
             return "PositionedTile{" +
-                    "bitmask=" + longToBinaryString(bitmask) +
+                    "bitmask=" + bitmaskToBinaryString(bitmask) +
                     ", id=" + id +
                     ", tileNumber=" + tileNumber +
                     '}';
@@ -568,10 +609,11 @@ public final class StaticLongArrayMain {
         }
     }
 
-    private static void submitSolution(int[] usedPositionedTileIds, long finalBoardBitmask) {
-        for (long meaningBitmask : BOARD_MEANING_BITMASKS) {
-            long meaningBitmaskEntry = (finalBoardBitmask & meaningBitmask) ^ meaningBitmask;
-            int oneCount = Long.bitCount(meaningBitmaskEntry);
+    private static void submitSolution(int[] usedPositionedTileIds, long[] finalBoardBitmask) {
+        for (long[] meaningBitmask : BOARD_MEANING_BITMASKS) {
+            long[] tmpBitmask = new long[BITMASK_ARRAY_LENGTH];
+            long[] meaningBitmaskEntry = bitmaskXor(bitmaskAnd(tmpBitmask, meaningBitmask, tmpBitmask), meaningBitmask, tmpBitmask);
+            int oneCount = bitmaskCountOnes(meaningBitmaskEntry);
             if (oneCount != 1) {
                 return;
             }
@@ -723,8 +765,8 @@ public final class StaticLongArrayMain {
         System.out.println("Testing long-array conversion for array:");
         print(array);
 
-        long bitmask = fromArray(array);
-        System.out.println("Converted to bitmask: " + longToBinaryString(bitmask));
+        long[] bitmask = fromArray(array);
+        System.out.println("Converted to bitmask: " + bitmaskToBinaryString(bitmask));
         int[][] newArray = toArray(bitmask, array.length, array[0].length);
         System.out.println("Converted back to array:");
         print(newArray);
@@ -821,21 +863,69 @@ public final class StaticLongArrayMain {
         }
     }
 
-    private static String longToBinaryString(long value) {
-        StringBuilder sb = new StringBuilder(Long.toBinaryString(value));
-        while (sb.length() < BOARD_CELL_COUNT) {
-            sb.insert(0, '0');
+    private static String bitmaskToBinaryString(long[] bitmask) {
+        StringBuilder sb = new StringBuilder();
+        for (long word : bitmask) {
+            String bits = Long.toBinaryString(word);
+            sb.append("0".repeat(64 - bits.length()));
+            sb.append(bits);
         }
-        String string = sb.toString();
+
+        String full = sb.length() > BOARD_CELL_COUNT ? sb.substring(0, BOARD_CELL_COUNT) : sb.toString();
 
         StringBuilder formatted = new StringBuilder();
-        for (int i = 0; i < string.length(); i++) {
-            formatted.append(string.charAt(i));
-            if ((i + 1) % ORIGINAL_BOARD_LAYOUT[0].length == 0 && i != string.length() - 1) {
+        int rowWidth = ORIGINAL_BOARD_LAYOUT[0].length;
+        for (int i = 0; i < full.length(); i++) {
+            formatted.append(full.charAt(i));
+            if ((i + 1) % rowWidth == 0 && i != full.length() - 1) {
                 formatted.append('_');
             }
         }
         return formatted.toString();
+    }
+
+    private static long[] bitmaskOr(long[] a, long[] b, long[] result) {
+        for (int i = 0; i < BITMASK_ARRAY_LENGTH; i++) {
+            result[i] = a[i] | b[i];
+        }
+        return result;
+    }
+
+    private static long[] bitmaskAnd(long[] a, long[] b, long[] result) {
+        for (int i = 0; i < BITMASK_ARRAY_LENGTH; i++) {
+            result[i] = a[i] & b[i];
+        }
+        return result;
+    }
+
+    private static long[] bitmaskXor(long[] a, long[] b, long[] result) {
+        for (int i = 0; i < BITMASK_ARRAY_LENGTH; i++) {
+            result[i] = a[i] ^ b[i];
+        }
+        return result;
+    }
+
+    private static void setBitInBitmask(long[] bitmask, int position) {
+        int arrayIndex = position / 64;
+        int bitIndex = position % 64;
+        bitmask[arrayIndex] |= (1L << (63 - bitIndex));
+    }
+
+    private static boolean bitmaskAndIsZero(long[] a, long[] b) {
+        for (int i = 0; i < BITMASK_ARRAY_LENGTH; i++) {
+            if ((a[i] & b[i]) != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static int bitmaskCountOnes(long[] bitmask) {
+        int count = 0;
+        for (long l : bitmask) {
+            count += Long.bitCount(l);
+        }
+        return count;
     }
 
 }
