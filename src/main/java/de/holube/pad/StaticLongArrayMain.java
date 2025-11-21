@@ -194,9 +194,9 @@ public final class StaticLongArrayMain {
             Color.YELLOW
     );
 
-    private static final int[][][] ORIGINAL_TILES = YEAR_TILES;
-    private static final int[][] ORIGINAL_BOARD_LAYOUT = YEAR_BOARD_LAYOUT;
-    private static final int[][][] ORIGINAL_BOARD_MEANING = YEAR_BOARD_MEANING;
+    private static final int[][][] ORIGINAL_TILES = DEFAULT_TILES;
+    private static final int[][] ORIGINAL_BOARD_LAYOUT = DEFAULT_BOARD_LAYOUT;
+    private static final int[][][] ORIGINAL_BOARD_MEANING = DEFAULT_BOARD_MEANING;
     private static final int BOARD_CELL_COUNT = Arrays.stream(ORIGINAL_BOARD_LAYOUT).mapToInt(row -> row.length).sum();
     private static final int BITMASK_ARRAY_LENGTH = (int) Math.ceil(BOARD_CELL_COUNT / 64d);
 
@@ -298,16 +298,30 @@ public final class StaticLongArrayMain {
                 if (ORIGINAL_BOARD_LAYOUT[row][col] == 0) {
                     resetBoard(board);
                     // add [0, 1, 1, 0], [1, 0, 0, 1], [0, 1, 1, 0] pattern
-                    addBannedHorizontalPatterns(board, row, col, bannedBitmasks);
+                    addBannedHorizontalTwoPatterns(board, row, col, bannedBitmasks);
+                    // add [0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0] pattern
+                    resetBoard(board);
+                    addBannedHorizontalThreePatterns(board, row, col, bannedBitmasks);
+                    resetBoard(board);
+                    // add [0, 1], [1, 0], [1, 0], [0, 1] pattern
+                    addBannedVerticalTwoPatterns(board, row, col, bannedBitmasks);
+                    resetBoard(board);
+                    // add [0, 1], [1, 0], [1, 0], [1, 0], [0, 1] pattern
+                    addBannedVerticalThreePatterns(board, row, col, bannedBitmasks);
                 }
             }
         }
         BANNED_BITMASKS = bannedBitmasks.toArray(new long[0][][]);
         System.out.println("Banned Bitmasks Count: " + BANNED_BITMASKS.length);
+        for (int i = 0; i < BANNED_BITMASKS.length; i++) {
+            System.out.println("Banned Bitmask " + i + ": ");
+            System.out.println("Pattern Bitmask: " + bitmaskToBinaryString(BANNED_BITMASKS[i][0]));
+            System.out.println("Area Bitmask:    " + bitmaskToBinaryString(BANNED_BITMASKS[i][1]));
+        }
     }
 
-    private static void addBannedHorizontalPatterns(int[][] board, int row, int col, Set<long[][]> bannedBitmasks) {
-        if (col >= board[row].length - 2 || board[row][col + 1] == 1 || board[row][col + 2] == 1 || ORIGINAL_BOARD_MEANING[0][row][col] != ORIGINAL_BOARD_MEANING[0][row][col + 1]) {
+    private static void addBannedHorizontalTwoPatterns(int[][] board, int row, int col, Set<long[][]> bannedBitmasks) {
+        if (col >= board[row].length - 1 || board[row][col + 1] == 1 || ORIGINAL_BOARD_MEANING[0][row][col] != ORIGINAL_BOARD_MEANING[0][row][col + 1]) {
             return;
         }
         if (row > 0) {
@@ -329,6 +343,102 @@ public final class StaticLongArrayMain {
 
         board[row][col] = 1;
         board[row][col + 1] = 1;
+        bannedBitmask[0] = fromArray(board);
+
+        bannedBitmasks.add(bannedBitmask);
+    }
+
+    private static void addBannedHorizontalThreePatterns(int[][] board, int row, int col, Set<long[][]> bannedBitmasks) {
+        if (col < 0 || col >= board[row].length - 2
+                || board[row][col] == 1 || board[row][col + 1] == 1 || board[row][col + 2] == 1
+                || ORIGINAL_BOARD_MEANING[0][row][col] != ORIGINAL_BOARD_MEANING[0][row][col + 1]
+                || ORIGINAL_BOARD_MEANING[0][row][col] != ORIGINAL_BOARD_MEANING[0][row][col + 2]) {
+            return;
+        }
+        if (row > 0) {
+            board[row - 1][col] = 1;
+            board[row - 1][col + 1] = 1;
+            board[row - 1][col + 2] = 1;
+        }
+        if (row < board.length - 1) {
+            board[row + 1][col] = 1;
+            board[row + 1][col + 1] = 1;
+            board[row + 1][col + 2] = 1;
+        }
+        if (col > 0) {
+            board[row][col - 1] = 1;
+        }
+        if (col + 3 < board[row].length) {
+            board[row][col + 3] = 1;
+        }
+        long[][] bannedBitmask = new long[2][];
+        bannedBitmask[1] = fromArray(board);
+
+        board[row][col] = 1;
+        board[row][col + 1] = 1;
+        board[row][col + 2] = 1;
+        bannedBitmask[0] = fromArray(board);
+
+        bannedBitmasks.add(bannedBitmask);
+    }
+
+    private static void addBannedVerticalTwoPatterns(int[][] board, int row, int col, Set<long[][]> bannedBitmasks) {
+        if (row >= board.length - 1 || board[row + 1][col] == 1 || ORIGINAL_BOARD_MEANING[0][row][col] != ORIGINAL_BOARD_MEANING[0][row + 1][col]) {
+            return;
+        }
+        if (col > 0) {
+            board[row][col - 1] = 1;
+            board[row + 1][col - 1] = 1;
+        }
+        if (col < board[row].length - 1) {
+            board[row][col + 1] = 1;
+            board[row + 1][col + 1] = 1;
+        }
+        if (row > 0) {
+            board[row - 1][col] = 1;
+        }
+        if (row + 2 < board.length) {
+            board[row + 2][col] = 1;
+        }
+        long[][] bannedBitmask = new long[2][];
+        bannedBitmask[1] = fromArray(board);
+
+        board[row][col] = 1;
+        board[row + 1][col] = 1;
+        bannedBitmask[0] = fromArray(board);
+
+        bannedBitmasks.add(bannedBitmask);
+    }
+
+    private static void addBannedVerticalThreePatterns(int[][] board, int row, int col, Set<long[][]> bannedBitmasks) {
+        if (row < 0 || row >= board.length - 2
+                || board[row][col] == 1 || board[row + 1][col] == 1 || board[row + 2][col] == 1
+                || ORIGINAL_BOARD_MEANING[0][row][col] != ORIGINAL_BOARD_MEANING[0][row + 1][col]
+                || ORIGINAL_BOARD_MEANING[0][row][col] != ORIGINAL_BOARD_MEANING[0][row + 2][col]) {
+            return;
+        }
+        if (col > 0) {
+            board[row][col - 1] = 1;
+            board[row + 1][col - 1] = 1;
+            board[row + 2][col - 1] = 1;
+        }
+        if (col < board[row].length - 1) {
+            board[row][col + 1] = 1;
+            board[row + 1][col + 1] = 1;
+            board[row + 2][col + 1] = 1;
+        }
+        if (row > 0) {
+            board[row - 1][col] = 1;
+        }
+        if (row + 3 < board.length) {
+            board[row + 3][col] = 1;
+        }
+        long[][] bannedBitmask = new long[2][];
+        bannedBitmask[1] = fromArray(board);
+
+        board[row][col] = 1;
+        board[row + 1][col] = 1;
+        board[row + 2][col] = 1;
         bannedBitmask[0] = fromArray(board);
 
         bannedBitmasks.add(bannedBitmask);
