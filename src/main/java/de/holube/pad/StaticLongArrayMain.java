@@ -386,10 +386,11 @@ public final class StaticLongArrayMain {
             long[] tmpBoardBitmask = new long[BITMASK_ARRAY_LENGTH];
             long[] tmpBitmask = new long[BITMASK_ARRAY_LENGTH];
 
-            calculateRecursive(tileIndex, boardBitmask, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters);
+            calculateRecursive(tileIndex, boardBitmasks, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters);
         }
 
-        private void calculateRecursive(int tileIndex, long[] boardBitmask, int[] usedPositionedTileIds, long[] tmpBoardBitmask, long[] tmpBitmask, int[] pruneCounters) {
+        private void calculateRecursive(int tileIndex, long[][] boardBitmasks, int[] usedPositionedTileIds, long[] tmpBoardBitmask, long[] tmpBitmask, int[] pruneCounters) {
+            final long[] boardBitmask = boardBitmasks[tileIndex - 1];
             if (tileIndex == TILE_COUNT) {
                 submitSolution(usedPositionedTileIds, boardBitmask);
                 return;
@@ -404,7 +405,8 @@ public final class StaticLongArrayMain {
                         continue;
                     }
                     usedPositionedTileIds[tileIndex] = positionedTile.id();
-                    calculateRecursive(tileIndex + 1, Arrays.copyOf(tmpBoardBitmask, BITMASK_ARRAY_LENGTH), usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters);
+                    System.arraycopy(tmpBoardBitmask, 0, boardBitmasks[tileIndex], 0, BITMASK_ARRAY_LENGTH);
+                    calculateRecursive(tileIndex + 1, boardBitmasks, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters);
                 }
             }
         }
