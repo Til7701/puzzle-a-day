@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -193,9 +194,9 @@ public final class StaticLongArrayMain {
             Color.YELLOW
     );
 
-    private static final int[][][] ORIGINAL_TILES = DEFAULT_TILES;
-    private static final int[][] ORIGINAL_BOARD_LAYOUT = DEFAULT_BOARD_LAYOUT;
-    private static final int[][][] ORIGINAL_BOARD_MEANING = DEFAULT_BOARD_MEANING;
+    private static final int[][][] ORIGINAL_TILES = YEAR_TILES;
+    private static final int[][] ORIGINAL_BOARD_LAYOUT = YEAR_BOARD_LAYOUT;
+    private static final int[][][] ORIGINAL_BOARD_MEANING = YEAR_BOARD_MEANING;
     private static final int BOARD_CELL_COUNT = Arrays.stream(ORIGINAL_BOARD_LAYOUT).mapToInt(row -> row.length).sum();
     private static final int BITMASK_ARRAY_LENGTH = (int) Math.ceil(BOARD_CELL_COUNT / 64d);
 
@@ -233,6 +234,7 @@ public final class StaticLongArrayMain {
      * Fourth dimension 1: Bitmask; one for each cell in the meaning area that must be empty and surrounded by tiles; all interesting cells are 1 except the center cell
      */
     private static final long[][][][] PRUNE_AND_EQUALS_AT_LEAST_TWO_BITMASKS;
+    private static final CountDownLatch END_LATCH = new CountDownLatch(PARALLELISM);
 
     static {
         List<Tile> tiles = new ArrayList<>();
@@ -332,6 +334,12 @@ public final class StaticLongArrayMain {
 
     private static void installShutdownHook() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                END_LATCH.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                Thread.currentThread().interrupt();
+            }
             System.out.println("Shutdown Hook: Final Solutions Summary");
             System.out.println("Pruned: " + Arrays.toString(PRUNE_COUNTER));
             printSolutionSummary();
@@ -414,6 +422,10 @@ public final class StaticLongArrayMain {
         public void run() {
             Task task;
             int[] pruneCounters = new int[PRUNE_COUNTER.length];
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                addPruneCounters(pruneCounters);
+                END_LATCH.countDown();
+            }));
             while ((task = TASK_QUEUE.poll()) != null && !Thread.currentThread().isInterrupted()) {
                 calculate(task, pruneCounters);
                 int completedTasks = TASK_COUNTER.incrementAndGet();
