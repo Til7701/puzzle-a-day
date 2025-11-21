@@ -194,9 +194,9 @@ public final class StaticLongArrayMain {
             Color.YELLOW
     );
 
-    private static final int[][][] ORIGINAL_TILES = DEFAULT_TILES;
-    private static final int[][] ORIGINAL_BOARD_LAYOUT = DEFAULT_BOARD_LAYOUT;
-    private static final int[][][] ORIGINAL_BOARD_MEANING = DEFAULT_BOARD_MEANING;
+    private static final int[][][] ORIGINAL_TILES = YEAR_TILES;
+    private static final int[][] ORIGINAL_BOARD_LAYOUT = YEAR_BOARD_LAYOUT;
+    private static final int[][][] ORIGINAL_BOARD_MEANING = YEAR_BOARD_MEANING;
     private static final int BOARD_CELL_COUNT = Arrays.stream(ORIGINAL_BOARD_LAYOUT).mapToInt(row -> row.length).sum();
     private static final int BITMASK_ARRAY_LENGTH = (int) Math.ceil(BOARD_CELL_COUNT / 64d);
 
@@ -584,14 +584,22 @@ public final class StaticLongArrayMain {
     }
 
     private static void prepareTasks() {
-        Tile firstTile = TILES[0];
-        for (int i = 0; i < firstTile.allPositions().length; i++) {
-            int[] usedPositionedTileIds = new int[TILE_COUNT];
-            usedPositionedTileIds[0] = firstTile.allPositions[i].id();
-            TASK_QUEUE.add(new Task(
-                    usedPositionedTileIds,
-                    1
-            ));
+        long[] tmpBitmask = new long[BITMASK_ARRAY_LENGTH];
+        for (int i = 0; i < TILES[0].allPositions().length; i++) {
+            final PositionedTile positionedTile = TILES[0].allPositions()[i];
+            for (int j = 0; j < TILES[1].allPositions().length; j++) {
+                final PositionedTile positionedTile2 = TILES[1].allPositions()[j];
+                bitmaskAnd(EMPTY_BOARD_BITMASK, positionedTile.bitmask(), tmpBitmask);
+                if (bitmaskAndIsZero(EMPTY_BOARD_BITMASK, positionedTile.bitmask()) && bitmaskAndIsZero(positionedTile2.bitmask(), tmpBitmask)) {
+                    int[] usedPositionedTileIds = new int[TILE_COUNT];
+                    usedPositionedTileIds[0] = positionedTile.id();
+                    usedPositionedTileIds[1] = positionedTile2.id();
+                    TASK_QUEUE.add(new Task(
+                            usedPositionedTileIds,
+                            2
+                    ));
+                }
+            }
         }
         System.out.println("Prepared " + TASK_QUEUE.size() + " tasks.");
     }
