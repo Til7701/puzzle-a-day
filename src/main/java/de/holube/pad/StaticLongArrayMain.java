@@ -194,9 +194,9 @@ public final class StaticLongArrayMain {
             Color.YELLOW
     );
 
-    private static final int[][][] ORIGINAL_TILES = DEFAULT_TILES;
-    private static final int[][] ORIGINAL_BOARD_LAYOUT = DEFAULT_BOARD_LAYOUT;
-    private static final int[][][] ORIGINAL_BOARD_MEANING = DEFAULT_BOARD_MEANING;
+    private static final int[][][] ORIGINAL_TILES = YEAR_TILES;
+    private static final int[][] ORIGINAL_BOARD_LAYOUT = YEAR_BOARD_LAYOUT;
+    private static final int[][][] ORIGINAL_BOARD_MEANING = YEAR_BOARD_MEANING;
     private static final int BOARD_CELL_COUNT = Arrays.stream(ORIGINAL_BOARD_LAYOUT).mapToInt(row -> row.length).sum();
     private static final int BITMASK_ARRAY_LENGTH = (int) Math.ceil(BOARD_CELL_COUNT / 64d);
 
@@ -232,6 +232,13 @@ public final class StaticLongArrayMain {
      * Fourth dimension 1: Bitmask; one for each cell in the meaning area that must be empty and surrounded by tiles; all interesting cells are 1 except the center cell
      */
     private static final long[][][][] PRUNE_AND_EQUALS_AT_LEAST_TWO_BITMASKS;
+    /**
+     * First dimension: List Index
+     * Second dimension: Two bitmasks
+     * Third dimension 0: Bitmask; area of interest; all interesting cells are 1
+     * Third dimension 1: Bitmask; pattern that is not allowed
+     */
+    private static final long[][][] BANNED_BITMASKS;
     private static final CountDownLatch END_LATCH = new CountDownLatch(PARALLELISM);
 
     static {
@@ -277,7 +284,63 @@ public final class StaticLongArrayMain {
         }
     }
 
-    private static final long[][] PRUNE_COUNTER = new long[2][TILE_COUNT];
+    // create banned bitmasks
+    static {
+        Set<long[][]> bannedBitmasks = new TreeSet<>((o1, o2) -> {
+            int cmp = Arrays.compare(o1[0], o2[0]);
+            if (cmp != 0) return cmp;
+            return Arrays.compare(o1[1], o2[1]);
+        });
+
+        int[][] board = new int[ORIGINAL_BOARD_LAYOUT.length][ORIGINAL_BOARD_LAYOUT[0].length];
+        for (int row = 0; row < ORIGINAL_BOARD_LAYOUT.length; row++) {
+            for (int col = 0; col < ORIGINAL_BOARD_LAYOUT[row].length; col++) {
+                if (ORIGINAL_BOARD_LAYOUT[row][col] == 0) {
+                    resetBoard(board);
+                    // add [0, 1, 1, 0], [1, 0, 0, 1], [0, 1, 1, 0] pattern
+                    addBannedHorizontalPatterns(board, row, col, bannedBitmasks);
+                }
+            }
+        }
+        BANNED_BITMASKS = bannedBitmasks.toArray(new long[0][][]);
+        System.out.println("Banned Bitmasks Count: " + BANNED_BITMASKS.length);
+    }
+
+    private static void addBannedHorizontalPatterns(int[][] board, int row, int col, Set<long[][]> bannedBitmasks) {
+        if (col >= board[row].length - 2 || board[row][col + 1] == 1 || board[row][col + 2] == 1 || ORIGINAL_BOARD_MEANING[0][row][col] != ORIGINAL_BOARD_MEANING[0][row][col + 1]) {
+            return;
+        }
+        if (row > 0) {
+            board[row - 1][col] = 1;
+            board[row - 1][col + 1] = 1;
+        }
+        if (row < board.length - 1) {
+            board[row + 1][col] = 1;
+            board[row + 1][col + 1] = 1;
+        }
+        if (col > 0) {
+            board[row][col - 1] = 1;
+        }
+        if (col + 2 < board[row].length) {
+            board[row][col + 2] = 1;
+        }
+        long[][] bannedBitmask = new long[2][];
+        bannedBitmask[1] = fromArray(board);
+
+        board[row][col] = 1;
+        board[row][col + 1] = 1;
+        bannedBitmask[0] = fromArray(board);
+
+        bannedBitmasks.add(bannedBitmask);
+    }
+
+    private static void resetBoard(int[][] array) {
+        for (int i = 0; i < array.length; i++) {
+            System.arraycopy(ORIGINAL_BOARD_LAYOUT[i], 0, array[i], 0, array[i].length);
+        }
+    }
+
+    private static final long[][] PRUNE_COUNTER = new long[3][TILE_COUNT];
     private static final Semaphore PRUNE_COUNTER_MUTEX = new Semaphore(1);
 
     private static void setSurroundingCoordinates(int[][] board, int row, int col, int value) {
@@ -429,7 +492,7 @@ public final class StaticLongArrayMain {
         @Override
         public void run() {
             Task task;
-            long[][] pruneCounters = new long[2][TILE_COUNT];
+            long[][] pruneCounters = new long[PRUNE_COUNTER.length][TILE_COUNT];
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 addPruneCounters(pruneCounters);
                 END_LATCH.countDown();
@@ -483,6 +546,7 @@ public final class StaticLongArrayMain {
     private static boolean prune(int tileIndex, long[] boardBitmask, int[] usedPositionedTileIds, long[] tmpBoardBitmask, long[] tmpBitmask, long[][] pruneCounters) {
         return pruneNoCellsEmptyInMeaningArea(tileIndex, boardBitmask, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters)
                 || pruneNoTwoSingleCellsInMeaningArea(tileIndex, boardBitmask, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters)
+                || pruneBannedBitmasks(tileIndex, boardBitmask, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters)
                 ;
     }
 
@@ -508,6 +572,16 @@ public final class StaticLongArrayMain {
                         return true;
                     }
                 }
+            }
+        }
+        return false;
+    }
+
+    private static boolean pruneBannedBitmasks(int tileIndex, long[] boardBitmask, int[] usedPositionedTileIds, long[] tmpBoardBitmask, long[] tmpBitmask, long[][] pruneCounters) {
+        for (long[][] bannedBitmask : BANNED_BITMASKS) {
+            if (bitmaskAndEquals(tmpBoardBitmask, bannedBitmask[0], bannedBitmask[1])) {
+                pruneCounters[2][tileIndex]++;
+                return true;
             }
         }
         return false;
