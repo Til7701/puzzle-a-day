@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class StaticLongArrayMain {
@@ -174,7 +175,7 @@ public final class StaticLongArrayMain {
                     {3, 4, 1, 2, 3, 4, 5, 6, 7, 3, 4},
                     {5, 6, 8, 9, 10, 11, 12, 13, 14, 5, 6},
                     {7, 8, 15, 16, 17, 18, 19, 20, 21, 7, 8},
-                    {9, 0, 22, 23, 24, 25, 26, 27, 28, 9, 0},
+                    {9, 10, 22, 23, 24, 25, 26, 27, 28, 9, 10},
                     {-1, -1, 29, 30, 31, -1, -1, -1, -1, -1, -1}
             }
     };
@@ -221,6 +222,8 @@ public final class StaticLongArrayMain {
     private static final Deque<Task> TASK_QUEUE = new ConcurrentLinkedDeque<>();
     private static int TOTAL_TASKS;
     private static final AtomicInteger TASK_COUNTER = new AtomicInteger(0);
+    private static final int[] PRUNE_COUNTER = new int[1];
+    private static final Semaphore PRUNE_COUNTER_MUTEX = new Semaphore(1);
 
     static {
         List<Tile> tiles = new ArrayList<>();
@@ -270,11 +273,21 @@ public final class StaticLongArrayMain {
         for (long[] bitmask : BOARD_MEANING_BITMASKS) {
             System.out.println(bitmaskToBinaryString(bitmask));
         }
+        installShutdownHook();
         long startTime = System.currentTimeMillis();
         solve();
         long endTime = System.currentTimeMillis();
         System.out.println("Time taken: " + (endTime - startTime) + " ms");
+        System.out.println("Pruned: " + Arrays.toString(PRUNE_COUNTER));
         printSolutionSummary();
+    }
+
+    private static void installShutdownHook() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("Shutdown Hook: Final Solutions Summary");
+            System.out.println("Pruned: " + Arrays.toString(PRUNE_COUNTER));
+            printSolutionSummary();
+        }));
     }
 
     private static void plausibilityChecks() {
@@ -352,49 +365,65 @@ public final class StaticLongArrayMain {
         @Override
         public void run() {
             Task task;
+            int[] pruneCounters = new int[PRUNE_COUNTER.length];
             while ((task = TASK_QUEUE.poll()) != null && !Thread.currentThread().isInterrupted()) {
-                calculate(task);
+                calculate(task, pruneCounters);
                 int completedTasks = TASK_COUNTER.incrementAndGet();
                 System.out.println(completedTasks + " / " + TOTAL_TASKS + " tasks completed");
+                addPruneCounters(pruneCounters);
+                System.out.println("Pruned: " + Arrays.toString(PRUNE_COUNTER));
                 printSolutionSummary();
             }
         }
 
-        private void calculate(Task task) {
+        private void calculate(Task task, int[] pruneCounters) {
             int[] usedPositionedTileIds = new int[TILE_COUNT];
             System.arraycopy(task.usedPositionedTileIds(), 0, usedPositionedTileIds, 0, usedPositionedTileIds.length);
             int tileIndex = task.startTileIndex();
+            long[][] boardBitmasks = new long[TILE_COUNT][BITMASK_ARRAY_LENGTH];
             long[] boardBitmask = constructBoardBitmask(usedPositionedTileIds, tileIndex - 1);
+            boardBitmasks[tileIndex - 1] = boardBitmask;
             long[] tmpBoardBitmask = new long[BITMASK_ARRAY_LENGTH];
             long[] tmpBitmask = new long[BITMASK_ARRAY_LENGTH];
 
-            calculateRecursive(tileIndex, boardBitmask, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask);
+            calculateRecursive(tileIndex, boardBitmask, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters);
         }
 
-        private void calculateRecursive(int tileIndex, long[] boardBitmask, int[] usedPositionedTileIds, long[] tmpBoardBitmask, long[] tmpBitmask) {
+        private void calculateRecursive(int tileIndex, long[] boardBitmask, int[] usedPositionedTileIds, long[] tmpBoardBitmask, long[] tmpBitmask, int[] pruneCounters) {
             if (tileIndex == TILE_COUNT) {
                 submitSolution(usedPositionedTileIds, boardBitmask);
                 return;
             }
 
             Tile tile = TILES[tileIndex];
-            tileLoop:
             for (PositionedTile positionedTile : tile.allPositions()) {
                 long[] positionedTileBitmask = positionedTile.bitmask();
                 if (bitmaskAndIsZero(boardBitmask, positionedTileBitmask)) {
                     bitmaskOr(boardBitmask, positionedTileBitmask, tmpBoardBitmask);
-                    for (long[] meaningBitmask : BOARD_MEANING_BITMASKS) {
-                        long[] meaningBitmaskEntry = bitmaskXor(bitmaskAnd(tmpBitmask, meaningBitmask, tmpBitmask), meaningBitmask, tmpBitmask);
-                        int oneCount = bitmaskCountOnes(meaningBitmaskEntry);
-                        if (oneCount == 0) {
-                            continue tileLoop;
-                        }
+                    if (prune(tileIndex, boardBitmask, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters)) {
+                        continue;
                     }
                     usedPositionedTileIds[tileIndex] = positionedTile.id();
-                    calculateRecursive(tileIndex + 1, Arrays.copyOf(tmpBoardBitmask, BITMASK_ARRAY_LENGTH), usedPositionedTileIds, tmpBoardBitmask, tmpBitmask);
+                    calculateRecursive(tileIndex + 1, Arrays.copyOf(tmpBoardBitmask, BITMASK_ARRAY_LENGTH), usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters);
                 }
             }
         }
+    }
+
+    private static boolean prune(int tileIndex, long[] boardBitmask, int[] usedPositionedTileIds, long[] tmpBoardBitmask, long[] tmpBitmask, int[] pruneCounters) {
+        return pruneNoCellsEmptyInMeaningArea(tileIndex, boardBitmask, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters)
+                ;
+    }
+
+    private static boolean pruneNoCellsEmptyInMeaningArea(int tileIndex, long[] boardBitmask, int[] usedPositionedTileIds, long[] tmpBoardBitmask, long[] tmpBitmask, int[] pruneCounters) {
+        for (long[] meaningBitmask : BOARD_MEANING_BITMASKS) {
+            int oneCount = bitmaskAndXorCountOnes(tmpBoardBitmask, meaningBitmask, meaningBitmask);
+            if (oneCount == 0) {
+                pruneCounters[0]++;
+                return true;
+            }
+        }
+        return false;
     }
 
     private static int[][] rotate90Clockwise(int[][] origin) {
@@ -765,6 +794,7 @@ public final class StaticLongArrayMain {
             return 0;
         });
         List<int[]> allPossibleMeanings = constructAllPossibleMeanings();
+        System.out.println("Total Possible Meanings: " + allPossibleMeanings.size());
         for (int[] meaning : allPossibleMeanings) {
             meaningsCount.put(meaning, 0);
         }
@@ -798,9 +828,7 @@ public final class StaticLongArrayMain {
     }
 
     private static List<int[]> constructAllPossibleMeanings() {
-        List<int[]> results = constructAllPossibleMeaningsForIndexRecursive(0);
-
-        return results;
+        return constructAllPossibleMeaningsForIndexRecursive(0);
     }
 
     private static List<int[]> constructAllPossibleMeaningsForIndexRecursive(int meaningIndex) {
@@ -1017,6 +1045,28 @@ public final class StaticLongArrayMain {
             count += Long.bitCount(l);
         }
         return count;
+    }
+
+    private static int bitmaskAndXorCountOnes(long[] a, long[] b, long[] c) {
+        int count = 0;
+        for (int i = 0; i < BITMASK_ARRAY_LENGTH; i++) {
+            count += Long.bitCount((a[i] & b[i]) ^ c[i]);
+        }
+        return count;
+    }
+
+    private static void addPruneCounters(int[] pruneCounters) {
+        try {
+            PRUNE_COUNTER_MUTEX.acquire();
+            for (int i = 0; i < PRUNE_COUNTER.length; i++) {
+                PRUNE_COUNTER[i] += pruneCounters[i];
+                pruneCounters[i] = 0;
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } finally {
+            PRUNE_COUNTER_MUTEX.release();
+        }
     }
 
 }
