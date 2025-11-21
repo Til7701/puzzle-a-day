@@ -222,8 +222,17 @@ public final class StaticLongArrayMain {
     private static final Deque<Task> TASK_QUEUE = new ConcurrentLinkedDeque<>();
     private static int TOTAL_TASKS;
     private static final AtomicInteger TASK_COUNTER = new AtomicInteger(0);
-    private static final int[] PRUNE_COUNTER = new int[1];
+
+    private static final int[] PRUNE_COUNTER = new int[2];
     private static final Semaphore PRUNE_COUNTER_MUTEX = new Semaphore(1);
+    /**
+     * First dimension: Meaning Area Index
+     * Second dimension: List Index
+     * Third dimension: Two bitmasks
+     * Fourth dimension 0: Bitmask; one for each cell in the meaning area that must be surrounded by tiles; all interesting cells are 1
+     * Fourth dimension 1: Bitmask; one for each cell in the meaning area that must be empty and surrounded by tiles; all interesting cells are 1 except the center cell
+     */
+    private static final long[][][][] PRUNE_AND_EQUALS_AT_LEAST_TWO_BITMASKS;
 
     static {
         List<Tile> tiles = new ArrayList<>();
@@ -243,6 +252,42 @@ public final class StaticLongArrayMain {
         TILE_COUNT = TILES.length;
 
         EMPTY_BOARD_BITMASK = fromArray(ORIGINAL_BOARD_LAYOUT);
+
+        PRUNE_AND_EQUALS_AT_LEAST_TWO_BITMASKS = new long[BOARD_MEANING_BITMASKS.length][][][];
+        for (int i = 0; i < PRUNE_AND_EQUALS_AT_LEAST_TWO_BITMASKS.length; i++) {
+            List<long[][]> bitmaskList = new ArrayList<>();
+            int[][] tmpBoardArray = new int[ORIGINAL_BOARD_LAYOUT.length][ORIGINAL_BOARD_LAYOUT[0].length];
+            for (int j = 0; j < ORIGINAL_BOARD_LAYOUT.length; j++) {
+                for (int k = 0; k < ORIGINAL_BOARD_LAYOUT[i].length; k++) {
+                    if (ORIGINAL_BOARD_MEANING[0][j][k] == i) {
+                        setSurroundingCoordinates(tmpBoardArray, j, k, 1);
+                        long[][] bitmasks = new long[2][];
+                        bitmasks[0] = fromArray(tmpBoardArray);
+
+                        long[] bitmask = fromArray(tmpBoardArray);
+                        clearBitInBitmask(bitmask, (j * tmpBoardArray[j].length + k));
+                        bitmasks[1] = bitmask;
+
+                        bitmaskList.add(bitmasks);
+                        setSurroundingCoordinates(tmpBoardArray, j, k, 0);
+                    }
+                }
+            }
+            PRUNE_AND_EQUALS_AT_LEAST_TWO_BITMASKS[i] = bitmaskList.toArray(new long[0][][]);
+        }
+    }
+
+    private static void setSurroundingCoordinates(int[][] board, int row, int col, int value) {
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                int rowToSet = row + i;
+                int colToSet = col + j;
+                if (rowToSet >= 0 && rowToSet < board.length
+                        && colToSet >= 0 && colToSet < board[0].length) {
+                    board[rowToSet][colToSet] = value;
+                }
+            }
+        }
     }
 
     private StaticLongArrayMain() {
@@ -414,6 +459,7 @@ public final class StaticLongArrayMain {
 
     private static boolean prune(int tileIndex, long[] boardBitmask, int[] usedPositionedTileIds, long[] tmpBoardBitmask, long[] tmpBitmask, int[] pruneCounters) {
         return pruneNoCellsEmptyInMeaningArea(tileIndex, boardBitmask, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters)
+                || pruneNoTwoSingleCellsInMeaningArea(tileIndex, boardBitmask, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters)
                 ;
     }
 
@@ -423,6 +469,22 @@ public final class StaticLongArrayMain {
             if (oneCount == 0) {
                 pruneCounters[0]++;
                 return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean pruneNoTwoSingleCellsInMeaningArea(int tileIndex, long[] boardBitmask, int[] usedPositionedTileIds, long[] tmpBoardBitmask, long[] tmpBitmask, int[] pruneCounters) {
+        for (long[][][] andEqualsAtLeastTwoBitmasks : PRUNE_AND_EQUALS_AT_LEAST_TWO_BITMASKS) {
+            int matchCount = 0;
+            for (long[][] andEqualsAtLeastTwoBitmask : andEqualsAtLeastTwoBitmasks) {
+                if (bitmaskAndEquals(tmpBoardBitmask, andEqualsAtLeastTwoBitmask[0], andEqualsAtLeastTwoBitmask[1])) {
+                    matchCount++;
+                    if (matchCount >= 2) {
+                        pruneCounters[1]++;
+                        return true;
+                    }
+                }
             }
         }
         return false;
@@ -880,6 +942,19 @@ public final class StaticLongArrayMain {
                 {1, 1, 1, 1},
                 {0, 0, 0, 1}
         });
+        testSurroundingSetter(
+                new int[][]{
+                        {0, 0, 0, 0, 0},
+                        {0, 0, 0, 0, 0},
+                        {0, 0, 0, 0, 0}
+                },
+                new int[][]{
+                        {1, 1, 1, 0, 0},
+                        {1, 1, 1, 0, 0},
+                        {1, 1, 1, 0, 0}
+                },
+                1, 1, 1
+        );
     }
 
     private static void testLongArrayConversion(int[][] array) {
@@ -895,6 +970,22 @@ public final class StaticLongArrayMain {
         if (!Arrays.deepEquals(newArray, array)) {
             throw new IllegalStateException();
         }
+    }
+
+    private static void testSurroundingSetter(int[][] input, int[][] expected, int row, int col, int value) {
+        System.out.println("Testing surrounding setter at (" + row + ", " + col + ") with value " + value);
+        System.out.println("Input:");
+        print(input);
+        setSurroundingCoordinates(input, row, col, value);
+        System.out.println("Result:");
+        print(input);
+        System.out.println("Expected:");
+        print(expected);
+
+        if (!Arrays.deepEquals(input, expected)) {
+            throw new IllegalStateException("Surrounding setter test failed");
+        }
+
     }
 
     private static final String OUTPUT_FOLDER = "output";
@@ -1032,6 +1123,12 @@ public final class StaticLongArrayMain {
         bitmask[arrayIndex] |= (1L << (63 - bitIndex));
     }
 
+    private static void clearBitInBitmask(long[] bitmask, int position) {
+        int arrayIndex = position / 64;
+        int bitIndex = position % 64;
+        bitmask[arrayIndex] &= ~(1L << (63 - bitIndex));
+    }
+
     private static boolean bitmaskAndIsZero(long[] a, long[] b) {
         for (int i = 0; i < BITMASK_ARRAY_LENGTH; i++) {
             if ((a[i] & b[i]) != 0) {
@@ -1055,6 +1152,15 @@ public final class StaticLongArrayMain {
             count += Long.bitCount((a[i] & b[i]) ^ c[i]);
         }
         return count;
+    }
+
+    private static boolean bitmaskAndEquals(long[] tmpBoardBitmask, long[] a, long[] b) {
+        for (int i = 0; i < BITMASK_ARRAY_LENGTH; i++) {
+            if ((tmpBoardBitmask[i] & a[i]) != b[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static void addPruneCounters(int[] pruneCounters) {
