@@ -193,9 +193,9 @@ public final class StaticLongArrayMain {
             Color.YELLOW
     );
 
-    private static final int[][][] ORIGINAL_TILES = YEAR_TILES;
-    private static final int[][] ORIGINAL_BOARD_LAYOUT = YEAR_BOARD_LAYOUT;
-    private static final int[][][] ORIGINAL_BOARD_MEANING = YEAR_BOARD_MEANING;
+    private static final int[][][] ORIGINAL_TILES = DEFAULT_TILES;
+    private static final int[][] ORIGINAL_BOARD_LAYOUT = DEFAULT_BOARD_LAYOUT;
+    private static final int[][][] ORIGINAL_BOARD_MEANING = DEFAULT_BOARD_MEANING;
     private static final int BOARD_CELL_COUNT = Arrays.stream(ORIGINAL_BOARD_LAYOUT).mapToInt(row -> row.length).sum();
     private static final int BITMASK_ARRAY_LENGTH = (int) Math.ceil(BOARD_CELL_COUNT / 64d);
 
@@ -278,15 +278,18 @@ public final class StaticLongArrayMain {
     }
 
     private static void setSurroundingCoordinates(int[][] board, int row, int col, int value) {
-        for (int i = -1; i <= 1; i++) {
-            for (int j = -1; j <= 1; j++) {
-                int rowToSet = row + i;
-                int colToSet = col + j;
-                if (rowToSet >= 0 && rowToSet < board.length
-                        && colToSet >= 0 && colToSet < board[0].length) {
-                    board[rowToSet][colToSet] = value;
-                }
-            }
+        board[row][col] = value;
+        if (row > 0) {
+            board[row - 1][col] = value;
+        }
+        if (row < board.length - 1) {
+            board[row + 1][col] = value;
+        }
+        if (col > 0) {
+            board[row][col - 1] = value;
+        }
+        if (col < board[row].length - 1) {
+            board[row][col + 1] = value;
         }
     }
 
@@ -949,9 +952,9 @@ public final class StaticLongArrayMain {
                         {0, 0, 0, 0, 0}
                 },
                 new int[][]{
+                        {0, 1, 0, 0, 0},
                         {1, 1, 1, 0, 0},
-                        {1, 1, 1, 0, 0},
-                        {1, 1, 1, 0, 0}
+                        {0, 1, 0, 0, 0}
                 },
                 1, 1, 1
         );
