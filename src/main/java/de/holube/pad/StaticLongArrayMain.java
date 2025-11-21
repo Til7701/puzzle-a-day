@@ -130,25 +130,21 @@ public final class StaticLongArrayMain {
                     {1, 1, 1},
             },
             {
+                    {1, 1, 0},
+                    {0, 1, 1},
+                    {0, 1, 1},
+            },
+            {
                     {1, 1, 1},
+                    {0, 1, 0}
+            },
+            {
                     {1, 1, 1},
-                    {1, 1, 1},
+                    {1, 0, 0}
             },
             {
-                    {1},
-            },
-            {
-                    {1, 1},
-                    {1, 1},
-            },
-            {
-                    {1, 1}
-            },
-            {
-                    {1, 1}
-            },
-            {
-                    {1, 1, 1, 1}
+                    {1, 1, 0},
+                    {0, 1, 1}
             }
     };
 
@@ -302,8 +298,10 @@ public final class StaticLongArrayMain {
             }
         }
 
-        if (cellsInBoard != cellsInTiles) {
-            throw new IllegalStateException("Number of empty cells in board (" + cellsInBoard + ") does not match number of cells in tiles (" + cellsInTiles + ")");
+        int meaningCount = max(ORIGINAL_BOARD_MEANING[0]) + 1;
+
+        if ((cellsInBoard - meaningCount) != cellsInTiles) {
+            throw new IllegalStateException("Number of empty cells in board (" + cellsInBoard + ") does not match number of cells in tiles (" + cellsInTiles + "), considering meanings (" + meaningCount + ").");
         }
     }
 
