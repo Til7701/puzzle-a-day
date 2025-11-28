@@ -194,9 +194,9 @@ public final class StaticLongArrayMain {
             Color.YELLOW
     );
 
-    private static final int[][][] ORIGINAL_TILES = DEFAULT_TILES;
-    private static final int[][] ORIGINAL_BOARD_LAYOUT = DEFAULT_BOARD_LAYOUT;
-    private static final int[][][] ORIGINAL_BOARD_MEANING = DEFAULT_BOARD_MEANING;
+    private static final int[][][] ORIGINAL_TILES = YEAR_TILES;
+    private static final int[][] ORIGINAL_BOARD_LAYOUT = YEAR_BOARD_LAYOUT;
+    private static final int[][][] ORIGINAL_BOARD_MEANING = YEAR_BOARD_MEANING;
     private static final int BOARD_CELL_COUNT = Arrays.stream(ORIGINAL_BOARD_LAYOUT).mapToInt(row -> row.length).sum();
     private static final int BITMASK_ARRAY_LENGTH = (int) Math.ceil(BOARD_CELL_COUNT / 64d);
 
@@ -204,6 +204,7 @@ public final class StaticLongArrayMain {
     private static final int TILE_COUNT;
     private static final long[] EMPTY_BOARD_BITMASK;
     private static final long[][] BOARD_MEANING_BITMASKS;
+    private static final int[] MAX_MEANING_VALUES;
 
     static {
         int[][] meaningArray = ORIGINAL_BOARD_MEANING[0];
@@ -215,6 +216,16 @@ public final class StaticLongArrayMain {
                 if (cell >= 0) {
                     int bitToSet = (j * meaningArray[j].length + k);
                     setBitInBitmask(BOARD_MEANING_BITMASKS[cell], bitToSet);
+                }
+            }
+        }
+
+        MAX_MEANING_VALUES = new int[max + 1];
+        for (int j = 0; j < meaningArray.length; j++) {
+            for (int k = 0; k < meaningArray[j].length; k++) {
+                int cell = meaningArray[j][k];
+                if (cell >= 0) {
+                    MAX_MEANING_VALUES[cell] = Math.max(MAX_MEANING_VALUES[cell], ORIGINAL_BOARD_MEANING[1][j][k]);
                 }
             }
         }
@@ -504,6 +515,7 @@ public final class StaticLongArrayMain {
         System.out.println("Time taken: " + (endTime - startTime) + " ms");
         printPruneCounters();
         printSolutionSummary();
+        System.out.println(Arrays.toString(SOLUTIONS));
     }
 
     private static void printPruneCounters() {
@@ -1032,68 +1044,38 @@ public final class StaticLongArrayMain {
                 }
             }
         }
-        SOLUTIONS.add(new Solution(
-                Arrays.copyOf(usedPositionedTileIds, usedPositionedTileIds.length),
-                solutionMeanings
-        ));
+
+        addSolutionForMeanings(solutionMeanings);
     }
 
-    private record Solution(
-            int[] usedPositionedTileIds,
-            int[] meaningValues
-    ) {
-        @Override
-        public boolean equals(Object o) {
-            if (o == null || getClass() != o.getClass()) return false;
-            Solution solution = (Solution) o;
-            return Objects.deepEquals(meaningValues, solution.meaningValues) && Objects.deepEquals(usedPositionedTileIds, solution.usedPositionedTileIds);
-        }
+    private static final long[] SOLUTIONS;
 
-        @Override
-        public int hashCode() {
-            return Objects.hash(Arrays.hashCode(usedPositionedTileIds), Arrays.hashCode(meaningValues));
-        }
-
-        @Override
-        public String toString() {
-            return "Solution{" +
-                    "usedPositionedTileIds=" + Arrays.toString(usedPositionedTileIds) +
-                    ", meaningValues=" + Arrays.toString(meaningValues) +
-                    '}';
-        }
+    static {
+        List<int[]> allPossibleMeanings = constructAllPossibleMeanings();
+        SOLUTIONS = new long[allPossibleMeanings.size()];
+        System.out.println("Initialized SOLUTIONS array with size: " + SOLUTIONS.length);
     }
 
-    private static final Deque<Solution> SOLUTIONS = new ConcurrentLinkedDeque<>();
+    private static void addSolutionForMeanings(int[] meanings) {
+        int index = 0;
+        for (int i = 0; i < MAX_MEANING_VALUES.length; i++) {
+            int meaningValue = meanings[i];
+            int multiplier = 1;
+            for (int j = 0; j < i; j++) {
+                multiplier *= MAX_MEANING_VALUES[j];
+            }
+            index += (meaningValue - 1) * multiplier;
+        }
+        synchronized (SOLUTIONS) {
+            SOLUTIONS[index]++;
+        }
+    }
 
     private static void printSolutionSummary() {
-        System.out.println("Total Solutions Found: " + SOLUTIONS.size());
-        Map<int[], Integer> meaningsCount = new TreeMap<>((o1, o2) -> {
-            for (int i = 0; i < o1.length; i++) {
-                int compared = Integer.compare(o1[i], o2[i]);
-                if (compared != 0) {
-                    return compared;
-                }
-            }
-            return 0;
-        });
-        List<int[]> allPossibleMeanings = constructAllPossibleMeanings();
-        System.out.println("Total Possible Meanings: " + allPossibleMeanings.size());
-        for (int[] meaning : allPossibleMeanings) {
-            meaningsCount.put(meaning, 0);
-        }
-        for (Solution solution : SOLUTIONS) {
-            int[] key = solution.meaningValues();
-            Integer count = meaningsCount.get(key);
-            if (count == null) {
-                throw new IllegalStateException("Unknown meaning found in solution: " + Arrays.toString(key));
-            }
-            meaningsCount.put(key, count + 1);
-        }
-        int min = 0;
-        int max = 0;
+        long min = 0;
+        long max = 0;
         double sum = 0;
-        for (Map.Entry<int[], Integer> entry : meaningsCount.entrySet()) {
-            int count = entry.getValue();
+        for (long count : SOLUTIONS) {
             if (count > max) {
                 max = count;
             }
@@ -1102,9 +1084,8 @@ public final class StaticLongArrayMain {
             }
             sum += count;
         }
-        double average = sum / meaningsCount.size();
+        double average = sum / SOLUTIONS.length;
         System.out.println("Meanings Summary:");
-        System.out.println("Total Different Meanings: " + meaningsCount.size());
         System.out.println("Min Solutions per Meaning: " + min);
         System.out.println("Max Solutions per Meaning: " + max);
         System.out.println("Average Solutions per Meaning: " + average);
