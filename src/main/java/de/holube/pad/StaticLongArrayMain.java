@@ -194,9 +194,9 @@ public final class StaticLongArrayMain {
             Color.YELLOW
     );
 
-    private static final int[][][] ORIGINAL_TILES = YEAR_TILES;
-    private static final int[][] ORIGINAL_BOARD_LAYOUT = YEAR_BOARD_LAYOUT;
-    private static final int[][][] ORIGINAL_BOARD_MEANING = YEAR_BOARD_MEANING;
+    private static final int[][][] ORIGINAL_TILES = DEFAULT_TILES;
+    private static final int[][] ORIGINAL_BOARD_LAYOUT = DEFAULT_BOARD_LAYOUT;
+    private static final int[][][] ORIGINAL_BOARD_MEANING = DEFAULT_BOARD_MEANING;
     private static final int BOARD_CELL_COUNT = Arrays.stream(ORIGINAL_BOARD_LAYOUT).mapToInt(row -> row.length).sum();
     private static final int BITMASK_ARRAY_LENGTH = (int) Math.ceil(BOARD_CELL_COUNT / 64d);
 
@@ -594,6 +594,10 @@ public final class StaticLongArrayMain {
                     int[] usedPositionedTileIds = new int[TILE_COUNT];
                     usedPositionedTileIds[0] = positionedTile.id();
                     usedPositionedTileIds[1] = positionedTile2.id();
+                    long[] boardBitmask = constructBoardBitmask(usedPositionedTileIds, 1);
+                    if (prune(1, boardBitmask, usedPositionedTileIds, boardBitmask, new long[BITMASK_ARRAY_LENGTH], new long[PRUNE_COUNTER.length][TILE_COUNT])) {
+                        continue;
+                    }
                     TASK_QUEUE.add(new Task(
                             usedPositionedTileIds,
                             2
