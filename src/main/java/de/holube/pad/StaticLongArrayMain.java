@@ -181,7 +181,7 @@ public final class StaticLongArrayMain {
             }
     };
 
-    private static final int PARALLELISM = Runtime.getRuntime().availableProcessors() - 2;
+    private static final int PARALLELISM = (int) (Runtime.getRuntime().availableProcessors() * 0.9);
     //private static final int PARALLELISM = 1;
     private static final List<Color> COLORS = List.of(
             Color.RED,
@@ -536,6 +536,7 @@ public final class StaticLongArrayMain {
             System.out.println("Shutdown Hook: Final Solutions Summary");
             printPruneCounters();
             printSolutionSummary();
+            System.out.println(Arrays.toString(SOLUTIONS));
         }));
     }
 
@@ -650,28 +651,30 @@ public final class StaticLongArrayMain {
             boardBitmasks[tileIndex - 1] = boardBitmask;
             long[] tmpBoardBitmask = new long[BITMASK_ARRAY_LENGTH];
             long[] tmpBitmask = new long[BITMASK_ARRAY_LENGTH];
+            byte[][] tmpSolutionBoard = new byte[ORIGINAL_BOARD_LAYOUT.length][ORIGINAL_BOARD_LAYOUT[0].length];
+            int[] tmpSolutionMeanings = new int[BOARD_MEANING_BITMASKS.length];
 
-            calculateRecursive(tileIndex, boardBitmasks, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters);
+            calculateRecursive(tileIndex, boardBitmasks, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters, tmpSolutionBoard, tmpSolutionMeanings);
         }
 
-        private void calculateRecursive(int tileIndex, long[][] boardBitmasks, int[] usedPositionedTileIds, long[] tmpBoardBitmask, long[] tmpBitmask, long[][] pruneCounters) {
+        private void calculateRecursive(int tileIndex, long[][] boardBitmasks, int[] usedPositionedTileIds, long[] tmpBoardBitmask, long[] tmpBitmask, long[][] pruneCounters, byte[][] tmpSolutionBoard, int[] tmpSolutionMeanings) {
             final long[] boardBitmask = boardBitmasks[tileIndex - 1];
             if (tileIndex == TILE_COUNT) {
-                submitSolution(usedPositionedTileIds, boardBitmask);
+                submitSolution(usedPositionedTileIds, boardBitmask, tmpSolutionBoard, tmpSolutionMeanings);
                 return;
             }
 
             Tile tile = TILES[tileIndex];
             for (PositionedTile positionedTile : tile.allPositions()) {
                 long[] positionedTileBitmask = positionedTile.bitmask();
-                if (bitmaskAndIsZero(boardBitmask, positionedTileBitmask)) {
-                    bitmaskOr(boardBitmask, positionedTileBitmask, tmpBoardBitmask);
-                    if (prune(tileIndex, boardBitmask, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters)) {
+                if (bitmaskAndIsZero2(boardBitmask, positionedTileBitmask)) {
+                    bitmaskOr2(boardBitmask, positionedTileBitmask, tmpBoardBitmask);
+                    if (tileIndex < TILE_COUNT - 1 && prune(tileIndex, boardBitmask, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters)) {
                         continue;
                     }
                     usedPositionedTileIds[tileIndex] = positionedTile.id();
                     System.arraycopy(tmpBoardBitmask, 0, boardBitmasks[tileIndex], 0, BITMASK_ARRAY_LENGTH);
-                    calculateRecursive(tileIndex + 1, boardBitmasks, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters);
+                    calculateRecursive(tileIndex + 1, boardBitmasks, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters, tmpSolutionBoard, tmpSolutionMeanings);
                 }
             }
         }
@@ -699,7 +702,7 @@ public final class StaticLongArrayMain {
         for (long[][][] andEqualsAtLeastTwoBitmasks : PRUNE_AND_EQUALS_AT_LEAST_TWO_BITMASKS) {
             int matchCount = 0;
             for (long[][] andEqualsAtLeastTwoBitmask : andEqualsAtLeastTwoBitmasks) {
-                if (bitmaskAndEquals(tmpBoardBitmask, andEqualsAtLeastTwoBitmask[0], andEqualsAtLeastTwoBitmask[1])) {
+                if (bitmaskAndEquals2(tmpBoardBitmask, andEqualsAtLeastTwoBitmask[0], andEqualsAtLeastTwoBitmask[1])) {
                     matchCount++;
                     if (matchCount >= 2) {
                         pruneCounters[1][tileIndex]++;
@@ -713,7 +716,7 @@ public final class StaticLongArrayMain {
 
     private static boolean pruneBannedBitmasks(int tileIndex, long[] boardBitmask, int[] usedPositionedTileIds, long[] tmpBoardBitmask, long[] tmpBitmask, long[][] pruneCounters) {
         for (long[][] bannedBitmask : BANNED_BITMASKS) {
-            if (bitmaskAndEquals(tmpBoardBitmask, bannedBitmask[0], bannedBitmask[1])) {
+            if (bitmaskAndEquals2(tmpBoardBitmask, bannedBitmask[0], bannedBitmask[1])) {
                 pruneCounters[2][tileIndex]++;
                 return true;
             }
@@ -820,8 +823,9 @@ public final class StaticLongArrayMain {
         return result;
     }
 
-    public static byte[][] toByteArray(long[] bitmask, int rows, int columns) {
-        final byte[][] result = new byte[rows][columns];
+    public static byte[][] toByteArray(long[] bitmask, byte[][] result) {
+        int rows = result.length;
+        int columns = result[0].length;
         final int relevantLength = rows * columns;
 
         for (int pos = 0; pos < relevantLength; pos++) {
@@ -1024,7 +1028,7 @@ public final class StaticLongArrayMain {
         }
     }
 
-    private static void submitSolution(int[] usedPositionedTileIds, long[] finalBoardBitmask) {
+    private static void submitSolution(int[] usedPositionedTileIds, long[] finalBoardBitmask, byte[][] tmpSolutionBoard, int[] tmpSolutionMeanings) {
         for (long[] meaningBitmask : BOARD_MEANING_BITMASKS) {
             long[] tmpBitmask = new long[BITMASK_ARRAY_LENGTH];
             long[] meaningBitmaskEntry = bitmaskXor(bitmaskAnd(finalBoardBitmask, meaningBitmask, tmpBitmask), meaningBitmask, tmpBitmask);
@@ -1033,19 +1037,18 @@ public final class StaticLongArrayMain {
                 return;
             }
         }
-        byte[][] solutionBoardArray = toByteArray(finalBoardBitmask, ORIGINAL_BOARD_LAYOUT.length, ORIGINAL_BOARD_LAYOUT[0].length);
-        int[] solutionMeanings = new int[BOARD_MEANING_BITMASKS.length];
-        for (int i = 0; i < solutionBoardArray.length; i++) {
-            for (int j = 0; j < solutionBoardArray[i].length; j++) {
-                if (solutionBoardArray[i][j] == 0) {
+        toByteArray(finalBoardBitmask, tmpSolutionBoard);
+        for (int i = 0; i < tmpSolutionBoard.length; i++) {
+            for (int j = 0; j < tmpSolutionBoard[i].length; j++) {
+                if (tmpSolutionBoard[i][j] == 0) {
                     int meaningIndex = ORIGINAL_BOARD_MEANING[0][i][j];
                     int meaningValue = ORIGINAL_BOARD_MEANING[1][i][j];
-                    solutionMeanings[meaningIndex] = meaningValue;
+                    tmpSolutionMeanings[meaningIndex] = meaningValue;
                 }
             }
         }
 
-        addSolutionForMeanings(solutionMeanings);
+        addSolutionForMeanings(tmpSolutionMeanings);
     }
 
     private static final long[] SOLUTIONS;
@@ -1056,10 +1059,10 @@ public final class StaticLongArrayMain {
         System.out.println("Initialized SOLUTIONS array with size: " + SOLUTIONS.length);
     }
 
-    private static void addSolutionForMeanings(int[] meanings) {
+    private static void addSolutionForMeanings(int[] tmpSolutionMeanings) {
         int index = 0;
         for (int i = 0; i < MAX_MEANING_VALUES.length; i++) {
-            int meaningValue = meanings[i];
+            int meaningValue = tmpSolutionMeanings[i];
             int multiplier = 1;
             for (int j = 0; j < i; j++) {
                 multiplier *= MAX_MEANING_VALUES[j];
@@ -1072,14 +1075,14 @@ public final class StaticLongArrayMain {
     }
 
     private static void printSolutionSummary() {
-        long min = 0;
+        long min = Long.MAX_VALUE;
         long max = 0;
         double sum = 0;
         for (long count : SOLUTIONS) {
             if (count > max) {
                 max = count;
             }
-            if (count < min || min == 0) {
+            if (count < min) {
                 min = count;
             }
             sum += count;
@@ -1303,6 +1306,11 @@ public final class StaticLongArrayMain {
         return result;
     }
 
+    private static void bitmaskOr2(long[] a, long[] b, long[] result) {
+        result[0] = a[0] | b[0];
+        result[1] = a[1] | b[1];
+    }
+
     private static long[] bitmaskAnd(long[] a, long[] b, long[] result) {
         for (int i = 0; i < BITMASK_ARRAY_LENGTH; i++) {
             result[i] = a[i] & b[i];
@@ -1338,6 +1346,10 @@ public final class StaticLongArrayMain {
         return true;
     }
 
+    private static boolean bitmaskAndIsZero2(long[] a, long[] b) {
+        return (a[0] & b[0]) == 0 && (a[1] & b[1]) == 0;
+    }
+
     private static int bitmaskCountOnes(long[] bitmask) {
         int count = 0;
         for (long l : bitmask) {
@@ -1361,6 +1373,11 @@ public final class StaticLongArrayMain {
             }
         }
         return true;
+    }
+
+    private static boolean bitmaskAndEquals2(long[] tmpBoardBitmask, long[] a, long[] b) {
+        return (tmpBoardBitmask[0] & a[0]) == b[0]
+                && (tmpBoardBitmask[1] & a[1]) == b[1];
     }
 
     private static void addPruneCounters(long[][] pruneCounters) {
