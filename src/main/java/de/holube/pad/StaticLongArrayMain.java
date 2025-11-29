@@ -510,6 +510,7 @@ public final class StaticLongArrayMain {
             System.out.println(bitmaskToBinaryString(bitmask));
         }
         installShutdownHook();
+        System.gc();
         long startTime = System.currentTimeMillis();
         solve();
         long endTime = System.currentTimeMillis();
