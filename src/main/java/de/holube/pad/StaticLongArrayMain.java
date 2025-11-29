@@ -462,6 +462,7 @@ public final class StaticLongArrayMain {
     }
 
     private static final long[][] PRUNE_COUNTER = new long[3][TILE_COUNT];
+    private static final long[] NON_PRUNE_COUNTER = new long[TILE_COUNT];
     private static final Semaphore PRUNE_COUNTER_MUTEX = new Semaphore(1);
 
     private static void setSurroundingCoordinates(int[][] board, int row, int col, int value) {
@@ -523,6 +524,7 @@ public final class StaticLongArrayMain {
         for (int i = 0; i < PRUNE_COUNTER.length; i++) {
             System.out.println("Prune " + i + ": " + Arrays.toString(PRUNE_COUNTER[i]));
         }
+        System.out.println("Non-Prune Counters: " + Arrays.toString(NON_PRUNE_COUNTER));
     }
 
     private static void installShutdownHook() {
@@ -628,21 +630,22 @@ public final class StaticLongArrayMain {
         public void run() {
             Task task;
             long[][] pruneCounters = new long[PRUNE_COUNTER.length][TILE_COUNT];
+            long[] nonPruneCounters = new long[TILE_COUNT];
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                addPruneCounters(pruneCounters);
+                addPruneCounters(pruneCounters, nonPruneCounters);
                 END_LATCH.countDown();
             }));
             while ((task = TASK_QUEUE.poll()) != null && !Thread.currentThread().isInterrupted()) {
-                calculate(task, pruneCounters);
+                calculate(task, pruneCounters, nonPruneCounters);
                 int completedTasks = TASK_COUNTER.incrementAndGet();
                 System.out.println(completedTasks + " / " + TOTAL_TASKS + " tasks completed");
-                addPruneCounters(pruneCounters);
+                addPruneCounters(pruneCounters, nonPruneCounters);
                 printPruneCounters();
                 printSolutionSummary();
             }
         }
 
-        private void calculate(Task task, long[][] pruneCounters) {
+        private void calculate(Task task, long[][] pruneCounters, long[] nonPruneCounters) {
             int[] usedPositionedTileIds = new int[TILE_COUNT];
             System.arraycopy(task.usedPositionedTileIds(), 0, usedPositionedTileIds, 0, usedPositionedTileIds.length);
             int tileIndex = task.startTileIndex();
@@ -654,10 +657,10 @@ public final class StaticLongArrayMain {
             byte[][] tmpSolutionBoard = new byte[ORIGINAL_BOARD_LAYOUT.length][ORIGINAL_BOARD_LAYOUT[0].length];
             int[] tmpSolutionMeanings = new int[BOARD_MEANING_BITMASKS.length];
 
-            calculateRecursive(tileIndex, boardBitmasks, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters, tmpSolutionBoard, tmpSolutionMeanings);
+            calculateRecursive(tileIndex, boardBitmasks, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters, nonPruneCounters, tmpSolutionBoard, tmpSolutionMeanings);
         }
 
-        private void calculateRecursive(int tileIndex, long[][] boardBitmasks, int[] usedPositionedTileIds, long[] tmpBoardBitmask, long[] tmpBitmask, long[][] pruneCounters, byte[][] tmpSolutionBoard, int[] tmpSolutionMeanings) {
+        private void calculateRecursive(int tileIndex, long[][] boardBitmasks, int[] usedPositionedTileIds, long[] tmpBoardBitmask, long[] tmpBitmask, long[][] pruneCounters, long[] nonPruneCounters, byte[][] tmpSolutionBoard, int[] tmpSolutionMeanings) {
             final long[] boardBitmask = boardBitmasks[tileIndex - 1];
             if (tileIndex == TILE_COUNT) {
                 submitSolution(usedPositionedTileIds, boardBitmask, tmpSolutionBoard, tmpSolutionMeanings);
@@ -672,9 +675,10 @@ public final class StaticLongArrayMain {
                     if (tileIndex < TILE_COUNT - 1 && prune(tileIndex, boardBitmask, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters)) {
                         continue;
                     }
+                    nonPruneCounters[tileIndex]++;
                     usedPositionedTileIds[tileIndex] = positionedTile.id();
                     System.arraycopy(tmpBoardBitmask, 0, boardBitmasks[tileIndex], 0, BITMASK_ARRAY_LENGTH);
-                    calculateRecursive(tileIndex + 1, boardBitmasks, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters, tmpSolutionBoard, tmpSolutionMeanings);
+                    calculateRecursive(tileIndex + 1, boardBitmasks, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters, nonPruneCounters, tmpSolutionBoard, tmpSolutionMeanings);
                 }
             }
         }
@@ -1380,7 +1384,7 @@ public final class StaticLongArrayMain {
                 && (tmpBoardBitmask[1] & a[1]) == b[1];
     }
 
-    private static void addPruneCounters(long[][] pruneCounters) {
+    private static void addPruneCounters(long[][] pruneCounters, long[] nonPruneCounters) {
         try {
             PRUNE_COUNTER_MUTEX.acquire();
             for (int i = 0; i < PRUNE_COUNTER.length; i++) {
@@ -1388,6 +1392,10 @@ public final class StaticLongArrayMain {
                     PRUNE_COUNTER[i][j] += pruneCounters[i][j];
                     pruneCounters[i][j] = 0;
                 }
+            }
+            for (int i = 0; i < NON_PRUNE_COUNTER.length; i++) {
+                NON_PRUNE_COUNTER[i] += nonPruneCounters[i];
+                nonPruneCounters[i] = 0;
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
