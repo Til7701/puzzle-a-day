@@ -1054,9 +1054,14 @@ public final class StaticLongArrayMain {
         }
 
         addSolutionForMeanings(tmpSolutionMeanings);
+        if (Arrays.equals(tmpSolutionMeanings, SOLUTION_TO_SAVE)) {
+            System.out.println("Found solution for meanings " + Arrays.toString(SOLUTION_TO_SAVE));
+            generateImageForBoard(usedPositionedTileIds);
+        }
     }
 
     private static final long[] SOLUTIONS;
+    private static final int[] SOLUTION_TO_SAVE = {12, 24, 2, 5};
 
     static {
         List<int[]> allPossibleMeanings = constructAllPossibleMeanings();
@@ -1078,6 +1083,7 @@ public final class StaticLongArrayMain {
             SOLUTIONS[index]++;
         }
     }
+
 
     private static void printSolutionSummary() {
         long min = Long.MAX_VALUE;
