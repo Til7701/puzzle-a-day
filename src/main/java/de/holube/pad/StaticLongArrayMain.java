@@ -181,6 +181,112 @@ public final class StaticLongArrayMain {
             }
     };
 
+    private static final int[][][] YEAR4_TILES = {
+            {
+                    {1, 0, 0},
+                    {1, 1, 1},
+                    {0, 0, 1},
+            },
+            {
+                    {1, 0, 0, 0},
+                    {1, 1, 1, 1},
+            },
+            {
+                    {1, 0},
+                    {1, 1},
+                    {1, 0},
+                    {1, 0},
+            },
+            {
+                    {1, 1},
+                    {1, 1},
+                    {1, 1},
+            },
+            {
+                    {1, 0},
+                    {1, 1},
+                    {0, 1},
+                    {0, 1},
+            },
+            {
+                    {1, 1},
+                    {1, 1},
+                    {1, 0},
+            },
+            {
+                    {1, 1},
+                    {1, 0},
+                    {1, 1},
+            },
+            {
+                    {1, 0, 0},
+                    {1, 0, 0},
+                    {1, 1, 1},
+            },
+            {
+                    {1, 1, 0},
+                    {0, 1, 1},
+                    {0, 1, 1},
+            },
+            {
+                    {1, 1, 1},
+                    {0, 1, 0}
+            },
+            {
+                    {1, 1, 1},
+                    {1, 0, 0}
+            },
+            {
+                    {1, 1, 0},
+                    {0, 1, 1}
+            },
+            {
+                    {1, 1, 1, 0},
+                    {0, 1, 1, 1},
+            },
+            {
+                    {1, 0, 0},
+                    {1, 1, 0},
+                    {0, 1, 1},
+            },
+            {
+                    {1, 0, 1},
+                    {1, 0, 1},
+                    {1, 1, 1},
+            }
+    };
+
+    private static final int[][] YEAR4_BOARD_LAYOUT = {
+            {0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+    };
+
+    private static final int[][][] YEAR4_BOARD_MEANING = {
+            {
+                    {0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+                    {0, 0, 0, 0, 0, 0, -1, 2, 2, 3, 3, 4, 4, 5, 5},
+                    {1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5},
+                    {1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5},
+                    {1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5},
+                    {1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5},
+                    {1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
+            },
+            {
+                    {1, 2, 3, 4, 5, 6, -1, -1, -1},
+                    {7, 8, 9, 10, 11, 12, -1, 1, 2, 1, 2, 1, 2, 1, 2},
+                    {1, 2, 3, 4, 5, 6, 7, 3, 4, 3, 4, 3, 4, 3, 4},
+                    {8, 9, 10, 11, 12, 13, 14, 5, 6, 5, 6, 5, 6, 5, 6},
+                    {15, 16, 17, 18, 19, 20, 21, 7, 8, 7, 8, 7, 8, 7, 8},
+                    {22, 23, 24, 25, 26, 27, 28, 9, 10, 9, 10, 9, 10, 9, 10},
+                    {29, 30, 31, -1, -1, -1, -1, -1, -1}
+            }
+    };
+
     private static final int PARALLELISM = (int) (Runtime.getRuntime().availableProcessors() * 0.9);
     //private static final int PARALLELISM = 1;
     private static final List<Color> COLORS = List.of(
@@ -199,6 +305,11 @@ public final class StaticLongArrayMain {
     private static final int[][][] ORIGINAL_BOARD_MEANING = YEAR_BOARD_MEANING;
     private static final int BOARD_CELL_COUNT = Arrays.stream(ORIGINAL_BOARD_LAYOUT).mapToInt(row -> row.length).sum();
     private static final int BITMASK_ARRAY_LENGTH = (int) Math.ceil(BOARD_CELL_COUNT / 64d);
+
+    static {
+        System.out.println("Board Cell Count: " + BOARD_CELL_COUNT);
+        System.out.println("Bitmask Array Length: " + BITMASK_ARRAY_LENGTH);
+    }
 
     private static final Tile[] TILES;
     private static final int TILE_COUNT;
