@@ -441,9 +441,6 @@ public final class StaticLongArrayMain {
     private static long[][] createBannedBitmaskForPatternAt(int[][] pattern, int row, int col, int[][] board) {
         int meaningArea = -1;
 
-        System.out.println("Creating banned bitmask for pattern at (" + row + ", " + col + "): ");
-        System.out.println("Pattern: " + Arrays.deepToString(pattern));
-
         resetBoard(board);
         // create area of interest
         for (int i = 0; i < pattern.length; i++) {
@@ -480,8 +477,6 @@ public final class StaticLongArrayMain {
         }
         long[][] bannedBitmask = new long[2][];
         bannedBitmask[0] = fromArray(board);
-        System.out.println("Area of Interest: " + bitmaskToBinaryString(bannedBitmask[0]));
-        print(board);
 
         // create pattern bitmask
         for (int i = 0; i < pattern.length; i++) {
@@ -494,8 +489,6 @@ public final class StaticLongArrayMain {
             }
         }
         bannedBitmask[1] = fromArray(board);
-        System.out.println("Pattern Bitmask: " + bitmaskToBinaryString(bannedBitmask[1]));
-        print(board);
 
         return bannedBitmask;
     }
