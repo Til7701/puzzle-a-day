@@ -638,7 +638,7 @@ public final class StaticLongArrayMain {
             for (int j = 0; j < TILES[1].allPositions().length; j++) {
                 final PositionedTile positionedTile2 = TILES[1].allPositions()[j];
                 bitmaskAnd(EMPTY_BOARD_BITMASK, positionedTile.bitmask(), tmpBitmask);
-                if (bitmaskAndIsZero(EMPTY_BOARD_BITMASK, positionedTile.bitmask()) && bitmaskAndIsZero(positionedTile2.bitmask(), tmpBitmask)) {
+                if (bitmaskAndIsZeroSwitch(EMPTY_BOARD_BITMASK, positionedTile.bitmask()) && bitmaskAndIsZeroSwitch(positionedTile2.bitmask(), tmpBitmask)) {
                     int[] usedPositionedTileIds = new int[TILE_COUNT];
                     usedPositionedTileIds[0] = positionedTile.id();
                     usedPositionedTileIds[1] = positionedTile2.id();
@@ -703,8 +703,8 @@ public final class StaticLongArrayMain {
             Tile tile = TILES[tileIndex];
             for (PositionedTile positionedTile : tile.allPositions()) {
                 long[] positionedTileBitmask = positionedTile.bitmask();
-                if (bitmaskAndIsZero2(boardBitmask, positionedTileBitmask)) {
-                    bitmaskOr2(boardBitmask, positionedTileBitmask, tmpBoardBitmask);
+                if (bitmaskAndIsZeroSwitch(boardBitmask, positionedTileBitmask)) {
+                    bitmaskXorSwitch(boardBitmask, positionedTileBitmask, tmpBoardBitmask);
                     if (tileIndex < TILE_COUNT - 1 && prune(tileIndex, boardBitmask, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters)) {
                         continue;
                     }
@@ -726,7 +726,7 @@ public final class StaticLongArrayMain {
 
     private static boolean pruneNoCellsEmptyInMeaningArea(int tileIndex, long[] boardBitmask, int[] usedPositionedTileIds, long[] tmpBoardBitmask, long[] tmpBitmask, long[][] pruneCounters) {
         for (long[] meaningBitmask : BOARD_MEANING_BITMASKS) {
-            int oneCount = bitmaskAndXorCountOnes(tmpBoardBitmask, meaningBitmask, meaningBitmask);
+            int oneCount = bitmaskAndXorCountOnesSwitch(tmpBoardBitmask, meaningBitmask, meaningBitmask);
             if (oneCount == 0) {
                 pruneCounters[0][tileIndex]++;
                 return true;
@@ -739,7 +739,7 @@ public final class StaticLongArrayMain {
         for (long[][][] andEqualsAtLeastTwoBitmasks : PRUNE_AND_EQUALS_AT_LEAST_TWO_BITMASKS) {
             int matchCount = 0;
             for (long[][] andEqualsAtLeastTwoBitmask : andEqualsAtLeastTwoBitmasks) {
-                if (bitmaskAndEquals2(tmpBoardBitmask, andEqualsAtLeastTwoBitmask[0], andEqualsAtLeastTwoBitmask[1])) {
+                if (bitmaskAndEqualsSwitch(tmpBoardBitmask, andEqualsAtLeastTwoBitmask[0], andEqualsAtLeastTwoBitmask[1])) {
                     matchCount++;
                     if (matchCount >= 2) {
                         pruneCounters[1][tileIndex]++;
@@ -753,7 +753,7 @@ public final class StaticLongArrayMain {
 
     private static boolean pruneBannedBitmasks(int tileIndex, long[] boardBitmask, int[] usedPositionedTileIds, long[] tmpBoardBitmask, long[] tmpBitmask, long[][] pruneCounters) {
         for (long[][] bannedBitmask : BANNED_BITMASKS) {
-            if (bitmaskAndEquals2(tmpBoardBitmask, bannedBitmask[0], bannedBitmask[1])) {
+            if (bitmaskAndEqualsSwitch(tmpBoardBitmask, bannedBitmask[0], bannedBitmask[1])) {
                 pruneCounters[2][tileIndex]++;
                 return true;
             }
@@ -1349,9 +1349,19 @@ public final class StaticLongArrayMain {
         return result;
     }
 
-    private static void bitmaskOr2(long[] a, long[] b, long[] result) {
-        result[0] = a[0] | b[0];
-        result[1] = a[1] | b[1];
+    private static void bitmaskXorSwitch(long[] a, long[] b, long[] result) {
+        switch (BITMASK_ARRAY_LENGTH) {
+            case 1 -> result[0] = a[0] ^ b[0];
+            case 2 -> {
+                result[0] = a[0] ^ b[0];
+                result[1] = a[1] ^ b[1];
+            }
+            default -> {
+                for (int i = 0; i < BITMASK_ARRAY_LENGTH; i++) {
+                    result[i] = a[i] ^ b[i];
+                }
+            }
+        }
     }
 
     private static long[] bitmaskAnd(long[] a, long[] b, long[] result) {
@@ -1380,17 +1390,21 @@ public final class StaticLongArrayMain {
         bitmask[arrayIndex] &= ~(1L << (63 - bitIndex));
     }
 
-    private static boolean bitmaskAndIsZero(long[] a, long[] b) {
-        for (int i = 0; i < BITMASK_ARRAY_LENGTH; i++) {
-            if ((a[i] & b[i]) != 0) {
-                return false;
+    private static boolean bitmaskAndIsZeroSwitch(long[] a, long[] b) {
+        return switch (BITMASK_ARRAY_LENGTH) {
+            case 1 -> (a[0] & b[0]) == 0;
+            case 2 -> (a[0] & b[0]) == 0 && (a[1] & b[1]) == 0;
+            default -> {
+                boolean result = true;
+                for (int i = 0; i < BITMASK_ARRAY_LENGTH; i++) {
+                    if ((a[i] & b[i]) != 0) {
+                        result = false;
+                        break;
+                    }
+                }
+                yield result;
             }
-        }
-        return true;
-    }
-
-    private static boolean bitmaskAndIsZero2(long[] a, long[] b) {
-        return (a[0] & b[0]) == 0 && (a[1] & b[1]) == 0;
+        };
     }
 
     private static int bitmaskCountOnes(long[] bitmask) {
@@ -1401,26 +1415,37 @@ public final class StaticLongArrayMain {
         return count;
     }
 
-    private static int bitmaskAndXorCountOnes(long[] a, long[] b, long[] c) {
-        int count = 0;
-        for (int i = 0; i < BITMASK_ARRAY_LENGTH; i++) {
-            count += Long.bitCount((a[i] & b[i]) ^ c[i]);
-        }
-        return count;
-    }
-
-    private static boolean bitmaskAndEquals(long[] tmpBoardBitmask, long[] a, long[] b) {
-        for (int i = 0; i < BITMASK_ARRAY_LENGTH; i++) {
-            if ((tmpBoardBitmask[i] & a[i]) != b[i]) {
-                return false;
+    private static int bitmaskAndXorCountOnesSwitch(long[] a, long[] b, long[] c) {
+        return switch (BITMASK_ARRAY_LENGTH) {
+            case 1 -> Long.bitCount((a[0] & b[0]) ^ c[0]);
+            case 2 -> Long.bitCount((a[0] & b[0]) ^ c[0])
+                    + Long.bitCount((a[1] & b[1]) ^ c[1]);
+            default -> {
+                int count = 0;
+                for (int i = 0; i < BITMASK_ARRAY_LENGTH; i++) {
+                    count += Long.bitCount((a[i] & b[i]) ^ c[i]);
+                }
+                yield count;
             }
-        }
-        return true;
+        };
     }
 
-    private static boolean bitmaskAndEquals2(long[] tmpBoardBitmask, long[] a, long[] b) {
-        return (tmpBoardBitmask[0] & a[0]) == b[0]
-                && (tmpBoardBitmask[1] & a[1]) == b[1];
+    private static boolean bitmaskAndEqualsSwitch(long[] tmpBoardBitmask, long[] a, long[] b) {
+        return switch (BITMASK_ARRAY_LENGTH) {
+            case 1 -> (tmpBoardBitmask[0] & a[0]) == b[0];
+            case 2 -> (tmpBoardBitmask[0] & a[0]) == b[0]
+                    && (tmpBoardBitmask[1] & a[1]) == b[1];
+            default -> {
+                boolean result = true;
+                for (int i = 0; i < BITMASK_ARRAY_LENGTH; i++) {
+                    if ((tmpBoardBitmask[i] & a[i]) != b[i]) {
+                        result = false;
+                        break;
+                    }
+                }
+                yield result;
+            }
+        };
     }
 
     private static void addPruneCounters(long[][] pruneCounters, long[] nonPruneCounters) {
