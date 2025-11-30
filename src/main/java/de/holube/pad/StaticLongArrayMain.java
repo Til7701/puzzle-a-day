@@ -683,7 +683,41 @@ public final class StaticLongArrayMain {
             printPruneCounters();
             printSolutionSummary();
             System.out.println(Arrays.toString(SOLUTIONS));
+            findMeaningsWithNoSolutions();
         }));
+    }
+
+    private static void findMeaningsWithNoSolutions() {
+        for (int i = 0; i < SOLUTIONS.length; i++) {
+            long count = SOLUTIONS[i];
+            if (count == 0) {
+                System.out.println("Meaning with no solutions found!");
+                System.out.println("Index: " + i);
+                int[] meaning = meaningsFromIndex(i);
+                System.out.println("Meaning Values: " + Arrays.toString(meaning));
+            }
+        }
+    }
+
+    public static int[] meaningsFromIndex(int index) {
+        int n = MAX_MEANING_VALUES.length;
+        long total = 1L;
+        for (int v : MAX_MEANING_VALUES) {
+            total *= v;
+        }
+        if (index < 0 || index >= total) {
+            throw new IllegalArgumentException("index out of range: " + index);
+        }
+
+        int[] result = new int[n];
+        long divisor = 1L;
+        for (int i = 0; i < n; i++) {
+            int radix = MAX_MEANING_VALUES[i];
+            int digit = (int) ((index / divisor) % radix);
+            result[i] = digit + 1;
+            divisor *= radix;
+        }
+        return result;
     }
 
     private static void plausibilityChecks() {
