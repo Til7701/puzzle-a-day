@@ -1372,6 +1372,26 @@ public final class StaticLongArrayMain {
                 },
                 1, 1, 1
         );
+        testSolutionIndexFunctions();
+    }
+
+    private static void testSolutionIndexFunctions() {
+        int[] testMeaning = new int[MAX_MEANING_VALUES.length];
+        Arrays.fill(testMeaning, 1);
+        addSolutionForMeanings(testMeaning);
+        if (SOLUTIONS[0] != 1) {
+            throw new IllegalStateException("Meanings index 0 failed");
+        }
+
+        if (!Arrays.equals(meaningsFromIndex(0), testMeaning)) {
+            throw new IllegalStateException("Meanings from index 0 failed");
+        }
+        testMeaning[0] = 2;
+        if (!Arrays.equals(meaningsFromIndex(1), testMeaning)) {
+            throw new IllegalStateException("Meanings from index 1 failed");
+        }
+
+        Arrays.fill(SOLUTIONS, 0);
     }
 
     private static void testLongArrayConversion(int[][] array) {
