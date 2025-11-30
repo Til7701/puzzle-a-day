@@ -268,22 +268,22 @@ public final class StaticLongArrayMain {
 
     private static final int[][][] YEAR4_BOARD_MEANING = {
             {
-                    {0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-                    {0, 0, 0, 0, 0, 0, -1, 2, 2, 3, 3, 4, 4, 5, 5},
+                    {0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1, 4, 4, -1, -1},
+                    {0, 0, 0, 0, 0, 0, -1, -1, -1, 3, 3, 4, 4, 5, 5},
                     {1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5},
                     {1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5},
                     {1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5},
-                    {1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5},
-                    {1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
+                    {1, 1, 1, 1, 1, 1, 1, 2, 2, 3, 3, -1, -1, 5, 5},
+                    {1, 1, 1, -1, -1, -1, -1, 2, 2, -1, -1, -1, -1, -1, -1}
             },
             {
-                    {1, 2, 3, 4, 5, 6, -1, -1, -1},
-                    {7, 8, 9, 10, 11, 12, -1, 1, 2, 1, 2, 1, 2, 1, 2},
-                    {1, 2, 3, 4, 5, 6, 7, 3, 4, 3, 4, 3, 4, 3, 4},
-                    {8, 9, 10, 11, 12, 13, 14, 5, 6, 5, 6, 5, 6, 5, 6},
-                    {15, 16, 17, 18, 19, 20, 21, 7, 8, 7, 8, 7, 8, 7, 8},
-                    {22, 23, 24, 25, 26, 27, 28, 9, 10, 9, 10, 9, 10, 9, 10},
-                    {29, 30, 31, -1, -1, -1, -1, -1, -1}
+                    {1, 2, 3, 4, 5, 6, -1, -1, -1, -1, -1, 1, 2, -1, -1},
+                    {7, 8, 9, 10, 11, 12, -1, -1, -1, 1, 2, 3, 4, 1, 2},
+                    {1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 3, 4},
+                    {8, 9, 10, 11, 12, 13, 14, 7, 8, 9, 10, 11, 12, 5, 6}, //FIXME WIP
+                    {15, 16, 17, 18, 19, 20, 21, 13, 14, 15, 16, 17, 18, 7, 8},
+                    {22, 23, 24, 25, 26, 27, 28, 19, 20, 21, 22, -1, -1, 9, 10},
+                    {29, 30, 31, -1, -1, -1, -1, 23, 24, -1, -1, -1, -1, -1, -1}
             }
     };
 
@@ -711,6 +711,32 @@ public final class StaticLongArrayMain {
 
         if ((cellsInBoard - meaningCount) != cellsInTiles) {
             throw new IllegalStateException("Number of empty cells in board (" + cellsInBoard + ") does not match number of cells in tiles (" + cellsInTiles + "), considering meanings (" + meaningCount + ").");
+        }
+
+        int expectedBoardRows = ORIGINAL_BOARD_LAYOUT.length;
+        int expectedBoardCols = ORIGINAL_BOARD_LAYOUT[0].length;
+        verifyBoardSize(expectedBoardRows, expectedBoardCols, ORIGINAL_BOARD_LAYOUT);
+        verifyBoardSize(expectedBoardRows, expectedBoardCols, ORIGINAL_BOARD_MEANING[0]);
+        verifyBoardSize(expectedBoardRows, expectedBoardCols, ORIGINAL_BOARD_MEANING[1]);
+        for (int i = 0; i < ORIGINAL_BOARD_LAYOUT.length; i++) {
+            for (int j = 0; j < ORIGINAL_BOARD_LAYOUT[i].length; j++) {
+                if (ORIGINAL_BOARD_LAYOUT[i][j] == -1 &&
+                        (ORIGINAL_BOARD_MEANING[0][i][j] != -1 || ORIGINAL_BOARD_MEANING[1][i][j] != -1)
+                ) {
+                    throw new IllegalStateException("Board layout cell at (" + i + ", " + j + ") is -1, but corresponding meaning cells are not both -1 (meaning0: " + ORIGINAL_BOARD_MEANING[0][i][j] + ", meaning1: " + ORIGINAL_BOARD_MEANING[1][i][j] + ").");
+                }
+            }
+        }
+    }
+
+    private static void verifyBoardSize(int expectedRows, int expectedCols, int[][] boardLayout) {
+        if (boardLayout.length != expectedRows) {
+            throw new IllegalStateException("Board layout row count (" + boardLayout.length + ") does not match expected row count (" + expectedRows + ").");
+        }
+        for (int i = 0; i < boardLayout.length; i++) {
+            if (boardLayout[i].length != expectedCols) {
+                throw new IllegalStateException("Board layout row " + i + " column count (" + boardLayout[i].length + ") does not match expected column count (" + expectedCols + ").");
+            }
         }
     }
 
