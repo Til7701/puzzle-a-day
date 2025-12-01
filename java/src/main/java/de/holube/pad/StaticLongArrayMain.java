@@ -392,7 +392,8 @@ public final class StaticLongArrayMain {
             Color.YELLOW,
             Color.WHITE,
             Color.GRAY,
-            Color.DARK_GRAY
+            Color.DARK_GRAY,
+            Color.LIGHT_GRAY
     );
 
     private static final int[][][] ORIGINAL_TILES = YEAR2_TILES;
