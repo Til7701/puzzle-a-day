@@ -626,20 +626,21 @@ public final class StaticLongArrayMain {
     }
 
     static {
-        List<Tile> tiles = new ArrayList<>();
+        TILES = new Tile[TILE_COUNT];
+        Arrays.sort(ORIGINAL_TILES, (o1, o2) -> {
+            int size1 = o1.length * o1[0].length;
+            int size2 = o2.length * o2[0].length;
+            return Integer.compare(size2, size1);
+        });
+
         for (int i = 0; i < ORIGINAL_TILES.length; i++) {
-            tiles.add(new Tile(
+            Tile tile = new Tile(
                     ORIGINAL_TILES[i],
                     i,
                     COLORS.get(i % COLORS.size())
-            ));
+            );
+            TILES[i] = tile;
         }
-        tiles.sort((o1, o2) -> {
-            int size1 = o1.base.length * o1.base[0].length;
-            int size2 = o2.base.length * o2.base[0].length;
-            return Integer.compare(size2, size1);
-        });
-        TILES = tiles.toArray(new Tile[0]);
     }
 
     private static void resetBoard(int[][] array) {
@@ -973,7 +974,8 @@ public final class StaticLongArrayMain {
             }
 
             Tile tile = TILES[tileIndex];
-            for (PositionedTile positionedTile : tile.allPositions()) {
+            PositionedTile[] allPositions = tile.allPositionsPossibleWithPrevious()[usedPositionedTileIds[tileIndex - 1]];
+            for (PositionedTile positionedTile : allPositions) {
                 long[] positionedTileBitmask = positionedTile.bitmask();
                 if (bitmaskAndIsZeroSwitch(boardBitmask, positionedTileBitmask)) {
                     bitmaskXorSwitch(boardBitmask, positionedTileBitmask, tmpBoardBitmask);
@@ -1196,7 +1198,8 @@ public final class StaticLongArrayMain {
             int[][] base,
             int tileNumber,
             Color color,
-            PositionedTile[] allPositions
+            PositionedTile[] allPositions,
+            PositionedTile[][] allPositionsPossibleWithPrevious
     ) {
 
         private Tile(int[][] base, int tileNumber, Color color) {
@@ -1205,7 +1208,9 @@ public final class StaticLongArrayMain {
             List<int[][]> baseRotated = getAllRotations(base);
             System.out.println("Number of Rotations: " + baseRotated.size());
             List<PositionedTile> ap = getAllPositions(baseRotated, tileNumber);
-            this(base, tileNumber, color, ap.toArray(new PositionedTile[0]));
+            PositionedTile[] allPositions = ap.toArray(new PositionedTile[0]);
+            PositionedTile[][] allPositionsPossibleWithPrevious = getAllPositionsPossibleWithPrevious(tileNumber, allPositions);
+            this(base, tileNumber, color, allPositions, allPositionsPossibleWithPrevious);
             System.out.println("Number of Boards: " + allPositions.length);
 
             // test if all positioned tiles are in the correct order with their ids
@@ -1275,6 +1280,39 @@ public final class StaticLongArrayMain {
             }
 
             return List.copyOf(results);
+        }
+
+        private static PositionedTile[][] getAllPositionsPossibleWithPrevious(int thisTileNumber, PositionedTile[] myAllPositions) {
+            List<List<PositionedTile>> allPossibleWithPrevious = new ArrayList<>();
+            long[] tmpBitmask = new long[BITMASK_ARRAY_LENGTH];
+
+            if (thisTileNumber == 0) {
+                for (PositionedTile thisPositionedTile : myAllPositions) {
+                    List<PositionedTile> singleList = new ArrayList<>();
+                    singleList.add(thisPositionedTile);
+                    allPossibleWithPrevious.add(singleList);
+                }
+            } else {
+                for (PositionedTile previousPositionedTile : TILES[thisTileNumber - 1].allPositions()) {
+                    List<PositionedTile> possibleWithPrevious = new ArrayList<>();
+                    long[] previousBitmask = previousPositionedTile.bitmask();
+                    for (PositionedTile thisPositionedTile : myAllPositions) {
+                        long[] thisBitmask = thisPositionedTile.bitmask();
+                        if (bitmaskAndIsZeroSwitch(previousBitmask, thisBitmask)) {
+                            bitmaskXorSwitch(previousBitmask, thisBitmask, tmpBitmask);
+                            if (prune(0, tmpBitmask, PRUNE_COUNTER)) {
+                                continue;
+                            }
+                            possibleWithPrevious.add(thisPositionedTile);
+                        }
+                    }
+                    allPossibleWithPrevious.add(possibleWithPrevious);
+                }
+            }
+
+            return allPossibleWithPrevious.stream()
+                    .map(l -> l.toArray(new PositionedTile[0]))
+                    .toArray(PositionedTile[][]::new);
         }
 
         private static boolean isValid(int[][] board) {
