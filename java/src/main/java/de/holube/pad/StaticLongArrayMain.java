@@ -389,7 +389,10 @@ public final class StaticLongArrayMain {
             Color.ORANGE,
             Color.CYAN,
             Color.PINK,
-            Color.YELLOW
+            Color.YELLOW,
+            Color.WHITE,
+            Color.GRAY,
+            Color.DARK_GRAY
     );
 
     private static final int[][][] ORIGINAL_TILES = YEAR2_TILES;
@@ -1534,6 +1537,7 @@ public final class StaticLongArrayMain {
         int height = IMAGE_SIZE_PER_CELL * array.length;
         int width = IMAGE_SIZE_PER_CELL * array[0].length;
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        colorBoard(image);
         Graphics2D graphics2D = image.createGraphics();
 
         List<PositionedTile> positionedTiles = new ArrayList<>();
@@ -1563,11 +1567,28 @@ public final class StaticLongArrayMain {
         saveImage(image);
     }
 
+    private static void colorBoard(BufferedImage image) {
+        Graphics2D graphics2D = image.createGraphics();
+
+        for (int i = 0; i < ORIGINAL_BOARD_LAYOUT.length; i++) {
+            for (int j = 0; j < ORIGINAL_BOARD_LAYOUT[i].length; j++) {
+                if (ORIGINAL_BOARD_LAYOUT[i][j] != -1) {
+                    graphics2D.setColor(Color.BLACK);
+                    graphics2D.fillRect(
+                            j * IMAGE_SIZE_PER_CELL, i * IMAGE_SIZE_PER_CELL,
+                            IMAGE_SIZE_PER_CELL, IMAGE_SIZE_PER_CELL
+                    );
+                }
+            }
+        }
+    }
+
     private static void generateImageForBoard(int[] usedPositionedTileIds, int upToIndex) {
         int[][] array = toArray(constructBoardBitmask(usedPositionedTileIds, usedPositionedTileIds.length - 1), ORIGINAL_BOARD_LAYOUT.length, ORIGINAL_BOARD_LAYOUT[0].length);
         int height = IMAGE_SIZE_PER_CELL * array.length;
         int width = IMAGE_SIZE_PER_CELL * array[0].length;
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        colorBoard(image);
         Graphics2D graphics2D = image.createGraphics();
 
         List<PositionedTile> positionedTiles = new ArrayList<>();
