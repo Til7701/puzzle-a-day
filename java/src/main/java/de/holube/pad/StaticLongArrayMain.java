@@ -312,7 +312,7 @@ public final class StaticLongArrayMain {
     }
 
     private static final Tile[] TILES;
-    private static final int TILE_COUNT;
+    private static final int TILE_COUNT = ORIGINAL_TILES.length;
     private static final long[] EMPTY_BOARD_BITMASK;
     private static final long[][] BOARD_MEANING_BITMASKS;
     private static final int[] MAX_MEANING_VALUES;
@@ -467,23 +467,11 @@ public final class StaticLongArrayMain {
     };
     private static final CountDownLatch END_LATCH = new CountDownLatch(PARALLELISM);
 
-    static {
-        List<Tile> tiles = new ArrayList<>();
-        for (int i = 0; i < ORIGINAL_TILES.length; i++) {
-            tiles.add(new Tile(
-                    ORIGINAL_TILES[i],
-                    i,
-                    COLORS.get(i % COLORS.size())
-            ));
-        }
-        tiles.sort((o1, o2) -> {
-            int size1 = o1.base.length * o1.base[0].length;
-            int size2 = o2.base.length * o2.base[0].length;
-            return Integer.compare(size2, size1);
-        });
-        TILES = tiles.toArray(new Tile[0]);
-        TILE_COUNT = TILES.length;
+    private static final long[][] PRUNE_COUNTER = new long[3][TILE_COUNT];
+    private static final long[] NON_PRUNE_COUNTER = new long[TILE_COUNT];
+    private static final Semaphore PRUNE_COUNTER_MUTEX = new Semaphore(1);
 
+    static {
         EMPTY_BOARD_BITMASK = fromArray(ORIGINAL_BOARD_LAYOUT);
 
         PRUNE_AND_EQUALS_AT_LEAST_TWO_BITMASKS = new long[BOARD_MEANING_BITMASKS.length][][][];
@@ -508,10 +496,8 @@ public final class StaticLongArrayMain {
             }
             PRUNE_AND_EQUALS_AT_LEAST_TWO_BITMASKS[i] = bitmaskList.toArray(new long[0][][]);
         }
-    }
 
-    // create banned bitmasks
-    static {
+        // create banned bitmasks
         Set<long[][]> bannedBitmasks = new TreeSet<>((o1, o2) -> {
             int cmp = Arrays.compare(o1[0], o2[0]);
             if (cmp != 0) return cmp;
@@ -541,6 +527,23 @@ public final class StaticLongArrayMain {
             System.out.println("Pattern Bitmask: " + bitmaskToBinaryString(BANNED_BITMASKS[i][0]));
             System.out.println("Area Bitmask:    " + bitmaskToBinaryString(BANNED_BITMASKS[i][1]));
         }
+    }
+
+    static {
+        List<Tile> tiles = new ArrayList<>();
+        for (int i = 0; i < ORIGINAL_TILES.length; i++) {
+            tiles.add(new Tile(
+                    ORIGINAL_TILES[i],
+                    i,
+                    COLORS.get(i % COLORS.size())
+            ));
+        }
+        tiles.sort((o1, o2) -> {
+            int size1 = o1.base.length * o1.base[0].length;
+            int size2 = o2.base.length * o2.base[0].length;
+            return Integer.compare(size2, size1);
+        });
+        TILES = tiles.toArray(new Tile[0]);
     }
 
     private static void resetBoard(int[][] array) {
@@ -603,10 +606,6 @@ public final class StaticLongArrayMain {
 
         return bannedBitmask;
     }
-
-    private static final long[][] PRUNE_COUNTER = new long[3][TILE_COUNT];
-    private static final long[] NON_PRUNE_COUNTER = new long[TILE_COUNT];
-    private static final Semaphore PRUNE_COUNTER_MUTEX = new Semaphore(1);
 
     private static void setSurroundingCoordinates(int[][] board, int row, int col, int value) {
         board[row][col] = value;
@@ -688,9 +687,15 @@ public final class StaticLongArrayMain {
     }
 
     private static void findMeaningsWithNoSolutions() {
+        int nullCount = 0;
         for (int i = 0; i < SOLUTIONS.length; i++) {
             long count = SOLUTIONS[i];
             if (count == 0) {
+                nullCount++;
+                if (nullCount > 10) {
+                    System.out.println("...and more");
+                    break;
+                }
                 System.out.println("Meaning with no solutions found!");
                 System.out.println("Index: " + i);
                 int[] meaning = meaningsFromIndex(i);
@@ -814,7 +819,7 @@ public final class StaticLongArrayMain {
                     usedPositionedTileIds[0] = positionedTile.id();
                     usedPositionedTileIds[1] = positionedTile2.id();
                     long[] boardBitmask = constructBoardBitmask(usedPositionedTileIds, 1);
-                    if (prune(1, boardBitmask, usedPositionedTileIds, boardBitmask, new long[BITMASK_ARRAY_LENGTH], new long[PRUNE_COUNTER.length][TILE_COUNT])) {
+                    if (prune(1, boardBitmask, new long[PRUNE_COUNTER.length][TILE_COUNT])) {
                         continue;
                     }
                     TASK_QUEUE.add(new Task(
@@ -876,7 +881,7 @@ public final class StaticLongArrayMain {
                 long[] positionedTileBitmask = positionedTile.bitmask();
                 if (bitmaskAndIsZeroSwitch(boardBitmask, positionedTileBitmask)) {
                     bitmaskXorSwitch(boardBitmask, positionedTileBitmask, tmpBoardBitmask);
-                    if (tileIndex < TILE_COUNT - 1 && prune(tileIndex, boardBitmask, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters)) {
+                    if (tileIndex < TILE_COUNT - 1 && prune(tileIndex, tmpBoardBitmask, pruneCounters)) {
                         continue;
                     }
                     nonPruneCounters[tileIndex]++;
@@ -888,14 +893,14 @@ public final class StaticLongArrayMain {
         }
     }
 
-    private static boolean prune(int tileIndex, long[] boardBitmask, int[] usedPositionedTileIds, long[] tmpBoardBitmask, long[] tmpBitmask, long[][] pruneCounters) {
-        return pruneNoCellsEmptyInMeaningArea(tileIndex, boardBitmask, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters)
-                || pruneNoTwoSingleCellsInMeaningArea(tileIndex, boardBitmask, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters)
-                || pruneBannedBitmasks(tileIndex, boardBitmask, usedPositionedTileIds, tmpBoardBitmask, tmpBitmask, pruneCounters)
+    private static boolean prune(int tileIndex, long[] tmpBoardBitmask, long[][] pruneCounters) {
+        return pruneNoCellsEmptyInMeaningArea(tileIndex, tmpBoardBitmask, pruneCounters)
+                || pruneNoTwoSingleCellsInMeaningArea(tileIndex, tmpBoardBitmask, pruneCounters)
+                || pruneBannedBitmasks(tileIndex, tmpBoardBitmask, pruneCounters)
                 ;
     }
 
-    private static boolean pruneNoCellsEmptyInMeaningArea(int tileIndex, long[] boardBitmask, int[] usedPositionedTileIds, long[] tmpBoardBitmask, long[] tmpBitmask, long[][] pruneCounters) {
+    private static boolean pruneNoCellsEmptyInMeaningArea(int tileIndex, long[] tmpBoardBitmask, long[][] pruneCounters) {
         for (long[] meaningBitmask : BOARD_MEANING_BITMASKS) {
             int oneCount = bitmaskAndXorCountOnesSwitch(tmpBoardBitmask, meaningBitmask, meaningBitmask);
             if (oneCount == 0) {
@@ -906,7 +911,7 @@ public final class StaticLongArrayMain {
         return false;
     }
 
-    private static boolean pruneNoTwoSingleCellsInMeaningArea(int tileIndex, long[] boardBitmask, int[] usedPositionedTileIds, long[] tmpBoardBitmask, long[] tmpBitmask, long[][] pruneCounters) {
+    private static boolean pruneNoTwoSingleCellsInMeaningArea(int tileIndex, long[] tmpBoardBitmask, long[][] pruneCounters) {
         for (long[][][] andEqualsAtLeastTwoBitmasks : PRUNE_AND_EQUALS_AT_LEAST_TWO_BITMASKS) {
             int matchCount = 0;
             for (long[][] andEqualsAtLeastTwoBitmask : andEqualsAtLeastTwoBitmasks) {
@@ -922,7 +927,7 @@ public final class StaticLongArrayMain {
         return false;
     }
 
-    private static boolean pruneBannedBitmasks(int tileIndex, long[] boardBitmask, int[] usedPositionedTileIds, long[] tmpBoardBitmask, long[] tmpBitmask, long[][] pruneCounters) {
+    private static boolean pruneBannedBitmasks(int tileIndex, long[] tmpBoardBitmask, long[][] pruneCounters) {
         for (long[][] bannedBitmask : BANNED_BITMASKS) {
             if (bitmaskAndEqualsSwitch(tmpBoardBitmask, bannedBitmask[0], bannedBitmask[1])) {
                 pruneCounters[2][tileIndex]++;
@@ -1163,6 +1168,9 @@ public final class StaticLongArrayMain {
                 for (int j = 0; j < boardArray[i].length - tile[0].length + 1; j++) {
                     int[][] newBoard = place(tile, boardArray, i, j);
                     if (isValid(newBoard)) {
+                        long[] tmpBboardBitmask = fromArray(newBoard);
+                        if (prune(0, tmpBboardBitmask, PRUNE_COUNTER))
+                            continue;
                         removeBoard(newBoard, boardArray);
                         long[] boardBitmask = fromArray(newBoard);
                         results.add(boardBitmask);
